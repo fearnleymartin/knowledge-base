@@ -16,3 +16,13 @@ If you additional dependencies needed to be installed do not forget to re-export
 Setup conda environment using environment.yml.
 
 conda env create -f environment.yml
+
+# Scrapy
+
+to run crawler:  
+`cd knowledge_base`  
+`scrapy crawl superuser`
+
+# Json formats
+
+The different json formats are detailed in the directory json_formats.

@@ -9,7 +9,22 @@ from cssselect import GenericTranslator, SelectorError
 class SuperuserSpider(scrapy.Spider):
     name = "superuser"
     allowed_domains = ["superuser.com"]
-    start_urls = ['http://superuser.com/questions/56215/outlook-restore']
+    start_urls = ['http://superuser.com/questions/56215/outlook-restore',
+                  'http://superuser.com/questions/348750/outlook-reminders-not-appearing',
+                  'http://superuser.com/questions/781717/outlook-2007-how-to-search-filter-content-of-a-search-folder/781731',
+                  'http://superuser.com/questions/696979/removing-default-outlook-account-in-windows-mail',
+                  'http://superuser.com/questions/273217/completely-reset-outlook-2007-to-first-run',
+                  'http://superuser.com/questions/941455/upgrade-from-ms-outlook-2003-to-ms-outlook-2013-how-to-migrate-custom-views-an',
+                  'http://superuser.com/questions/848948/redirecting-outlook-meeting-request',
+                  'http://superuser.com/questions/934323/where-are-my-pst-files-for-outlook-2013',
+                  'http://superuser.com/questions/98229/outlook-ignorelist',
+                  'http://superuser.com/questions/56215/outlook-restore',
+                  'http://superuser.com/questions/51942/outlook-sharing',
+                  'http://superuser.com/questions/1000283/outlook-archiving',
+                  'http://superuser.com/questions/180343/import-outlook-2007-messages-to-outlook-express',
+                  'http://superuser.com/questions/387630/outlook-2003-outlook-2010-migration',
+                  'http://superuser.com/questions/49409/outlook-structure',
+                  'http://superuser.com/questions/62824/outlook-automation']
     gt = GenericTranslator()
 
     def parse(self, response):
@@ -19,6 +34,7 @@ class SuperuserSpider(scrapy.Spider):
         @TODO: put the split in try catch
         @TODO: make sure int conversion handles exceptions
         @TODO: handle exceptions if list index doesn't exist (or improve xpaths ? )
+        @TODO: check answer exists before scraping
         N.B. only returns first answer
         :param response:
         :return:
