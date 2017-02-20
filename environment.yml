@@ -1,0 +1,14 @@
+name: swisscom
+channels: !!python/tuple
+- !!python/unicode 'conda-forge'
+- !!python/unicode 'defaults'
+dependencies:
+- conda-forge::certifi=2017.1.23=py35_0
+- conda-forge::pip=9.0.1=py35_0
+- conda-forge::python=3.5.3=1
+- conda-forge::setuptools=33.1.0=py35_0
+- conda-forge::vs2015_runtime=14.0.25420=0
+- conda-forge::wheel=0.29.0=py35_0
+- conda-forge::wincertstore=0.2=py35_0
+prefix: C:\Users\Fearnley\Anaconda2\envs\swisscom
+
