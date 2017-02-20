@@ -16,3 +16,6 @@ If you additional dependencies needed to be installed do not forget to re-export
 Setup conda environment using environment.yml.
 
 conda env create -f environment.yml
+
+## Solr
+Solr config files for the project
