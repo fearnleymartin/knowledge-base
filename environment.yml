@@ -1,14 +1,31 @@
 name: swisscom
-channels: !!python/tuple
-- !!python/unicode 'conda-forge'
-- !!python/unicode 'defaults'
+channels:
+- anaconda
+- conda-forge
+- defaults
 dependencies:
-- conda-forge::certifi=2017.1.23=py35_0
-- conda-forge::pip=9.0.1=py35_0
-- conda-forge::python=3.5.3=1
-- conda-forge::setuptools=33.1.0=py35_0
-#- conda-forge::vs2015_runtime=14.0.25420=0
-- conda-forge::wheel=0.29.0=py35_0
-#- conda-forge::wincertstore=0.2=py35_0
-prefix: C:\Users\Fearnley\Anaconda2\envs\swisscom
+- beautifulsoup4=4.5.3=py35_0
+- ca-certificates=2017.1.23=0
+- certifi=2017.1.23=py35_0
+- idna=2.1=py35_0
+- ncurses=5.9=10
+- openssl=1.0.2h=3
+- pip=9.0.1=py35_0
+- python=3.5.3=1
+- readline=6.2=0
+- setuptools=33.1.0=py35_0
+- six=1.10.0=py35_1
+- sqlite=3.13.0=1
+- tk=8.5.19=1
+- tldextract=2.0.1=py35_0
+- wheel=0.29.0=py35_0
+- xz=5.2.2=0
+- zlib=1.2.11=0
+- libiconv=1.14=0
+- libxml2=2.9.4=0
+- libxslt=1.1.29=0
+- lxml=3.7.2=py35_0
+- requests=2.13.0=py35_0
+- requests-file=1.4.1=py35_0
+prefix: /Users/pierrecolombo/anaconda3/envs/swisscom
 
