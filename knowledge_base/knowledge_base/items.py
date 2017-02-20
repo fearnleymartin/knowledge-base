@@ -8,7 +8,20 @@
 import scrapy
 
 
-class KnowledgeBaseItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class QuestionAnswer(scrapy.Item):
+    """
+    Model for super user question / answer
+    """
+    question_title = scrapy.Field()
+    question_body = scrapy.Field()
+    question_tags = scrapy.Field()
+    question_upvotes = scrapy.Field()
+    question_view_count = scrapy.Field()
+
+    answer_body = scrapy.Field()
+    answer_accepted = scrapy.Field()
+    answer_upvotes = scrapy.Field()
+
+
+
+
