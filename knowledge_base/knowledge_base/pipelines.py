@@ -22,5 +22,5 @@ class JsonWriterPipeline(object):
 
         line = json.dumps(question_answer_pair)
         # print('line', line)
-        self.file.write(line)
+        self.file.write(line + '\n')
         return item
