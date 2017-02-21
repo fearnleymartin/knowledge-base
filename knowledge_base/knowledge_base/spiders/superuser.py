@@ -7,7 +7,7 @@ from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
 import logging
 from bs4 import BeautifulSoup
-
+import time
 
 
 class SuperuserSpider(CrawlSpider):
@@ -16,7 +16,12 @@ class SuperuserSpider(CrawlSpider):
 
     start_urls = ['http://superuser.com/search?q=outlook']
     gt = GenericTranslator()
-
+    new_search_page_pause_time = 0.8
+    captcha_pause_time = 20
+    search_page_count = 0
+    captcha_count = 0
+    start_time = time.time()
+    total_items = 0
     rules = (
         Rule(LinkExtractor(allow=('superuser.com/search', 'superuser.com/questions/'),
                            deny=('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab'),
@@ -42,11 +47,19 @@ class SuperuserSpider(CrawlSpider):
         if "superuser.com/search" in response.url:  # if search page, extract link and next page
             logging.info('new search page')
             logging.info(response.url)
-            pass
+            self.search_page_count += 1
+            print('new search page')
+            print('pausing')
+            time.sleep(self.new_search_page_pause_time)
+            print('restarting')
         elif "nocaptcha" in response.url:
             logging.info('captcha problem')
+            self.captcha_count += 1
+            print('captcha detected')
+            print('pausing')
+            time.sleep(self.captcha_pause_time)
+            print('restarting')
         else:  # if question page, parse post
-
             # check whether answer exists
             if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
                 pass  # no answer exists
@@ -59,8 +72,13 @@ class SuperuserSpider(CrawlSpider):
                 question_answer['question_upvotes'] = int(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " vote-count-post ")]/text()').extract_first())
                 question_answer['question_view_count'] = int(response.xpath(self.gt.css_to_xpath('#qinfo .label-key') + '/b/text()').extract()[1].split(' ')[0])
                 question_answer['question_author'] = response.xpath(self.gt.css_to_xpath('.owner .user-details')+'/a/text()').extract_first()
-                se_date_format = '%b %d \'%y at %H:%M'
-                question_answer['question_date'] = str(datetime.strptime(response.xpath(self.gt.css_to_xpath('.owner .user-action-time .relativetime')+'/text()').extract_first(), se_date_format))
+                se_date_format = '%b %d \'%y at %H:%M'  # if date not current year
+                se_date_format_curr_year = '%b %d at %H:%M'  # if date current year
+                try:
+                    question_answer['question_date'] = str(datetime.strptime(response.xpath(self.gt.css_to_xpath('.owner .user-action-time .relativetime')+'/text()').extract_first(), se_date_format))
+                except ValueError:
+                    question_answer['question_date'] = str(datetime.strptime(response.xpath(
+                        self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(), se_date_format_curr_year))
 
 
                 question_answer['answer_body'] = BeautifulSoup(response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first()).text
