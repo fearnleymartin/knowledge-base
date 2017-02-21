@@ -11,6 +11,8 @@
       "question_body": ["Paragraph 1 ", " Paragraph 2", "Paragraph3"],
       "question_tags": ["tag1", "tag2", "tag3"],
       "question_view_count": 316,
-      "question_title": "title"
+      "question_title": "title",
+      "question_author": "author",
+      "question_date": "2010-10-15 13:03:00"
     }
 }

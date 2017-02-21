@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-# import scrapy
-# from scrapy.loader import ItemLoader
 
 from ..items import QuestionAnswer
 from cssselect import GenericTranslator
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
+import logging
 
 
 class SuperuserSpider(CrawlSpider):
@@ -18,7 +17,8 @@ class SuperuserSpider(CrawlSpider):
 
     rules = (
         Rule(LinkExtractor(allow=('superuser.com/search', 'superuser.com/questions/'),
-                           deny=('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab')),
+                           deny=('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab'),
+                           restrict_xpaths=(gt.css_to_xpath('.result-link'), gt.css_to_xpath('.pager'))),
              callback="parse_items",
              follow=True),
     )
@@ -40,9 +40,11 @@ class SuperuserSpider(CrawlSpider):
 
         # check whether search page or question page
         if "superuser.com/search" in response.url:  #  if search page, extract link and next page
+            logging.info('new search page')
+            logging.info(response.url)
             pass
         elif "nocaptcha" in response.url:
-            pass
+            logging.info('captcha problem')
         else:  # if question page, parse post
             question_answer = QuestionAnswer()
             question_answer['question_title'] = response.xpath('//*[@id="question-header"]/h1/a/text()').extract_first()
