@@ -92,6 +92,7 @@ ENV/
 # pycharm
 .idea
 
+
 /solr-6.4.1 14.31.10/bin/
 /solr-6.4.1 14.31.10/.idea/
 /solr-6.4.1 14.31.10/example/
@@ -115,3 +116,4 @@ ENV/
 /solr-6.4.1 14.31.10/server/README.txt
 /solr-6.4.1 14.31.10/server/start.jar
 /solr-6.4.1 14.31.10/server/solr/configsets/
+/solr-6.4.1 14.31.10/server/solr/gettingstarted/
