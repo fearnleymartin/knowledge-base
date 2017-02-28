@@ -1,4 +1,4 @@
-from  import *
+from solr_query import SolrQuery
 solquery = SolrQuery('localhost:8983' ,'ProductDB')
 file = open('research_words' ,'r')
 s = file.read()
