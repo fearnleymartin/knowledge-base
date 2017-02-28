@@ -92,3 +92,6 @@ ENV/
 # pycharm
 .idea
 knowledge_base/log.txt
+/knowledge_base/logs/
+/knowledge_base/scraped_data/
+/knowledge_base/Scripts/

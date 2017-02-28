@@ -8,12 +8,14 @@
 import json
 import logging
 import time
+from datetime import datetime
+from urllib.parse import urlparse
 
 
 class JsonWriterPipeline(object):
 
     def open_spider(self, spider):
-        self.file = open('items.jl', 'w')
+        self.file = open('scraped_data/{}_items.jl'.format(spider.name), 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))
@@ -29,8 +31,14 @@ class JsonWriterPipeline(object):
 
     def process_item(self, item, spider):
         spider.total_items += 1
-        question_answer_pair = {'question': {k: v for (k, v) in dict(item).items() if k[0] == 'q'},
-                                'answer': {k: v for (k, v) in dict(item).items() if k[0] == 'a'}}
+        question_answer_pair = {
+            'product': spider.product,
+            'source_url': item['source_url'],
+            'source_domain': urlparse(item['source_url']).netloc,
+            'crawl_date': str(datetime.now()),
+            'question': {k: v for (k, v) in dict(item).items() if k[0] == 'q'},
+            'answers': {k: v for (k, v) in dict(item).items() if k[0] == 'a'}
+        }
 
         line = json.dumps(question_answer_pair)
         # print('line', line)

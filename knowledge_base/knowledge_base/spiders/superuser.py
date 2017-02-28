@@ -1,42 +1,46 @@
 # -*- coding: utf-8 -*-
 
 from ..items import QuestionAnswer
-from cssselect import GenericTranslator
-from scrapy.spiders import CrawlSpider, Rule
+from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
-import logging
 from bs4 import BeautifulSoup
-import time
+from .master import MasterSpider
 
 
-class SuperuserSpider(CrawlSpider):
+class SuperUserSpider(MasterSpider):
+    """
+    Will generalise to Q/A site spider
+    """
     name = "superuser"
     allowed_domains = ["superuser.com"]
+    custom_settings = {'DOWNLOAD_DELAY': 0.45,
+                       'LOG_FILE': 'logs/superuser_log.txt'
+                       }
 
-    start_urls = ['http://superuser.com/search?q=outlook']
-    gt = GenericTranslator()
-    new_search_page_pause_time = 0.8
-    captcha_pause_time = 20
-    search_page_count = 0
-    captcha_count = 0
-    start_time = time.time()
-    total_items = 0
+    def __init__(self):
+        self.rate_limit = True
+        super().__init__()
+
+    product = 'outlook'
+
+    start_urls = ['http://superuser.com/search?q={}'.format(product)]
+
     rules = (
+        # @TODO generalise
         Rule(LinkExtractor(allow=('superuser.com/search', 'superuser.com/questions/'),
                            deny=('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab'),
-                           restrict_xpaths=(gt.css_to_xpath('.result-link'), gt.css_to_xpath('.pager'))),
-             callback="parse_items",
+                           restrict_xpaths=(MasterSpider.gt.css_to_xpath('.result-link'), MasterSpider.gt.css_to_xpath('.pager'))),
+             callback="identify_and_parse_page",
              follow=True),
     )
 
-    def parse_items(self, response):
+
+    def identify_and_parse_page(self, response):
         """
         @TODO: put the split in try catch
         @TODO: make sure int conversion handles exceptions
         @TODO: handle exceptions if list index doesn't exist (or improve xpaths ? )
-        @TODO: check answer exists before scraping
-        @TODO: handle captchas
         @TODO: implement go to next search page
         N.B. only returns first answer
         :param response:
@@ -44,47 +48,90 @@ class SuperuserSpider(CrawlSpider):
         """
 
         # check whether search page or question page
-        if "superuser.com/search" in response.url:  # if search page, extract link and next page
-            logging.info('new search page')
-            logging.info(response.url)
-            self.search_page_count += 1
-            print('new search page')
-            print('pausing')
-            time.sleep(self.new_search_page_pause_time)
-            print('restarting')
-        elif "nocaptcha" in response.url:
-            logging.info('captcha problem')
-            self.captcha_count += 1
-            print('captcha detected')
-            print('pausing')
-            time.sleep(self.captcha_pause_time)
-            print('restarting')
+        if self.is_index_page(response.url):  # if search page, extract link and next page
+            self.process_index_page(response)
+        elif self.is_captcha_page(response.url):
+            self.process_captcha(response)
         else:  # if question page, parse post
-            # check whether answer exists
-            if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
-                pass  # no answer exists
-            else:
-                question_answer = QuestionAnswer()
-                question_answer['question_title'] = response.xpath('//*[@id="question-header"]/h1/a/text()').extract_first()
-                question_answer['question_body'] = BeautifulSoup(response.xpath(self.gt.css_to_xpath('.postcell .post-text')).extract_first()).text
-                question_answer['question_tags'] = list(set(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " post-tag ")]/text()').extract()))
-                # would like to specify the hierarchy of the css tags
-                question_answer['question_upvotes'] = int(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " vote-count-post ")]/text()').extract_first())
-                question_answer['question_view_count'] = int(response.xpath(self.gt.css_to_xpath('#qinfo .label-key') + '/b/text()').extract()[1].split(' ')[0])
-                question_answer['question_author'] = response.xpath(self.gt.css_to_xpath('.owner .user-details')+'/a/text()').extract_first()
-                se_date_format = '%b %d \'%y at %H:%M'  # if date not current year
-                se_date_format_curr_year = '%b %d at %H:%M'  # if date current year
-                try:
-                    question_answer['question_date'] = str(datetime.strptime(response.xpath(self.gt.css_to_xpath('.owner .user-action-time .relativetime')+'/text()').extract_first(), se_date_format))
-                except ValueError:
-                    question_answer['question_date'] = str(datetime.strptime(response.xpath(
-                        self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(), se_date_format_curr_year))
+            items = self.parse_items(response)
+            return items
 
+    def is_index_page(self, url):
+        """
+        @TODO: generalise
+        :param url:
+        :return: True if url is a page that list search results
+        """
+        return "superuser.com/search" in url
 
-                question_answer['answer_body'] = BeautifulSoup(response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first()).text
-                question_answer['answer_upvotes'] = int(response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " vote-count-post ")]/text()').extract()[1])
-                question_answer['answer_accepted'] = response.xpath(self.gt.css_to_xpath('.vote-accepted-on')+'/text()').extract_first() == 'accepted'
-                yield question_answer
+    def is_captcha_page(self, url):
+        """
+        @TODO generalise
+        :param url:
+        :return: True if request has been redirected to captcha
+        """
+        return "nocaptcha" in url
 
+    def parse_items(self, response):
+        # check whether answer exists
+        if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
+            return None  # no answer exists
+        else:
+            answers = response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()
+            question_answer_list = []
+            for answer_number in range(len(answers)):
+                question_answer = self.fill_question(response)
+                question_answer = self.fill_answer(response, question_answer, answer_number)
+                question_answer_list.append(question_answer)
+            return question_answer_list
 
+    def fill_question(self, response):
+        question_answer = QuestionAnswer()
+        question_answer['source_url'] = response.url
 
+        question_answer['question_title'] = response.xpath('//*[@id="question-header"]/h1/a/text()').extract_first()
+        question_answer['question_body'] = BeautifulSoup(
+            response.xpath(self.gt.css_to_xpath('.postcell .post-text')).extract_first()).text
+        question_answer['question_tags'] = list(set(
+            response.xpath('//*[contains(concat(" ", normalize-space(@class), " "), " post-tag ")]/text()').extract()))
+        # would like to specify the hierarchy of the css tags
+        question_answer['question_upvotes'] = int(response.xpath(
+            '//*[contains(concat(" ", normalize-space(@class), " "), " vote-count-post ")]/text()').extract_first())
+        question_answer['question_view_count'] = int(
+            response.xpath(self.gt.css_to_xpath('#qinfo .label-key') + '/b/text()').extract()[1].split(' ')[0])
+
+        author_name = response.xpath(
+            self.gt.css_to_xpath('.owner .user-details') + '/a/text()').extract_first()
+        question_answer['question_author'] = {'author_id': '{}_{}'.format(self.allowed_domains[0], author_name),
+                                              'author_name': author_name}
+
+        se_date_format = '%b %d \'%y at %H:%M'  # if date not current year
+        se_date_format_curr_year = '%b %d at %H:%M'  # if date current year
+        try:
+            question_answer['question_date'] = str(datetime.strptime(response.xpath(
+                self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(),
+                                                                     se_date_format))
+        except ValueError:
+            question_answer['question_date'] = str(datetime.strptime(response.xpath(
+                self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(),
+                                                                     se_date_format_curr_year))
+        return question_answer
+
+    def fill_answer(self, response, question_answer, answer_number):
+        """
+        @TODO improve so not doing operation multiple times for question
+        @TODO break components down into functions
+        :param response:
+        :param tags:
+        :param question:
+        :param answer:
+        :return:
+        """
+        question_answer['answer_body'] = BeautifulSoup(
+            response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()[answer_number]).text
+        question_answer['answer_upvotes'] = int(response.xpath(
+            '//*[contains(concat(" ", normalize-space(@class), " "), " vote-count-post ")]/text()').extract()[answer_number+1])
+        # slightly more complicated
+        # question_answer['answer_accepted'] = response.xpath(
+        #     self.gt.css_to_xpath('.vote-accepted-on') + '/text()').extract()[answer_number] == 'accepted'
+        return question_answer

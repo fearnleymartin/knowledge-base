@@ -5,7 +5,7 @@
   "crawl_date": "2010-10-15 13:03:00",  // handy for reviewing scraped data but not included in graph database
   "answer": // stack overflow reply or forum response
         {
-          "answer_number": 1,  // represents the order of posts in forum i.e. 1st reply is 1, second reply is 2 etc.
+          "answer_number": 1,  // represents the order of posts in forum i.e. 1st reply is 1, second reply is 2 etc. can be blank for Q/A site
           "answer_author": {
               "author_id": "source_author_id",  // Node in database (author)
               "author_name": "author_name", // For facilitating queries
@@ -21,7 +21,7 @@
           "answer_upvotes": 0,  // used for initial weighting in page rank algo (of documents)
           "answer_accepted": true,  // used for  initial weighting in page rank algo (of documents)
           "answer_body": "Body",  //  nodes in graph database (words),
-          "in_reply_to": 1  // If another answer is quoted, put the answer_number of the quoted answer (and 0 for question)
+          "answer_in_reply_to": 1  // If another answer is quoted, put the answer_number of the quoted answer (and 0 for question)
         },
   "question":  // stack overflow question or initial forum post
     {

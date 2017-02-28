@@ -19,10 +19,16 @@ class QuestionAnswer(scrapy.Item):
     question_view_count = scrapy.Field()
     question_author = scrapy.Field()
     question_date = scrapy.Field()
+    question_extra_info = scrapy.Field()
 
+    answer_number = scrapy.Field()
     answer_body = scrapy.Field()
     answer_accepted = scrapy.Field()
     answer_upvotes = scrapy.Field()
+    answer_date = scrapy.Field()
+    answer_in_reply_to = scrapy.Field()
+
+    source_url = scrapy.Field()
 
 
 
