@@ -62,7 +62,7 @@
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ar.txt" ignoreCase="true"/>
       <filter class="solr.ArabicNormalizationFilterFactory"/>
       <filter class="solr.ArabicStemFilterFactory"/>
     </analyzer>
@@ -71,7 +71,7 @@
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_bg.txt" ignoreCase="true"/>
       <filter class="solr.BulgarianStemFilterFactory"/>
     </analyzer>
   </fieldType>
@@ -80,7 +80,7 @@
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ca.txt" ignoreCase="true"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ca.txt" ignoreCase="true"/>
       <filter class="solr.SnowballPorterFilterFactory" language="Catalan"/>
     </analyzer>
   </fieldType>
@@ -405,7 +405,45 @@
 
     <!-- My own schema-->
 
+
+    <!--
+    <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
+    <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
+    <field name="_version_" type="long" indexed="false" stored="false"/>
+
+
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="author" type="string" indexed="false" stored="false"/>
+
+<field name="content" type="text_en_splitting" indexed="true" stored="true"/>
+  <field name="title" type="text_en_splitting" indexed="true" stored="true"/>
+
+  <field name="person" type="string" indexed="true" stored="true" />
+ <field name="address" type="string" indexed="true" stored="true" multiValued="true"/>
+ <field name="address.city" type="string" indexed="true" stored="true" />
+ <field name="address.postcode" type="string" indexed="true" stored="true" />  -->
+
+
 <!--
+  {
+  "answer":
+    {
+      "answer_upvotes": 0,
+      "answer_accepted": true,
+      "answer_body": "Body"
+    },
+  "question":
+    {
+      "question_upvotes": 0,
+      "question_body": "Body",
+      "question_tags": ["tag1", "tag2", "tag3"],
+      "question_view_count": 316,
+      "question_title": "title",
+      "question_author": "author",
+      "question_date": "2010-10-15:13:03:00"
+    }
+}
+
 
 
 This FilterFactory is very useful in matching prefix substrings (or suffix substrings if side="back") of particular
@@ -426,112 +464,23 @@ wildcards, n-gram query terms can be used within quoted phrases.
 </fieldType>
 -->
 
-
   <field name="_version_" type="long" indexed="false" stored="false"/>
 
   <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="product" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="source_url" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="source_domain" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="crawl_date" type="date" indexed="true" stored="true" required="true" multiValued="false" />
 
-
-  <!--
-
-
-  "answer": // stack overflow reply or forum response
-        {
-          "answer_number": 1,  // represents the order of posts in forum i.e. 1st reply is 1, second reply is 2 etc.
-          "answer_author": {
-              "author_id": "source_author_id",  // Node in database (author)
-              "author_name": "author_name", // For facilitating queries
-              // The following attribute can be used to weight the author for initialising page rank algo
-              "author_reputation": 10,  // Stack overflow attribute
-              "thread_count": 10,  // number of threads author has started
-              "reply_count": 10,  // number of replies authorhas posted
-              "average_reply_length": 10,
-              "member_since": "2010-10-15 13:03:00",
-              "likes_received": 10  // number of likes author's posts have received
-            },
-          "answer_date": "2010-10-15 13:03:00",  //  relation between documents (time closeness)
-          "answer_upvotes": 0,  // used for initial weighting in page rank algo (of documents)
-          "answer_accepted": true,  // used for  initial weighting in page rank algo (of documents)
-          "answer_body": "Body",  //  nodes in graph database (words),
-          "in_reply_to": 1  // If another answer is quoted, put the answer_number of the quoted answer (and 0 for question)
-        },
-  -->
-
-  <field name="answer" type="string" indexed="true" stored="true" multiValued="false"/>
-  <field name="answer.answer_number" type="int" indexed="true" stored="true" />
-
-
-  <field name="answer.answer_author" type="string" indexed="true" stored="true" />
-  <field name="answer.answer_author.author_id" type="string" indexed="true" stored="true" />
-  <field name="answer.answer_author.author_name" type="text_en_splitting" indexed="true" stored="true"/>
-  <field name="answer.answer_author.author_reputation" type="int" indexed="true" stored="true"/>
-  <field name="answer.answer_author.thread_count" type="int" indexed="true" stored="true"/>
-  <field name="answer.answer_author.reply_count" type="int" indexed="true" stored="true"/>
-  <field name="answer.answer_author.average_reply_length" type="int" indexed="true" stored="true"/>
-  <field name="answer.answer_author.member_since" type="date" indexed="true" stored="true"/>
-  <field name="answer.answer_author.likes_received" type="int" indexed="true" stored="true"/>
-
-
-  <field name="answer.answer_date" type="date" indexed="true" stored="true" />
+  <field name="answer" type="string" indexed="true" stored="true" multiValued="true"/>
   <field name="answer.answer_upvotes" type="int" indexed="true" stored="true" />
   <field name="answer.answer_accepted" type="boolean" indexed="true" stored="true" />
   <field name="answer.answer_body" type="text_en_splitting" indexed="true" stored="true" />
-  <field name="answer.in_reply_to" type="int" indexed="true" stored="true" />
 
-
-  <!--
-
-  "question":  // stack overflow question or initial forum post
-    {
-      "question_upvotes": 0,  // used for initial weighting in page rank algo
-      "question_body": "Body",  // nodes in graph database (words)
-      "question_tags": ["tag1", "tag2", "tag3"],  // node in graph database (tags)
-      "question_view_count": 316,    // can be used for initial weighting in page rank algo
-      "question_title": "title",  // nodes in graph database (words), can give higher weight than normal words in page rank algo for example
-      "question_author": {
-        "author_id": "source_author_id",  // Node in database (author)
-        "author_name": "author_name", // For facilitating queries
-        // The following attribute can be used to weight the author for initialising page rank algo
-        "author_reputation": 10,  // Stack overflow attribute
-        "thread_count": 10,  // number of threads author has started
-        "reply_count": 10,  // number of replies authorhas posted
-        "average_reply_length": 10,
-        "member_since": "2010-10-15 13:03:00",
-        "likes_received": 10  // number of likes author's posts have received
-      },
-      "question_date": "2010-10-15 13:03:00",  // relation between documents (time closeness)
-      "question_extra_info":
-
-  -->
-
-
-
-  <field name="question" type="string" indexed="true" stored="true" multiValued="false"/>
+  <field name="question" type="string" indexed="true" stored="true" multiValued="true"/>
   <field name="question.question_upvotes" type="int" indexed="true" stored="true" />
   <field name="question.question_body" type="text_en_splitting" indexed="true" stored="true" />
   <field name="question.question_tags" type="text_en_splitting" indexed="true" stored="true" multiValued="true"/>
   <field name="question.question_view_count" type="int" indexed="true" stored="true" />
+  <field name="question.question_author" type="string" indexed="false" stored="false"/>
   <field name="question.question_title" type="text_en_splitting" indexed="true" stored="true"/>
   <field name="question.question_date" type="date" indexed="true" stored="true"/>
-
-  <field name="question.question_author" type="string" indexed="true" stored="true" />
-  <field name="question.question_author.author_id" type="string" indexed="true" stored="true" />
-  <field name="question.question_author.author_name" type="text_en_splitting" indexed="true" stored="true"/>
-  <field name="question.question_author.author_reputation" type="int" indexed="true" stored="true"/>
-  <field name="question.question_author.thread_count" type="int" indexed="true" stored="true"/>
-  <field name="question.question_author.reply_count" type="int" indexed="true" stored="true"/>
-  <field name="question.question_author.average_reply_length" type="int" indexed="true" stored="true"/>
-  <field name="question.question_author.member_since" type="date" indexed="true" stored="true"/>
-  <field name="question.question_author.likes_received" type="int" indexed="true" stored="true"/>
-
-
-
-
-  <field name="question.question_extra_info" type="text_en_splitting" indexed="true" stored="true" multiValued="true"/>
 
 
 

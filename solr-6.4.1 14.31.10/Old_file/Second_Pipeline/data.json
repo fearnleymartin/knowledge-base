@@ -1,6 +1,6 @@
 {
  // Represents a question/answer pair found on forum or on Q/A site
- "product": "product",
+ "product": "produoinoinoionounoinoinct",
  // node in graph database (product)
  "source_url": "www.example.com/path",
  // handy for reviewing scraped data but not included in graph database

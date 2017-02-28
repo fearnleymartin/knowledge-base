@@ -289,7 +289,7 @@ class SolrQuery:
         if len(sys.argv) > 0:
             os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
             print(os.getcwd())
-            os.system('bin/post -c ' + str(self.solr_core)  + ' ' + 'formatted_file' + '.json')
+            os.system('bin/post -c ' + str(self.solr_core)  + ' ' + path)
 
     def __set_near_query__(self,field_name,keywords,dist,number =10):
         """
@@ -412,11 +412,11 @@ class SolrResponse:
         """
         return self.__results__
 
+'''
+solquery = SolrQuery('localhost:8983','ProductDB')
+solquery.clean_DB()
 
-
-#solquery = SolrQuery('localhost:8983','ProductDB')
-
-#solquery.add_doc('server/solr/ProductDB/Full.json')
+solquery.add_doc('server/solr/ProductDB/Full.json')
 
 # filter by fiel
 #solquery.add_field('question.question_upvotes')
@@ -441,6 +441,6 @@ solquery.__set_near_query__('question.question_title:',str(s),10,10)
 print('question.question_title:'+ '\''+str(s)+ '\'')
 solquery.add_field('question.question_title')
 solrResponse = solquery.execute()
-print(solrResponse.get_results())
+print(solrResponse.get_results())'''
 
 

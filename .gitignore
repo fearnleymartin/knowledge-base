@@ -117,3 +117,6 @@ ENV/
 /solr-6.4.1 14.31.10/server/start.jar
 /solr-6.4.1 14.31.10/server/solr/configsets/
 /solr-6.4.1 14.31.10/server/solr/gettingstarted/
+!/solr-6.4.1 14.31.10/solr_query.py
+!/solr-6.4.1 14.31.10/
+/solr-6.4.1 14.31.10/trials.py

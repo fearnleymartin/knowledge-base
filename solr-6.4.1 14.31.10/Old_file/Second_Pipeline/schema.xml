@@ -62,7 +62,7 @@
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ar.txt" ignoreCase="true"/>
       <filter class="solr.ArabicNormalizationFilterFactory"/>
       <filter class="solr.ArabicStemFilterFactory"/>
     </analyzer>
@@ -71,7 +71,7 @@
     <analyzer>
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_bg.txt" ignoreCase="true"/>
       <filter class="solr.BulgarianStemFilterFactory"/>
     </analyzer>
   </fieldType>
@@ -80,7 +80,7 @@
       <tokenizer class="solr.StandardTokenizerFactory"/>
       <filter class="solr.ElisionFilterFactory" articles="lang/contractions_ca.txt" ignoreCase="true"/>
       <filter class="solr.LowerCaseFilterFactory"/>
-      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_ca.txt" ignoreCase="true"/>
       <filter class="solr.SnowballPorterFilterFactory" language="Catalan"/>
     </analyzer>
   </fieldType>
@@ -466,7 +466,7 @@ wildcards, n-gram query terms can be used within quoted phrases.
 
 
   <field name="answer.answer_author" type="string" indexed="true" stored="true" />
-  <field name="answer.answer_author.author_id" type="string" indexed="true" stored="true" />
+  <field name="answer.answer_author.author_id" type="int" indexed="true" stored="true" />
   <field name="answer.answer_author.author_name" type="text_en_splitting" indexed="true" stored="true"/>
   <field name="answer.answer_author.author_reputation" type="int" indexed="true" stored="true"/>
   <field name="answer.answer_author.thread_count" type="int" indexed="true" stored="true"/>
@@ -517,9 +517,10 @@ wildcards, n-gram query terms can be used within quoted phrases.
   <field name="question.question_view_count" type="int" indexed="true" stored="true" />
   <field name="question.question_title" type="text_en_splitting" indexed="true" stored="true"/>
   <field name="question.question_date" type="date" indexed="true" stored="true"/>
+  <field name="question.question_author" type="string" indexed="false" stored="false"/>
 
-  <field name="question.question_author" type="string" indexed="true" stored="true" />
-  <field name="question.question_author.author_id" type="string" indexed="true" stored="true" />
+   <field name="question.question_author" type="string" indexed="true" stored="true" />
+  <field name="question.question_author.author_id" type="int" indexed="true" stored="true" />
   <field name="question.question_author.author_name" type="text_en_splitting" indexed="true" stored="true"/>
   <field name="question.question_author.author_reputation" type="int" indexed="true" stored="true"/>
   <field name="question.question_author.thread_count" type="int" indexed="true" stored="true"/>
@@ -530,6 +531,7 @@ wildcards, n-gram query terms can be used within quoted phrases.
 
 
 
+  <field name="question.question_date" type="date" indexed="true" stored="true" />
 
   <field name="question.question_extra_info" type="text_en_splitting" indexed="true" stored="true" multiValued="true"/>
 
