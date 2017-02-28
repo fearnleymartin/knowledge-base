@@ -1,18 +1,45 @@
 {
-  "answer":
+  "product": "product",  // node in graph database (product)
+  "source_url": "source_url",  // node in graph database (source)
+  "crawl_date": "2010-10-15 13:03:00",  // handy for reviewing scraped data but not included in graph database
+  "answers": // can represent different stack exchange answers or the discussion on a forum
+      [
+        {
+          "answer_id": 1,  // represents the order of posts in forum
+          "answer_author": {
+              "author_id": "author_id",  // Node in database (author)
+              "author_reputation": 100  // Can be used for initial weight in page rank algo (of author)
+            // Can be reputation on stack overflow, or number of likes on Macrumors for example (depends on site)
+            },
+          "answer_date": "2010-10-15 13:03:00",  //  relation between documents (time closeness)
+          "answer_upvotes": 0,  // used for initial weighting in page rank algo (of documents)
+          "answer_accepted": true,  // used for  initial weighting in page rank algo (of documents)
+          "answer_body": "Body"  //  nodes in graph database (words)
+        },
+        {
+          "answer_id": 2,
+          "answer_author": {
+            "author_id": "author_id",
+            "author_reputation": 100
+          },
+          "answer_date": "2010-10-15 13:03:00",
+          "answer_upvotes": 0,
+          "answer_accepted": true,
+          "answer_body": "Body"
+        }
+      ],
+  "question":  // stack overflow question or initial forum post
     {
-      "answer_upvotes": 0,
-      "answer_accepted": true,
-      "answer_body": "Body"
-    },
-  "question":
-    {
-      "question_upvotes": 0,
-      "question_body": "Body",
-      "question_tags": ["tag1", "tag2", "tag3"],
-      "question_view_count": 316,
-      "question_title": "title",
-      "question_author": "author",
-      "question_date": "2010-10-15 13:03:00"
+      "question_upvotes": 0,  // used for initial weighting in page rank algo
+      "question_body": "Body",  // nodes in graph database (words)
+      "question_tags": ["tag1", "tag2", "tag3"],  // node in graph database (tags)
+      "question_view_count": 316,    // can be used for initial weighting in page rank algo
+      "question_title": "title",  // nodes in graph database (words), can give higher weight than normal words in page rank algo for example
+      "question_author": {
+        "author_id": "author_id",  // Node in graph database (author)
+        "author_reputation": 100  // Can be used for initial weight in page rank algo (of author)
+        // Can be reputation on stack overflow, or number of likes on Macrumors for example (depends on site)
+      },
+      "question_date": "2010-10-15 13:03:00"  // relation between documents (time closeness)
     }
 }
