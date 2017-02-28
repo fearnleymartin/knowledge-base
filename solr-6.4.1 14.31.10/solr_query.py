@@ -269,22 +269,41 @@ class SolrQuery:
         return
 
     def add_doc(self,path):
-        '''with open('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/' + path) as f:
-            content = f.readlines()
-        # first and last line no ,
-        with open('formatted_file' + '.json', 'w') as outfile:
-            i = 0
-            for line in content :
-                if(i == 0 or i == len(content)-1) :
-                    outfile.write(line )
-                    i +=1
-                else :
-                    outfile.write(line + ',')
-                    i += 1'''
+        '''
+        add a doc to the database
+        :param path: doc path you want to add
+        :return: void
+        '''
+        # with open('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/' + path) as f:
+        #     content = f.readlines()
+        # # first and last line no ,
+        # with open('formatted_file' + '.json', 'w') as outfile:
+        #     i = 0
+        #     for line in content :
+        #         if(i == 0 or i == len(content)-1) :
+        #             outfile.write(line )
+        #             i +=1
+        #         else :
+        #             outfile.write(line + ',')
+        #             i += 1
         if len(sys.argv) > 0:
             os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
             print(os.getcwd())
             os.system('bin/post -c ' + str(self.solr_core)  + ' ' + 'formatted_file' + '.json')
+
+    def __set_near_query__(self,field_name,keywords,dist,number =10):
+        """
+        Define the query in Solr ('q' parameter). This method should be called only once.
+        Every new call will override the previous query.
+        :param query: The query as a String, but you should use all the "static" functions like and_, or_, match_,
+        exact_match, etc. to build that query
+        """
+        self.__query_parameters__['q'] = '*:*'
+        self.__query_parameters__['defType'] ='edismax'
+        self.__query_parameters__['q.alt'] =keywords
+        self.__query_parameters__['qf'] = field_name
+        self.__query_parameters__['bq'] = None
+        self.__query_parameters__['rows'] = number
 
 
 def __init_query_parameters__():
@@ -296,7 +315,12 @@ def __init_query_parameters__():
         ('fq', None),
         ('rows', None),
         ('start', None),
-        ('sort', None))
+        ('sort', None),
+        ('defType',None),
+        ('q.alt',None),
+        ('qf',None),
+        ('bq',None)
+    )
     )
 
 
@@ -390,9 +414,9 @@ class SolrResponse:
 
 
 
-solquery = SolrQuery('localhost:8983','ProductDB')
+#solquery = SolrQuery('localhost:8983','ProductDB')
 
-solquery.add_doc('server/solr/ProductDB/Full.json')
+#solquery.add_doc('server/solr/ProductDB/Full.json')
 
 # filter by fiel
 #solquery.add_field('question.question_upvotes')
@@ -404,5 +428,19 @@ solquery.add_doc('server/solr/ProductDB/Full.json')
 #solrResponse = solquery.execute()
 #print(solrResponse.get_results())
 
+
+
+solquery = SolrQuery('localhost:8983','ProductDB')
+
+
+
+file = open('research_words','r')
+s = file.read()
+#solquery.set_query('question.question_title:'+ '\"'+str(s)+'~1'+ '\"')
+solquery.__set_near_query__('question.question_title:',str(s),10,10)
+print('question.question_title:'+ '\''+str(s)+ '\'')
+solquery.add_field('question.question_title')
+solrResponse = solquery.execute()
+print(solrResponse.get_results())
 
 

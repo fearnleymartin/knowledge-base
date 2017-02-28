@@ -442,7 +442,27 @@
       "question_author": "author",
       "question_date": "2010-10-15:13:03:00"
     }
-} -->
+}
+
+
+
+This FilterFactory is very useful in matching prefix substrings (or suffix substrings if side="back") of particular
+terms in the index during query time. Edge n-gram analysis can be performed at either index or query time (or both),
+but typically it is more useful, as shown in this example, to generate the n-grams at index time with all of the n-grams
+indexed at the same position. At query time the query term can be matched directly without any n-gram analysis. Unlike
+wildcards, n-gram query terms can be used within quoted phrases.
+
+
+<fieldType name="text_general_edge_ngram" class="solr.TextField" positionIncrementGap="100">
+   <analyzer type="index">
+      <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+      <filter class="solr.EdgeNGramFilterFactory" minGramSize="2" maxGramSize="15" side="front"/>
+   </analyzer>
+   <analyzer type="query">
+      <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+   </analyzer>
+</fieldType>
+-->
 
   <field name="_version_" type="long" indexed="false" stored="false"/>
 
