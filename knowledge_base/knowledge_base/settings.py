@@ -89,7 +89,7 @@ HTTPCACHE_DIR = 'httpcache'
 HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-CLOSESPIDER_PAGECOUNT = 10000
+CLOSESPIDER_PAGECOUNT = 10
 
 LOG_FILE = 'logs/log.txt'
 LOG_ENABLED = True

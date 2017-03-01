@@ -15,8 +15,8 @@ class MacRumorsSpider(MasterSpider):
     """
     name = "macrumors"
     allowed_domains = ["macrumors.com"]
-    custom_settings = {'DOWNLOAD_DELAY': 0.45,
-                       'LOG_FILE': 'logs/superuser_log.txt'
+    custom_settings = {'DOWNLOAD_DELAY': 0,
+                       'LOG_FILE': 'logs/{}_log.txt'.format(name)
                        }
 
     product_index_dict = \
@@ -46,25 +46,6 @@ class MacRumorsSpider(MasterSpider):
     )
 
 
-    def identify_and_parse_page(self, response):
-        """
-        @TODO: put the split in try catch
-        @TODO: make sure int conversion handles exceptions
-        @TODO: handle exceptions if list index doesn't exist (or improve xpaths ? )
-        N.B. only returns first answer
-        :param response:
-        :return:
-        """
-
-        # check whether search page or question page
-        if self.is_index_page(response.url):  # if search page, extract link and next page
-            self.process_index_page(response)
-        elif self.is_captcha_page(response.url):
-            self.process_captcha(response)
-        else:  # if question page, parse post
-            items = self.parse_items(response)
-            return items
-
 
     def is_index_page(self, url):
         """
@@ -82,7 +63,7 @@ class MacRumorsSpider(MasterSpider):
         """
         return "nocaptcha" in url
 
-    def parse_items(self, response):
+    def process_question_answer_page(self, response):
         """
         @TODO: implement going through pagination of forums responses
         :param response:
@@ -101,34 +82,35 @@ class MacRumorsSpider(MasterSpider):
             if len(posts) < 1:  # Check there are posts with answers
                 return None
             else:
-                posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
-                question = posts[0]
                 question_answer_list = []
-                for answer in [post for post in posts[1:] if len(post) > 0]:
-                    question_answer = self.fill_question_answer(response, tags, question, answer)
+                question_answer = QuestionAnswer()
+                question_answer = self.fill_question(response, question_answer)
+                # Cycle through posts and build Q/A pairs
+                posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
+                posts = [post for post in posts[1:] if len(post) > 0]
+                posts = self.filter_posts(response, posts)  # TODO implement function
+                for answer_number in range(len(posts)):
+                    question_answer = self.fill_question(response, question_answer)
                     question_answer_list.append(question_answer)
                 return question_answer_list
 
-
-
-    def fill_question_answer(self, response, tags, question, answer):
+    def fill_question(self, response, question_answer):
         """
-        @TODO improve so not doing operation multiple times for question
-        @TODO break components down into functions
+        @TODO remove repetition of tags
         :param response:
-        :param tags:
-        :param question:
-        :param answer:
+        :param question_answer:
         :return:
         """
-
-        question_answer = QuestionAnswer()
         question_answer['source_url'] = response.url
 
         question_answer['question_title'] = response.xpath(
             '//*[@id="content"]/div/div/div[2]/div/div[1]/div/h1/text()').extract_first()
 
-        question_answer['question_body'] = question
+        question_answer['question_body'] = BeautifulSoup(response.xpath(self.gt.css_to_xpath('.messageText')).extract_first()).text.replace("\t", "").replace("\n", "").replace("\u00a0", "")
+
+        tags = list(set(
+            response.xpath('//*[@id="content"]/div/div/div[1]/nav/fieldset/span/span[3]/a/span/text()').extract()))
+        tags = [tag.lower() for tag in tags]
         question_answer['question_tags'] = tags
 
         author_name = response.xpath(self.gt.css_to_xpath('.username') + '/text()').extract_first()
@@ -151,9 +133,31 @@ class MacRumorsSpider(MasterSpider):
             else:
                 pass
 
-        # To include other data eventually
-        # question_answer['answers'] = [post for post in posts[1:] if len(post) > 0]
+        return question_answer
 
-        question_answer['answer_body'] = answer
+    def fill_answer(self, response, question_answer, answer_number):
+        """
+        @TODO: remove repetition of posts
+        :param response:
+        :param question_answer:
+        :param answer_number:
+        :return:
+        """
+        posts = response.xpath(self.gt.css_to_xpath('.messageText')).extract()
+        posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
+        posts = [post for post in posts[1:] if len(post) > 0]
+
+        question_answer['answer_body'] = posts[answer_number]
 
         return question_answer
+
+    def filter_posts(self, response, posts):
+        """
+        TODO: implement
+        Return only pertinant Q/A pairs
+        :param response:
+        :param posts:
+        :return:
+        """
+        return posts
+

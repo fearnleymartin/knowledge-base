@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 class JsonWriterPipeline(object):
 
     def open_spider(self, spider):
-        self.file = open('scraped_data/{}_items.jl'.format(spider.name), 'w')
+        self.file = open('scraped_data/{}_items_test.jl'.format(spider.name), 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))

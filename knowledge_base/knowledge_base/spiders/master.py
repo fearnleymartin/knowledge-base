@@ -1,22 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from ..items import QuestionAnswer
 from cssselect import GenericTranslator
-from scrapy.spiders import CrawlSpider, Rule
-from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider
 from datetime import datetime
 import logging
-from bs4 import BeautifulSoup
 import time
 import re
 
 
 class MasterSpider(CrawlSpider):
+    """
+    Base class spider from which other spiders inherit
+    Gives the basic functions and layout of spider
+    Not meant to be run, but should be subclassed
+    Follows the index crawler pattern: i.e. start url is a paginated index of links (e.g. search results).
+    Will crawl the given links and iterate through the index pagination
+    """
     name = "master"
     allowed_domains = []
 
-    gt = GenericTranslator()
-    rate_limit = False
+    gt = GenericTranslator()  # For converting css classes to xpaths
+    rate_limit = False   # for imposing download rate limit (to avoid captchas)
 
     def __init__(self):
         super().__init__()
@@ -26,6 +30,7 @@ class MasterSpider(CrawlSpider):
         else:
             self.new_search_page_pause_time = 0
             self.captcha_pause_time = 0
+        # Initialise basic crawl starts
         self.search_page_count = 0
         self.captcha_count = 0
         self.start_time = time.time()
@@ -37,6 +42,8 @@ class MasterSpider(CrawlSpider):
 
     def identify_and_parse_page(self, response):
         """
+        Identifies page type (index page, captcha, results page)
+        and runs corresponding procedure
         :param response:
         :return:
         """
@@ -47,15 +54,13 @@ class MasterSpider(CrawlSpider):
         elif self.is_captcha_page(response.url):
             self.process_captcha(response)
         else:  # if question page, parse post
-            question_answer = self.parse_items(response)
-            if question_answer:
-                yield question_answer
+            items = self.process_question_answer_page(response)
+            return items
 
     def is_index_page(self, url):
         """
-        @TODO: generalise
         :param url:
-        :return: True if url is a page that list search results
+        :return: True if page is an index of links (e.g. search results), False otherwise
         """
         pass
 
@@ -93,6 +98,36 @@ class MasterSpider(CrawlSpider):
         time.sleep(self.captcha_pause_time)
         print('restarting')
 
+    def process_question_answer_page(self, response):
+        """
+        To override
+        For extracting information from question/answer pages or forum threads
+        Called by identify and parse page
+        :param response:
+        :return:
+        """
+
+    def fill_question(self, response, question_answer):
+        """
+        Called by process_question_answer_page
+        :param response:
+        :param question_answer:
+        :return: question_answer item object with question attributes filled in
+        """
+
+    def fill_answer(self, response, question_answer, answer_number):
+        """
+        Called by process_question_answer_page
+        :param response:
+        :param question_answer:
+        :param answer_number: position of answer/reply on page
+        :return: question_answer item object with answer attributes filled in corresponding to the answer number
+        """
+
+
+
+    ### HELPER FUNCTIONS
+
     def parse_date(self, date_string):
         """
         Return standardised date strings. The idea is to have a list of different possible formats and try them all out
@@ -108,6 +143,3 @@ class MasterSpider(CrawlSpider):
             except ValueError:
                 pass
         return None
-
-    def parse_items(self, response):
-        pass

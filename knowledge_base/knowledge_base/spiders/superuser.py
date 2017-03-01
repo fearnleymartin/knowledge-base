@@ -35,27 +35,6 @@ class SuperUserSpider(MasterSpider):
              follow=True),
     )
 
-
-    def identify_and_parse_page(self, response):
-        """
-        @TODO: put the split in try catch
-        @TODO: make sure int conversion handles exceptions
-        @TODO: handle exceptions if list index doesn't exist (or improve xpaths ? )
-        @TODO: implement go to next search page
-        N.B. only returns first answer
-        :param response:
-        :return:
-        """
-
-        # check whether search page or question page
-        if self.is_index_page(response.url):  # if search page, extract link and next page
-            self.process_index_page(response)
-        elif self.is_captcha_page(response.url):
-            self.process_captcha(response)
-        else:  # if question page, parse post
-            items = self.parse_items(response)
-            return items
-
     def is_index_page(self, url):
         """
         @TODO: generalise
@@ -72,21 +51,50 @@ class SuperUserSpider(MasterSpider):
         """
         return "nocaptcha" in url
 
-    def parse_items(self, response):
+    def identify_and_parse_page(self, response):
+        """
+        Identifies page type (index page, captcha, results page)
+        and runs corresponding procedure
+        :param response:
+        :return:
+        """
+
+        # check whether search page or question page
+        if self.is_index_page(response.url):  # if search page, extract link and next page
+            self.process_index_page(response)
+        elif self.is_captcha_page(response.url):
+            self.process_captcha(response)
+        else:  # if question page, parse post
+            items = self.process_question_answer_page(response)
+            return items
+
+    def process_question_answer_page(self, response):
+        """
+        Extracts Q/A pairs and parses them to scrapy's items pipeline
+        :param response: question_answer item object
+        :return:
+        """
         # check whether answer exists
         if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
             return None  # no answer exists
         else:
-            answers = response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()
             question_answer_list = []
+            question_answer = QuestionAnswer()
+            question_answer = self.fill_question(response, question_answer)
+            # cycle through answers and build Q/A pairs
+            answers = response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()
             for answer_number in range(len(answers)):
-                question_answer = self.fill_question(response)
-                question_answer = self.fill_answer(response, question_answer, answer_number)
-                question_answer_list.append(question_answer)
+                question_answer_copy = question_answer.copy()
+                question_answer_copy = self.fill_answer(response, question_answer_copy, answer_number)
+                question_answer_list.append(question_answer_copy)
             return question_answer_list
 
-    def fill_question(self, response):
-        question_answer = QuestionAnswer()
+    def fill_question(self, response, question_answer):
+        """
+        Extracts information related to the question
+        :param response:
+        :return: question_answer pair with question information filled in
+        """
         question_answer['source_url'] = response.url
 
         question_answer['question_title'] = response.xpath('//*[@id="question-header"]/h1/a/text()').extract_first()
@@ -119,13 +127,11 @@ class SuperUserSpider(MasterSpider):
 
     def fill_answer(self, response, question_answer, answer_number):
         """
-        @TODO improve so not doing operation multiple times for question
         @TODO break components down into functions
         :param response:
-        :param tags:
-        :param question:
-        :param answer:
-        :return:
+        :param question_answer: question_answer item object
+        :param answer_number: position of answer in page
+        :return: question_answer item object with answer information filled in corresponding to answer number
         """
         question_answer['answer_body'] = BeautifulSoup(
             response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()[answer_number]).text
