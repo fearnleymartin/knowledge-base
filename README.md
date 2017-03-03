@@ -17,5 +17,17 @@ Setup conda environment using environment.yml.
 
 conda env create -f environment.yml
 
+
 ## Solr
 Solr config files for the project
+
+
+# Scrapy
+
+to run crawler:  
+`cd knowledge_base`  
+`scrapy crawl superuser`
+
+# Json formats
+
+The different json formats are detailed in the directory json_formats.
