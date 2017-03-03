@@ -121,3 +121,4 @@ ENV/
 !/solr-6.4.1 14.31.10/
 /solr-6.4.1 14.31.10/trials.py
 /solr-6.4.1 14.31.10/Tests/
+/solr-6.4.1 14.31.10/Old_file/
