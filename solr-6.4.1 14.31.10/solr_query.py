@@ -204,7 +204,7 @@ class SolrQuery:
         :param query: The query as a String, but you should use all the "static" functions like and_, or_, match_,
         exact_match, etc. to build that query
         """
-        self.__query_parameters__['q'] = query
+        self.__query_parameters__['fq'] = query
 
     def add_filter(self, *args):
         """
@@ -289,6 +289,7 @@ class SolrQuery:
         if len(sys.argv) > 0:
             os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
             print(os.getcwd())
+            print('bin/post -c ' + str(self.solr_core)  + ' ' + path)
             os.system('bin/post -c ' + str(self.solr_core)  + ' ' + path)
 
     def __set_near_query__(self,field_name,keywords,dist,number =10):

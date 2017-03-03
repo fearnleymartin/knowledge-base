@@ -17,7 +17,7 @@
   <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
   <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
   <fieldType name="currency" class="solr.CurrencyField" currencyConfig="currency.xml" defaultCurrency="USD" precisionStep="8"/>
-  <fieldType name="date" class="solr.TrieDateField" positionIncrementGap="0" docValues="true" precisionStep="0"/>
+  <fieldType name="date" class="solr.TrieDateField" positionIncrementGap="0" docValues="true" precisionStep="10"/>
   <fieldType name="dates" class="solr.TrieDateField" positionIncrementGap="0" docValues="true" multiValued="true" precisionStep="0"/>
   <fieldType name="descendent_path" class="solr.TextField">
     <analyzer type="index">
@@ -151,7 +151,7 @@
       <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="1" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="1"/>
       <filter class="solr.LowerCaseFilterFactory"/>
       <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-      <filter class="solr.PorterStemFilterFactory"/>
+      <filter class="solr.SnowballPorterFilterFactory"/>
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.WhitespaceTokenizerFactory"/>
@@ -160,7 +160,8 @@
       <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" catenateAll="0" catenateWords="0"/>
       <filter class="solr.LowerCaseFilterFactory"/>
       <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
-      <filter class="solr.PorterStemFilterFactory"/>
+      <filter class="solr.SnowballPorterFilterFactory"/>
+
     </analyzer>
   </fieldType>
   <fieldType name="text_en_splitting_tight" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
@@ -433,7 +434,7 @@ wildcards, n-gram query terms can be used within quoted phrases.
   <field name="product" type="string" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="source_url" type="string" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="source_domain" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="crawl_date" type="date" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="crawl_date" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 
 
   <!--
@@ -472,11 +473,11 @@ wildcards, n-gram query terms can be used within quoted phrases.
   <field name="answer.answer_author.thread_count" type="int" indexed="true" stored="true"/>
   <field name="answer.answer_author.reply_count" type="int" indexed="true" stored="true"/>
   <field name="answer.answer_author.average_reply_length" type="int" indexed="true" stored="true"/>
-  <field name="answer.answer_author.member_since" type="date" indexed="true" stored="true"/>
+  <field name="answer.answer_author.member_since" type="string" indexed="true" stored="true"/>
   <field name="answer.answer_author.likes_received" type="int" indexed="true" stored="true"/>
 
 
-  <field name="answer.answer_date" type="date" indexed="true" stored="true" />
+  <field name="answer.answer_date" type="string" indexed="true" stored="true" />
   <field name="answer.answer_upvotes" type="int" indexed="true" stored="true" />
   <field name="answer.answer_accepted" type="boolean" indexed="true" stored="true" />
   <field name="answer.answer_body" type="text_en_splitting" indexed="true" stored="true" />
@@ -514,9 +515,9 @@ wildcards, n-gram query terms can be used within quoted phrases.
   <field name="question.question_upvotes" type="int" indexed="true" stored="true" />
   <field name="question.question_body" type="text_en_splitting" indexed="true" stored="true" />
   <field name="question.question_tags" type="text_en_splitting" indexed="true" stored="true" multiValued="true"/>
-  <field name="question.question_view_count" type="int" indexed="true" stored="true" />
   <field name="question.question_title" type="text_en_splitting" indexed="true" stored="true"/>
-  <field name="question.question_date" type="date" indexed="true" stored="true"/>
+  <field name="question.question_view_count" type="int" indexed="true" stored="true" />
+  <field name="question.question_date" type="string" indexed="true" stored="true"/>
 
   <field name="question.question_author" type="string" indexed="true" stored="true" />
   <field name="question.question_author.author_id" type="string" indexed="true" stored="true" />
@@ -525,7 +526,7 @@ wildcards, n-gram query terms can be used within quoted phrases.
   <field name="question.question_author.thread_count" type="int" indexed="true" stored="true"/>
   <field name="question.question_author.reply_count" type="int" indexed="true" stored="true"/>
   <field name="question.question_author.average_reply_length" type="int" indexed="true" stored="true"/>
-  <field name="question.question_author.member_since" type="date" indexed="true" stored="true"/>
+  <field name="question.question_author.member_since" type="string" indexed="true" stored="true"/>
   <field name="question.question_author.likes_received" type="int" indexed="true" stored="true"/>
 
 
