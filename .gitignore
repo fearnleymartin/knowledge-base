@@ -91,7 +91,39 @@ ENV/
 
 # pycharm
 .idea
-knowledge_base/log.txt
+
+/solr-6.4.1 14.31.10/bin/
+/solr-6.4.1 14.31.10/.idea/
+/solr-6.4.1 14.31.10/example/
+/solr-6.4.1 14.31.10/contrib/
+/solr-6.4.1 14.31.10/dist/
+/solr-6.4.1 14.31.10/docs/
+/solr-6.4.1 14.31.10/licenses/
+/solr-6.4.1 14.31.10/server/etc/
+/solr-6.4.1 14.31.10/server/logs/
+/solr-6.4.1 14.31.10/server/modules/
+/solr-6.4.1 14.31.10/server/resources/
+/solr-6.4.1 14.31.10/server/lib/
+/solr-6.4.1 14.31.10/server/contexts/
+/solr-6.4.1 14.31.10/server/scripts/
+/solr-6.4.1 14.31.10/LUCENE_CHANGES.txt
+/solr-6.4.1 14.31.10/server/solr-webapp/
+/solr-6.4.1 14.31.10/LICENSE.txt
+/solr-6.4.1 14.31.10/NOTICE.txt
+/solr-6.4.1 14.31.10/README.txt
+/solr-6.4.1 14.31.10/CHANGES.txt
+/solr-6.4.1 14.31.10/server/README.txt
+/solr-6.4.1 14.31.10/server/start.jar
+/solr-6.4.1 14.31.10/server/solr/configsets/
+/solr-6.4.1 14.31.10/server/solr/gettingstarted/
+!/solr-6.4.1 14.31.10/solr_query.py
+!/solr-6.4.1 14.31.10/
+/solr-6.4.1 14.31.10/trials.py
+/solr-6.4.1 14.31.10/Tests/
+/solr-6.4.1 14.31.10/Old_file/
+
+/knowledge_base/log.txt
 /knowledge_base/logs/
 /knowledge_base/scraped_data/
 /knowledge_base/Scripts/
+

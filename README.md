@@ -17,6 +17,11 @@ Setup conda environment using environment.yml.
 
 conda env create -f environment.yml
 
+
+## Solr
+Solr config files for the project
+
+
 # Scrapy
 
 to run crawler:  
