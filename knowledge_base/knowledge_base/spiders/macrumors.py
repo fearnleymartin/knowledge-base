@@ -7,6 +7,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import re
 from .master import MasterSpider
+from ..utils import date_to_solr_format
 
 
 class MacRumorsSpider(MasterSpider):
@@ -123,13 +124,13 @@ class MacRumorsSpider(MasterSpider):
         date = response.xpath(self.gt.css_to_xpath('.messageDetails .DateTime') + '/@data-datestring').extract_first()
         if date:
             date = re.sub('^0|(?<= )0', '', date)
-            question_answer['question_date'] = str(datetime.strptime(date, mac_rumors_date_format2))
+            question_answer['question_date'] = date_to_solr_format(datetime.strptime(date, mac_rumors_date_format2))
         else:
             date = response.xpath(
                 self.gt.css_to_xpath('.messageDetails .DateTime') + '/@title').extract_first()
             if date:
                 date = re.sub('^0|(?<= )0', '', date)
-                question_answer['question_date'] = str(datetime.strptime(date, mac_rumors_date_format))
+                question_answer['question_date'] = date_to_solr_format(datetime.strptime(date, mac_rumors_date_format))
             else:
                 pass
 

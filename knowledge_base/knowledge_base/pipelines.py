@@ -10,6 +10,7 @@ import logging
 import time
 from datetime import datetime
 from urllib.parse import urlparse
+from .utils import date_to_solr_format
 
 
 class JsonWriterPipeline(object):
@@ -35,9 +36,9 @@ class JsonWriterPipeline(object):
             'product': spider.product,
             'source_url': item['source_url'],
             'source_domain': urlparse(item['source_url']).netloc,
-            'crawl_date': str(datetime.now()),
+            'crawl_date': date_to_solr_format(datetime.now()),
             'question': {k: v for (k, v) in dict(item).items() if k[0] == 'q'},
-            'answers': {k: v for (k, v) in dict(item).items() if k[0] == 'a'}
+            'answer': {k: v for (k, v) in dict(item).items() if k[0] == 'a'}
         }
 
         line = json.dumps(question_answer_pair)

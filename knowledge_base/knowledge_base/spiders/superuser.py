@@ -6,6 +6,7 @@ from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
 from bs4 import BeautifulSoup
 from .master import MasterSpider
+from ..utils import date_to_solr_format
 
 
 class SuperUserSpider(MasterSpider):
@@ -116,11 +117,11 @@ class SuperUserSpider(MasterSpider):
         se_date_format = '%b %d \'%y at %H:%M'  # if date not current year
         se_date_format_curr_year = '%b %d at %H:%M'  # if date current year
         try:
-            question_answer['question_date'] = str(datetime.strptime(response.xpath(
+            question_answer['question_date'] = date_to_solr_format(datetime.strptime(response.xpath(
                 self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(),
                                                                      se_date_format))
         except ValueError:
-            question_answer['question_date'] = str(datetime.strptime(response.xpath(
+            question_answer['question_date'] = date_to_solr_format(datetime.strptime(response.xpath(
                 self.gt.css_to_xpath('.owner .user-action-time .relativetime') + '/text()').extract_first(),
                                                                      se_date_format_curr_year))
         return question_answer
