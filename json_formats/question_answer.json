@@ -1,0 +1,48 @@
+{  // Represents a question/answer pair found on forum or on Q/A site
+  "product": "product",  // node in graph database (product)
+  "source_url": "www.example.com/path",  // handy for reviewing scraped data but not included in graph database
+  "source_domain": "example.com",  // node in graph database (source)
+  "crawl_date": "2010-10-15 13:03:00",  // handy for reviewing scraped data but not included in graph database
+  "answer": // stack overflow reply or forum response
+        {
+          "answer_number": 1,  // represents the order of posts in forum i.e. 1st reply is 1, second reply is 2 etc. can be blank for Q/A site
+          "answer_author": {
+              "author_id": "source_author_id",  // Node in database (author)
+              "author_name": "author_name", // For facilitating queries
+              // The following attribute can be used to weight the author for initialising page rank algo
+              "author_reputation": 10,  // Stack overflow attribute
+              "thread_count": 10,  // number of threads author has started
+              "reply_count": 10,  // number of replies authorhas posted
+              "average_reply_length": 10,
+              "member_since": "2010-10-15 13:03:00",
+              "likes_received": 10  // number of likes author's posts have received
+            },
+          "answer_date": "2010-10-15 13:03:00",  //  relation between documents (time closeness)
+          "answer_upvotes": 0,  // used for initial weighting in page rank algo (of documents)
+          "answer_accepted": true,  // used for  initial weighting in page rank algo (of documents)
+          "answer_body": "Body",  //  nodes in graph database (words),
+          "answer_in_reply_to": 1  // If another answer is quoted, put the answer_number of the quoted answer (and 0 for question)
+        },
+  "question":  // stack overflow question or initial forum post
+    {
+      "question_upvotes": 0,  // used for initial weighting in page rank algo
+      "question_body": "Body",  // nodes in graph database (words)
+      "question_tags": ["tag1", "tag2", "tag3"],  // node in graph database (tags)
+      "question_view_count": 316,    // can be used for initial weighting in page rank algo
+      "question_title": "title",  // nodes in graph database (words), can give higher weight than normal words in page rank algo for example
+      "question_author": {
+        "author_id": "source_author_id",  // Node in database (author)
+        "author_name": "author_name", // For facilitating queries
+        // The following attribute can be used to weight the author for initialising page rank algo
+        "author_reputation": 10,  // Stack overflow attribute
+        "thread_count": 10,  // number of threads author has started
+        "reply_count": 10,  // number of replies authorhas posted
+        "average_reply_length": 10,
+        "member_since": "2010-10-15 13:03:00",
+        "likes_received": 10  // number of likes author's posts have received
+      },
+      "question_date": "2010-10-15 13:03:00",  // relation between documents (time closeness)
+      "question_extra_info": ["body1", "body2", "body3"]  // Can be stack overflow comments or extra clarification in forum discussion
+      // This is because in forums, often discussion takes place to clarify question before answer is given
+    }
+}
