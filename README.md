@@ -22,16 +22,14 @@ conda env create -f environment.yml
 Solr config files for the project
 
 To set up the solr configuration : 
-1) download the solr file : http://lucene.apache.org/solr/<br />
-2) create a core named ProductDB ( run the command : bin/solr create -c ProductDB)<br />
-3) replace the schema.xml and the solr config file by the one in the repo<br />
-4) (not mandatory) if you want to be able to run the test you will need to create a new core CoreTest<br />
-5) start solr on port 8993 bin/solr start -p 8983<br />
+- 1) download the solr file : http://lucene.apache.org/solr/ . 
+- 2) create a core named ProductDB ( run the command :`bin/solr create -c ProductDB`) . 
+- 3) replace the schema.xml and the solr config file by the one in the repo . 
+- 4) (not mandatory) if you want to be able to run the test you will need to create a new core CoreTest . 
+- 5) start solr on port 8993 `bin/solr start -p 8983` . 
+In solr you are in manual mode for the schema   
 
-In solr you are in manual mode for the schema <br />
-
-To perform a query use the solr_query.py<br />
-
+To perform a query use the solr_query.py . 
 
 # Scrapy
 
