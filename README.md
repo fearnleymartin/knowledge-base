@@ -27,6 +27,7 @@ To set up the solr configuration :
 - 3) replace the schema.xml and the solr config file by the one in the repo . 
 - 4) (not mandatory) if you want to be able to run the test you will need to create a new core CoreTest . 
 - 5) start solr on port 8993 `bin/solr start -p 8983` . 
+
 In solr you are in manual mode for the schema   
 
 To perform a query use the solr_query.py . 
