@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from ..items import QuestionAnswer
-from scrapy.spiders import Rule
-from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
 from bs4 import BeautifulSoup
 from .master import MasterSpider
@@ -27,47 +25,10 @@ class SuperUserSpider(MasterSpider):
 
     start_urls = ['http://superuser.com/search?q={}'.format(product)]
 
-    rules = (
-        # @TODO generalise
-        Rule(LinkExtractor(allow=('superuser.com/search', 'superuser.com/questions/'),
-                           deny=('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab'),
-                           restrict_xpaths=(MasterSpider.gt.css_to_xpath('.result-link'), MasterSpider.gt.css_to_xpath('.pager'))),
-             callback="identify_and_parse_page",
-             follow=True),
-    )
+    allow = ('superuser.com/search', 'superuser.com/questions/')
+    deny = ('superuser.com/questions/tagged', 'superuser.com/questions/ask', 'submit', 'answertab')
+    restrict_xpaths = (MasterSpider.gt.css_to_xpath('.result-link'), MasterSpider.gt.css_to_xpath('.pager'))
 
-    def is_index_page(self, url):
-        """
-        @TODO: generalise
-        :param url:
-        :return: True if url is a page that list search results
-        """
-        return "superuser.com/search" in url
-
-    def is_captcha_page(self, url):
-        """
-        @TODO generalise
-        :param url:
-        :return: True if request has been redirected to captcha
-        """
-        return "nocaptcha" in url
-
-    def identify_and_parse_page(self, response):
-        """
-        Identifies page type (index page, captcha, results page)
-        and runs corresponding procedure
-        :param response:
-        :return:
-        """
-
-        # check whether search page or question page
-        if self.is_index_page(response.url):  # if search page, extract link and next page
-            self.process_index_page(response)
-        elif self.is_captcha_page(response.url):
-            self.process_captcha(response)
-        else:  # if question page, parse post
-            items = self.process_question_answer_page(response)
-            return items
 
     def process_question_answer_page(self, response):
         """
@@ -75,20 +36,26 @@ class SuperUserSpider(MasterSpider):
         :param response: question_answer item object
         :return:
         """
-        # check whether answer exists
-        if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
-            return None  # no answer exists
-        else:
-            question_answer_list = []
-            question_answer = QuestionAnswer()
-            question_answer = self.fill_question(response, question_answer)
-            # cycle through answers and build Q/A pairs
-            answers = response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()
-            for answer_number in range(len(answers)):
-                question_answer_copy = question_answer.copy()
-                question_answer_copy = self.fill_answer(response, question_answer_copy, answer_number)
-                question_answer_list.append(question_answer_copy)
-            return question_answer_list
+        # TODO: implement going through pagination of forums responses
+        # All posts on page (might be posts on other pages though, )
+
+        # Filters
+        if not self.page_contains_answers(response):
+            return None
+
+        # Process posts
+        question_answer_list = []
+        question_answer = QuestionAnswer()
+        question_answer = self.fill_question(response, question_answer)
+        # cycle through answers and build Q/A pairs
+        answers = response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract()
+        for answer_number in range(len(answers)):
+            question_answer_copy = question_answer.copy()
+            question_answer_copy = self.fill_answer(response, question_answer_copy, answer_number)
+            question_answer_list.append(question_answer_copy)
+        return question_answer_list
+
+    ### Q/A parsing functions
 
     def fill_question(self, response, question_answer):
         """
@@ -142,3 +109,35 @@ class SuperUserSpider(MasterSpider):
         # question_answer['answer_accepted'] = response.xpath(
         #     self.gt.css_to_xpath('.vote-accepted-on') + '/text()').extract()[answer_number] == 'accepted'
         return question_answer
+
+    ### Filter functions
+
+    def page_contains_answers(self, response):
+        if response.xpath(self.gt.css_to_xpath('.answercell .post-text')).extract_first() is None:
+            return False  # no answer exists
+        else:
+            return True
+
+    ### Page identification functions
+
+    def is_results_page(self, url):
+        # @TODO tidy up types
+        if type(url) is not str:
+            url = url.url
+        return "superuser.com/questions/" in url
+
+    def is_index_page(self, url):
+        """
+        @TODO: generalise
+        :param url:
+        :return: True if url is a page that list search results
+        """
+        return "superuser.com/search" in url
+
+    def is_captcha_page(self, url):
+        """
+        @TODO generalise
+        :param url:
+        :return: True if request has been redirected to captcha
+        """
+        return "nocaptcha" in url
