@@ -9,6 +9,7 @@ from urllib.request import urlopen
 from requests import Session, Request
 import os
 import sys
+import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -256,23 +257,25 @@ class SolrQuery:
     def clean_DB(self):
         '''
         Deleat all the DB
-        :return: VOID
+        :return: response of the query if code 0 this is a success
         '''
 
         if len(sys.argv) > 0:
             os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
-            req ='curl http://localhost:8983/solr/ProductDB/update?commit=true -d '+'\"<delete><query>*:*</query ></delete>\"'
-            print(req)
-            os.system(req)
+            req ='curl http://localhost:8983/solr/' + str(self.solr_core)  + '/update?commit=true -d '+'\"<delete><query>*:*</query ></delete>\"'
+            #print(req)
+            x = os.popen(req).read()
             #os.system('bin/post -c ' + self.solr_core + ' ' +'-d ' +'\"<delete><query>*:*</query ></delete>\"')
 
-        return
+        else :
+            x = None
+        return x
 
     def add_doc(self,path):
         '''
         add a doc to the database
         :param path: doc path you want to add
-        :return: void
+        :return: response of the query if code 0 this is a success
         '''
         # with open('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/' + path) as f:
         #     content = f.readlines()
@@ -288,9 +291,18 @@ class SolrQuery:
         #             i += 1
         if len(sys.argv) > 0:
             os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
-            print(os.getcwd())
-            print('bin/post -c ' + str(self.solr_core)  + ' ' + path)
-            os.system('bin/post -c ' + str(self.solr_core)  + ' ' + path)
+
+            ### For checking paths
+
+
+            #print(os.getcwd())
+
+            x = os.popen('bin/post -c ' + str(self.solr_core)  + ' ' + path).read()
+
+        else :
+            x = None
+        return x
+
 
     def __set_near_query__(self,field_name,keywords,dist,number =10):
         """
@@ -413,6 +425,9 @@ class SolrResponse:
         """
         return self.__results__
 
+
+
+# some code examples
 '''
 solquery = SolrQuery('localhost:8983','ProductDB')
 solquery.clean_DB()
