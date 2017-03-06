@@ -92,7 +92,6 @@ ENV/
 # pycharm
 .idea
 
-
 /solr-6.4.1 14.31.10/bin/
 /solr-6.4.1 14.31.10/.idea/
 /solr-6.4.1 14.31.10/example/
@@ -122,3 +121,9 @@ ENV/
 /solr-6.4.1 14.31.10/trials.py
 /solr-6.4.1 14.31.10/Tests/
 /solr-6.4.1 14.31.10/Old_file/
+
+/knowledge_base/log.txt
+/knowledge_base/logs/
+/knowledge_base/scraped_data/
+/knowledge_base/Scripts/
+
