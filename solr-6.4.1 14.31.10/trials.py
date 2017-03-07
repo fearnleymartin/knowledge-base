@@ -1,7 +1,7 @@
 import os
 import sys
 from urllib.request import urlopen
-
+import nltk
 core_name = 'ProductDB'
 port = '8983'
 document_path = 'server/solr/ProductDB/testSimpler.json'
@@ -42,4 +42,8 @@ def search_query2():
 
 
 
-search_query2()
+#search_query2()
+#nltk.download()
+tokens = nltk.word_tokenize('How to do an update ')
+print(tokens)
+

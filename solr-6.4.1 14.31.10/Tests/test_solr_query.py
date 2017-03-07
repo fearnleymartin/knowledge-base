@@ -3,10 +3,12 @@ import sys
 
 sys.path.append('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10')
 from solr_query import SolrQuery
+from SolrEvaluation.evaluation_f1_score import f1_score
 
 
-class Test(unittest.TestCase) :
+class Test_SolrQuery(unittest.TestCase) :
     def test_cleanDB(self):
+
         solquery = SolrQuery('localhost:8983', 'TestCore')
         response = solquery.clean_DB()
         succeed = False
@@ -73,6 +75,13 @@ class Test(unittest.TestCase) :
                                 {'question.question_view_count': 2809}]
 
         self.assertEqual(theoritical_response, solrResponse)
+
+
+
+class Test_evaluation_f1_score(unittest.TestCase):
+
+    def test_f1_score(self):
+        self.assertEqual(f1_score('\"Outlook reminders not appearing\"', 'ProductDB', '8983', 'superuser.com'),1.0)
 
 
 

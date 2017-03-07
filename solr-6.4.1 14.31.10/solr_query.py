@@ -184,7 +184,7 @@ class SolrQuery:
         :return: a SolrReponse object
         """
         url = 'http://'+self.solr_server + '/solr/' + str(self.solr_core) + '/select?'
-        print(url)
+        # print(url)
 
         request = Request('GET', url, params=self.__get_flatten_parameters__(),
                           headers={'accept': 'application/json'}).prepare()
@@ -460,3 +460,9 @@ solrResponse = solquery.execute()
 print(solrResponse.get_results())'''
 
 
+
+'''
+solquery = SolrQuery('localhost:8983','ProductDB')
+solquery.set_query(and_('question.question_tags:reminder','question.question_view_count:318'))
+solrResponse = solquery.execute()
+print(solrResponse.get_results())'''

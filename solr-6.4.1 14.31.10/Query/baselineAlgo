@@ -1,0 +1,19 @@
+Tokenize
+Stopwords
+Identify the product given the list
+Perform query on the product and on the tokenize question
+
+
+
+##########################
+
+Quality of the answers :
+http://jultika.oulu.fi/files/nbnfioulu-201510282094.pdf
+Count :
+    - if count is negatif ignore
+    - if count is positive take into account
+
+Length of both question and body
+
+
+
