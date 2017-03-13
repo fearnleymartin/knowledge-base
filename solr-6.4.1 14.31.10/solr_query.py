@@ -92,6 +92,29 @@ def match_(field, value):
     return __format_params__('({}:({}))', field, value)
 
 
+def _near_match_query__(field, value) :
+   '''
+    Suppose field name in schema is "foo" which has values "b", "ba", "bar", "bart", "bartender", & "foobar"
+        q=foo:(bar*)
+    :param field: the field name
+    :param value: the value to be matched
+    :return: the built query
+   '''
+   return __format_params__('({}:({}))', field, '(' + value + '*)')
+
+def __boosted_query__(field, value,boost) :
+   '''
+
+   :param boost: the number you want to boost
+   :param field: the field name
+    :param value: the value to be matched
+    :return: the built query
+   '''
+
+   return __format_params__('({}:({}))', field, '(' + value + '*)')+'^'+ boost
+
+
+
 def facet_(*args):
     """
     Build the aggregation in the faceted queries
@@ -178,6 +201,18 @@ class SolrQuery:
                     flatten_params['json.facet'] = json.dumps(value, default=__json_default__)
         return flatten_params
 
+
+    def boost_by_field(self,field_name,keywords,boostedField):
+        '''
+
+        :param field_name:
+        :param keywords:
+        :param boostedField: the field we want to order by
+        :return:
+        '''
+        self.__query_parameters__['q'] = '{!boost b = '+ boostedField +'}('+ field_name + ':' +keywords + ') '
+
+
     def execute(self):
         """
         Execute the query
@@ -230,7 +265,7 @@ class SolrQuery:
         else:
             self.__query_parameters__['fl'] = set(args)
 
-    def set_rows(self, rows):
+    def set_rows(self, rows=10000):
         """
         Defines the number of rows you want Solr to return ('rows' parameter)
         :param rows: A number - defaulted to 10 in Solr.
@@ -306,6 +341,8 @@ class SolrQuery:
 
     def __set_near_query__(self,field_name,keywords,dist,number =10):
         """
+
+        custom request handler that does this
         Define the query in Solr ('q' parameter). This method should be called only once.
         Every new call will override the previous query.
         :param query: The query as a String, but you should use all the "static" functions like and_, or_, match_,
@@ -317,6 +354,9 @@ class SolrQuery:
         self.__query_parameters__['qf'] = field_name
         self.__query_parameters__['bq'] = None
         self.__query_parameters__['rows'] = number
+
+
+
 
 
 def __init_query_parameters__():
@@ -445,11 +485,13 @@ solquery.add_doc('server/solr/ProductDB/Full.json')
 #print(solrResponse.get_results())
 
 
-
-solquery = SolrQuery('localhost:8983','ProductDB')
-
+'''
 
 
+
+
+
+'''
 file = open('research_words','r')
 s = file.read()
 #solquery.set_query('question.question_title:'+ '\"'+str(s)+'~1'+ '\"')
@@ -460,9 +502,10 @@ solrResponse = solquery.execute()
 print(solrResponse.get_results())'''
 
 
-
 '''
 solquery = SolrQuery('localhost:8983','ProductDB')
-solquery.set_query(and_('question.question_tags:reminder','question.question_view_count:318'))
+solquery.boost_by_field('question.question_title','outlook','question.question_view_count')
+solquery.add_field('question.question_view_count')
 solrResponse = solquery.execute()
 print(solrResponse.get_results())'''
+

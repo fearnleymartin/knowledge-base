@@ -1,20 +1,20 @@
 PowerBook
-,Power Mac G4 Cube
-,Cinema Display
-,PowerBook G4 Titanium
-,iBook
-,Power Mac G4 Quicksilver
-,Server G4 Quicksilver
-,iPod
-,iMac G4
-,eMac
-,Xserve
-,Power Macintosh G4 MDD
-,Macintosh Server G4 MDD
-,PowerBook
-,Xserve slot
-,Xserve Cluster Node
-,iPod Classic	July 19, 2004
+Power Mac G4 Cube
+Cinema Display
+PowerBook G4 Titanium
+iBook
+Power Mac G4 Quicksilver
+Server G4 Quicksilver
+iPod
+iMac G4
+eMac
+Xserve
+Power Macintosh G4 MDD
+Macintosh Server G4 MDD
+PowerBook
+Xserve slot
+Xserve Cluster Node
+iPod Classic	July 19, 2004
 Power Macintosh G5
 iBook G4
 iMac G4
