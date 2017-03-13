@@ -171,13 +171,13 @@ class MacRumorsSpider(MasterSpider):
 
     ### Page identification functions
 
-    def is_results_page(self, url):
+    def is_results_page(self, url, response=None):
         # @TODO tidy up types
         if type(url) is not str:
             url = url.url
         return "threads" in url
 
-    def is_index_page(self, url):
+    def is_index_page(self, url, response=None):
         """
         :param url:
         :return: True if url is a page that list search results
@@ -185,7 +185,7 @@ class MacRumorsSpider(MasterSpider):
         # TODO: generalise
         return "forums.macrumors.com/forums" in url
 
-    def is_captcha_page(self, url):
+    def is_captcha_page(self, url, response=None):
         """
         @TODO generalise
         :param url:

@@ -120,13 +120,13 @@ class SuperUserSpider(MasterSpider):
 
     ### Page identification functions
 
-    def is_results_page(self, url):
+    def is_results_page(self, url, response=None):
         # @TODO tidy up types
         if type(url) is not str:
             url = url.url
         return "superuser.com/questions/" in url
 
-    def is_index_page(self, url):
+    def is_index_page(self, url, response=None):
         """
         @TODO: generalise
         :param url:
@@ -134,7 +134,7 @@ class SuperUserSpider(MasterSpider):
         """
         return "superuser.com/search" in url
 
-    def is_captcha_page(self, url):
+    def is_captcha_page(self, url, response=None):
         """
         @TODO generalise
         :param url:

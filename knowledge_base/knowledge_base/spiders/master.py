@@ -21,7 +21,7 @@ class MasterSpider(CrawlSpider):
     Will crawl the given links and iterate through the index pagination
     """
     name = "master"
-    allowed_domains = ['superuser.com']
+    allowed_domains = ['superuser.com', 'macrumors.com', 'answers.microsoft.com']
     custom_settings = {'DOWNLOAD_DELAY': 0.45,
                        'LOG_FILE': 'logs/master_log.txt'
                        }
@@ -32,13 +32,14 @@ class MasterSpider(CrawlSpider):
     product = 'outlook'
 
     start_urls = ['http://superuser.com/search?q={}'.format(product)]
+    start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
+    start_urls = ['https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
     # These allows define the crawling
     allow = ()
-    deny = ()
+    deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
     restrict_xpaths = ()
     rules = (
-        # @TODO implement
         Rule(LinkExtractor(allow=allow,  # Allow index and results pages
                            deny=deny,  # Other pages
                            restrict_xpaths=restrict_xpaths),  # Pagination, results pages
@@ -50,13 +51,13 @@ class MasterSpider(CrawlSpider):
     def __init__(self):
         super().__init__()
         if self.rate_limit:
-            self.new_search_page_pause_time = 0.8
+            self.new_index_page_pause_time = 0.8
             self.captcha_pause_time = 20
         else:
-            self.new_search_page_pause_time = 0
+            self.new_index_page_pause_time = 0
             self.captcha_pause_time = 0
         # Initialise basic crawl starts
-        self.search_page_count = 0
+        self.index_page_count = 0
         self.captcha_count = 0
         self.start_time = time.time()
         self.total_items = 0
@@ -68,20 +69,19 @@ class MasterSpider(CrawlSpider):
     def identify_and_parse_page(self, response):
         """
         Identifies page type (index page, captcha, results page)
-        and runs corresponding procedure
+        and runs corresponding parsing procedure
         :param response:
         :return:
         """
         print(response.url)
-        # check whether search page or question page
-        if self.is_index_page(response.url):  # if search page, extract link and next page
+        if self.is_index_page(response.url, response):
             self.process_index_page(response)
-        elif self.is_captcha_page(response.url):
+        elif self.is_captcha_page(response.url, response):
             self.process_captcha(response)
-        elif self.is_results_page(response):
+        elif self.is_results_page(response.url, response):
             items = self.process_question_answer_page(response)
             return items
-        else:  # if question page, parse post
+        else:
             print('other')
 
     ### Page processing functions
@@ -91,13 +91,13 @@ class MasterSpider(CrawlSpider):
         At the moment just logs that we have an index page, and pauses
         :return:
         """
-        logging.info('new search page')
+        logging.info('index page')
         logging.info(response.url)
-        self.search_page_count += 1
-        print('new search page')
-        print('pausing')
-        time.sleep(self.new_search_page_pause_time)
-        print('restarting')
+        self.index_page_count += 1
+        print('index page')
+        # print('pausing')
+        time.sleep(self.new_index_page_pause_time)
+        # print('restarting')
 
     def process_captcha(self, response):
         """
@@ -210,29 +210,39 @@ class MasterSpider(CrawlSpider):
 
     ### Page identification functions
 
-    def is_index_page(self, url):
+    def is_index_page(self, url, response=None):
         """
         :param url:
         :return: True if page is an index of links (e.g. search results), False otherwise
         """
-        pass
+        # TODO get clues from response and not just from url
+        index_clues = ['/search', '/forums/']
+        for index_clue in index_clues:
+            if index_clue in url:
+                return True
+        return False
 
-    def is_captcha_page(self, url):
+    def is_captcha_page(self, url, response=None):
         """
         @TODO generalise
         :param url:
         :return: True if request has been redirected to captcha
         """
-        pass
+        # TODO get clues from response and not just from url
+        'captcha' in url
 
-    def is_results_page(self, url):
+    def is_results_page(self, url, response=None):
         """
-        A results page is a page contain Q/A pairs
+        A results page is a page that contains Q/A pairs
         :param url:
         :return: true if is a results page
         """
-        # @TODO decide on the type this function takes
-        return True
+        # TODO get clues from response and not just from url
+        result_clues = ['/questions', '/threads', '/forum']
+        for result_clue in result_clues:
+            if result_clue in url:
+                return True
+        return False
 
     def process_links(self, links):
         """

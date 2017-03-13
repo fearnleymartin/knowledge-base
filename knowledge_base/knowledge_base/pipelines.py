@@ -20,7 +20,7 @@ class JsonWriterPipeline(object):
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))
-        logging.info('total search page count: {}'.format(spider.search_page_count))
+        logging.info('total search page count: {}'.format(spider.index_page_count))
         total_time = time.time() - spider.start_time
         logging.info('total time: {}'.format(total_time))
         logging.info('total items: {}'.format(spider.total_items))
