@@ -1,5 +1,12 @@
 from is_index_page import is_index_page, get_html
+from is_results_page import get_html as get_html_results
 import pytest
+import csv
+
+"""
+True urls are index pages, false urls are not
+We check we can classify them correctly
+"""
 
 true_urls = [
     # 'https://www.reddit.com/r/iphonehelp/',  # too many requests error
@@ -20,7 +27,7 @@ true_urls = [
     'https://community.sharefilesupport.com/citrixsharefile/topics/search/show',
     'https://community.dynamics.com/crm/f/117',
 ]
-true_urls = []
+# true_urls = []
 
 false_urls = [
     'https://docs.python.org/3/library/urllib.parse.html',
@@ -47,14 +54,42 @@ false_urls = [
 
 class TestIndex:
     def test_is_index_page(self):
+        """Check we correctly identified index pages"""
         for url in true_urls:
             html = get_html(url)
             res = is_index_page(html)
             print(res, url)
             assert(res)
+
     def test_is_not_index_page(self):
+        """Check we correctly identify non-index pages"""
         for url in false_urls:
             html = get_html(url)
             res = is_index_page(html)
             print(res, url)
             assert(not res)
+
+    def test_is_not_index_page2(self):
+        """
+        Check results page are not classified as index pages
+        :return:
+        """
+        results_page_urls = []
+        input_file = 'BDD-Q-A.csv'
+        with open(input_file) as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',')
+            for row in csvreader:
+                if 'Yes' in row[1]:
+                    results_page_url = row[0]
+                    results_page_urls.append(results_page_url)
+        results = []
+        for results_page_url in results_page_urls:
+            html = get_html_results(results_page_url)
+            res = is_index_page(html, results_page_url)
+            # assert
+            print(results_page_url, res is False)
+            results.append(res is False)
+        true_count = results.count(True)
+        print(true_count)
+        print(len(results_page_urls))
+        assert len(results_page_urls) == true_count
