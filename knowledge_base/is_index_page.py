@@ -3,6 +3,8 @@ import lxml.html
 import lxml.etree as etree
 from urllib.parse import urlparse
 import os.path
+from lxml.cssselect import CSSSelector
+
 
 """
 The idea is to identify the structure of index pages
@@ -24,7 +26,7 @@ def get_html(index_page_url, base_path='html_pages/{}.html' ):
     path = base_path.format(domain+path.replace('/', '_'))
 
     if os.path.isfile(path):
-        print('read_from_file')
+        # print('read_from_file')
         with open(path, encoding='utf-8') as html_file:
             index_page_html = html_file.read()
     else:
@@ -226,6 +228,35 @@ def filter_subnode_links(subnode_links):
     return [subnode for subnode in subnode_links if subnode_is_index(subnode)]
 
 
+def contains_pagination(html):
+    """
+    We want ot check that the page contains a paginator
+    For this we define a generic list of paginator class and verify that the page contains at least one
+    :param html: lxml object
+    :return: true if page contains paginator, false otherwise
+    """
+
+    pagination_classes = set(['pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons'])
+    stack = []
+    stack.append(html)
+    while len(stack) > 0:
+        node = stack.pop()
+        # TODO implement faster way of going through all classes
+        css_classes = node.get('class')
+        if css_classes:
+            css_classes = css_classes.lower()
+            css_classes = set(css_classes.split(' '))
+            for pagination_class in pagination_classes:
+                for css_class in css_classes:
+                    if pagination_class in css_class:
+                        return True
+        children = node.getchildren()
+        if len(children) > 0:
+            for child in children:
+                stack.append(child)
+    return False
+
+
 def is_index_page(index_page_url):
     """
     We need to have at least one node which is an index
@@ -235,6 +266,9 @@ def is_index_page(index_page_url):
     """
     html = get_html(index_page_url)
     html = filter_links(html)
+    if not contains_pagination(html):
+        print('no pagination')
+        return False
     subnodes = extract_nodes_with_over_x_children(html, 9)
     # print(map_ex(subnodes))
     subnode_links = extract_links_from_subnodes(subnodes, index_page_url)
@@ -246,5 +280,6 @@ def is_index_page(index_page_url):
 
 
 if __name__ == "__main__":
-    index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
+    # index_page_url = 'https://forums.macrumors.com/threads/touch-id-problem-iphone-7.2034435/'
+    index_page_url = 'https://community.mindjet.com/mindjet/details'
     print(is_index_page(index_page_url))
