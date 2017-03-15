@@ -16,52 +16,75 @@ with open('BDD-Q-A.csv','r') as csvfile:
             row[1] = False
         data.append(row)
 
-class TestIndex:
-    # def test_is_result_page(self):
-    #     results = []
-    #     for url_pair in data:
-    #         if url_pair[1]:
-    #             html = get_html(url_pair[0])
-    #             res = is_results_page(html, url_pair[0])
-    #             print(url_pair[0],res == url_pair[1] )
-    #             assert res == url_pair[1]
-    #             results.append(res == url_pair[1])
-    #     true_count = results.count(True)
-    #     # print(true_count)
-    #     # print(len(data))
-    #     # assert len(data) == true_count
+class TestResultsPage:
 
-    # def test_is_positive_result_page(self):
-    #     results = []
-    #     site_domains = []
-    #     for url_pair in data:
-    #         domain = urlparse(url_pair[0]).netloc
-    #         # print(domain)
-    #         if domain not in site_domains:
-    #             if url_pair[1]:
-    #                 html = get_html(url_pair[0])
-    #                 res = is_results_page(html, url_pair[0])
-    #                 print(url_pair[0], res == url_pair[1])
-    #                 assert res == url_pair[1]
-    #                 results.append(res == url_pair[1])
-    #         site_domains.append(domain)
+    # js problem for symantec
+    domains_to_skip = ['www.symantec.com']
+
+    def test_is_result_page(self):
+        results = []
+        count = 0
+        for url_pair in data:
+            url, label = url_pair[0], url_pair[1]
+            domain = urlparse(url).netloc
+            if domain not in self.domains_to_skip:
+                # if label:
+                res = is_results_page(url)
+                print(url, res == label)
+                print('--------------------------------------------------------------------------------------')
+                # assert res == label
+                results.append(res == label)
+                count += 1
+        true_count = results.count(True)
+        print(true_count)
+        print(count)
+        expected_count = count
+        assert expected_count == true_count
+
+    def test_is_positive_result_page(self):
+        results = []
+        count = 0
+        site_domains = self.domains_to_skip + ['']
+        for url_pair in data:
+            url, label = url_pair[0], url_pair[1]
+            domain = urlparse(url).netloc
+            # print(domain)
+            if domain not in site_domains:
+                if label:
+                    res = is_results_page(url)
+                    print(url, res == label)
+                    print('--------------------------------------------------------------------------------------')
+
+                    # assert res == label
+                    results.append(res == label)
+                    count += 1
+            site_domains.append(domain)
+        true_count = results.count(True)
+        print(true_count)
+        print(count)
+        expected_count = count
+        assert expected_count == true_count
 
     def test_is_negative_result_page(self):
         results = []
-        # site_domains = []
+        count = 0
         for url_pair in data:
-            # print(url_pair[0], url_pair[1])
-            # domain = urlparse(url_pair[0]).netloc
-            # print(domain)
-            # if domain not in site_domains:
-            if not url_pair[1]:
-                html = get_html(url_pair[0])
-                res = is_results_page(html, url_pair[0])
-                print(url_pair[0], res == url_pair[1])
-                assert res == url_pair[1]
-                results.append(res == url_pair[1])
-            # site_domains.append(domain)
+            url, label = url_pair[0], url_pair[1]
+            domain = urlparse(url).netloc
+            if domain not in self.domains_to_skip:
+                if not label:
+                    res = is_results_page(url)
+                    print(url, res == label)
+                    print('--------------------------------------------------------------------------------------')
 
+                    # assert res == label
+                    results.append(res == label)
+                    count += 1
+        true_count = results.count(True)
+        print(true_count)
+        print(count)
+        expected_count = count
+        assert expected_count == true_count
 
 
 
