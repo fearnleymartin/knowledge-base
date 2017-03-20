@@ -6,18 +6,21 @@ import requests
 from urllib.parse import urlparse
 import os.path
 
-
 from is_result_page import get_html
 
+
+#-------------------------------------------------------------------------------
+# Script testing if we get good results on the new database site_evalutation.csv:
+#---------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
 
     # Paths to the relevant folders
     dir_path = 'fastText/'
-    test_path = dir_path + 'cross_validation_data/test_data' + 'newSites'+ '.txt'
+    test_path = dir_path + 'cross_validation_data/test_data' + 'newSites'+ '.csv'
     test_labels_path = dir_path + 'cross_validation_data/test_label' + 'newSites' + '.txt'
-    model_path = dir_path + 'cross_validation_data/train_model_' + '0'
+    model_path = dir_path + 'cross_validation_data/train_model_' + '2'
     test_predictions_path = dir_path +  'cross_validation_data/finalPredicions' + '.txt'
 
 
@@ -36,6 +39,10 @@ if __name__ == "__main__":
     y_te['isResultPage'].replace(to_replace='No', value='__label__No ', inplace=True)
 
     y_te['content'].to_csv(test_path, index=False)
+    print("shape is : ", y_te.shape)
+    y_te = y_te[y_te['content'] != 'nan']
+    y_te.dropna(axis=0,inplace  = True)
+    print("shape is after na : ", y_te.shape)
     y_te['isResultPage'].to_csv(test_labels_path, index=False)
 
     # Use fast text command

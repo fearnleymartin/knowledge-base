@@ -1,14 +1,60 @@
 name: swisscom
-channels: !!python/tuple
-- !!python/unicode 'conda-forge'
-- !!python/unicode 'defaults'
+channels:
+- conda-forge
+- defaults
 dependencies:
-- conda-forge::certifi=2017.1.23=py35_0
-- conda-forge::pip=9.0.1=py35_0
-- conda-forge::python=3.5.3=1
-- conda-forge::setuptools=33.1.0=py35_0
-#- conda-forge::vs2015_runtime=14.0.25420=0
-- conda-forge::wheel=0.29.0=py35_0
-#- conda-forge::wincertstore=0.2=py35_0
-prefix: C:\Users\Fearnley\Anaconda2\envs\swisscom
+- ca-certificates=2017.1.23=0
+- certifi=2017.1.23=py35_0
+- idna=2.1=py35_0
+- ncurses=5.9=10
+- openssl=1.0.2h=3
+- pip=9.0.1=py35_0
+- python=3.5.3=1
+- readline=6.2=0
+- setuptools=33.1.0=py35_0
+- six=1.10.0=py35_1
+- sqlite=3.13.0=1
+- tk=8.5.19=1
+- tldextract=2.0.1=py35_0
+- wheel=0.29.0=py35_0
+- xz=5.2.2=0
+- zlib=1.2.11=0
+- beautifulsoup4=4.5.3=py35_0
+- cycler=0.10.0=py35_0
+- freetype=2.5.5=2
+- icu=54.1=0
+- libiconv=1.14=0
+- libpng=1.6.27=0
+- libxml2=2.9.4=0
+- libxslt=1.1.29=0
+- lxml=3.7.2=py35_0
+- matplotlib=2.0.0=np112py35_0
+- mkl=2017.0.1=0
+- nltk=3.2.2=py35_0
+- numpy=1.12.0=py35_0
+- pandas=0.19.2=np112py35_1
+- plotly=1.12.9=py35_0
+- pyparsing=2.1.4=py35_0
+- pyqt=5.6.0=py35_2
+- python-dateutil=2.6.0=py35_0
+- pytz=2016.10=py35_0
+- qt=5.6.2=0
+- requests=2.13.0=py35_0
+- requests-file=1.4.1=py35_0
+- sip=4.18=py35_0
+- pip:
+  - anyjson==0.3.3
+  - appdirs==1.4.2
+  - coverage==4.3.4
+  - coveralls==1.1
+  - docopt==0.6.2
+  - mysolr==0.8.3
+  - packaging==16.8
+  - py==1.4.32
+  - py2neo==3.1.2
+  - pytest==3.0.6
+  - solr==0.4
+  - solrq==1.1.0
+  - urllib3==1.9.1
+prefix: /Users/pierrecolombo/anaconda3/envs/swisscom
 
