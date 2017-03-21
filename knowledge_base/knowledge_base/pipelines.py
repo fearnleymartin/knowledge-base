@@ -29,6 +29,7 @@ class JsonWriterPipeline(object):
         except ZeroDivisionError:
             pass
         self.file.close()
+        spider.classification_file.close()
 
     def process_item(self, item, spider):
         spider.total_items += 1

@@ -1,7 +1,10 @@
 import csv
 import pytest
-from is_results_page import is_results_page, get_html
-from is_index_page import is_index_page
+try:
+    from ..knowledge_base.scripts.is_results_page import is_results_page
+    # get_html
+except Exception:
+    from knowledge_base.knowledge_base.scripts.is_results_page import is_results_page
 from urllib.parse import urlparse
 
 

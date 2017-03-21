@@ -13,30 +13,37 @@ We require one of the links to be a question at least
 """
 
 
-def get_html(index_page_url, base_path='html_pages/{}.html' ):
+def get_html(index_page_url, base_path='html_pages/{}.html', response=None):
     """
     If getting html page first time, we make a request and save the html to html_pages/<domain+path>.html
     Else we read html from file to save time
     :param index_page_url: the url of page to parse
     :return: lxml root node containing the page html
     """
+    #TODO move into utils type file
     parsed_url = urlparse(index_page_url)
     scheme, domain, path = parsed_url.scheme, parsed_url.netloc, parsed_url.path
     base_href = scheme + '://' + domain
-    path = base_path.format(domain+path.replace('/', '_'))
+    base_dir_path = 'C:/Users/Fearnley/Documents/Swisscom/knowledge-base/knowledge_base/'
+    path = base_dir_path+base_path.format(domain+path.replace('/', '_'))
 
-    if os.path.isfile(path):
-        # print('read_from_file')
-        with open(path, encoding='utf-8') as html_file:
-            index_page_html = html_file.read()
+    if response:
+        print('read from response')
+        index_page_html = response.body
     else:
-        # Changed the header because was getting blocked
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-        r = requests.get(index_page_url, headers=headers)
-        index_page_html = r.text
-        with open(path, 'w', encoding='utf-8') as html_file:
-            html_file.write(index_page_html)
+        if os.path.isfile(path):
+            print('read_from_file')
+            with open(path, encoding='utf-8') as html_file:
+                    index_page_html = html_file.read()
+        else:
+            # Changed the header because was getting blocked
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+            r = requests.get(index_page_url, headers=headers)
+            index_page_html = r.text
+            # try:
+            with open(path, 'w', encoding='utf-8') as html_file:
+                html_file.write(index_page_html)
 
     html = lxml.html.fromstring(index_page_html)
     html.make_links_absolute(base_href)
@@ -230,12 +237,13 @@ def filter_subnode_links(subnode_links):
 
 def contains_pagination(html):
     """
-    We want ot check that the page contains a paginator
+    We want to check that the page contains a paginator
     For this we define a generic list of paginator class and verify that the page contains at least one
     :param html: lxml object
     :return: true if page contains paginator, false otherwise
     """
 
+    # TODO improve with regexes
     pagination_classes = set(['pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons'])
     stack = []
     stack.append(html)
@@ -257,14 +265,23 @@ def contains_pagination(html):
     return False
 
 
-def is_index_page(index_page_url):
+def is_index_page(index_page_url, response=None, input_html=None):
     """
     We need to have at least one node which is an index
     :param html: lxml html object
     :param index_page_url: the url of the page
     :return: true if is index page, false otherwise
     """
-    html = get_html(index_page_url)
+    # print('launch is index page for: {}'.format(index_page_url))
+    if response:
+        # print('enter response of is index page')
+        html = get_html(index_page_url, response=response)
+    elif input_html is not None:
+        html = input_html
+    else:
+        # print('no response given')
+        html = get_html(index_page_url)
+
     html = filter_links(html)
     if not contains_pagination(html):
         print('no pagination')
@@ -276,6 +293,7 @@ def is_index_page(index_page_url):
     # print_link_list(subnode_links[0])
 
     index = filter_subnode_links(subnode_links)
+    # print("is index page: ", len(index)>0)
     return len(index) > 0
 
 
