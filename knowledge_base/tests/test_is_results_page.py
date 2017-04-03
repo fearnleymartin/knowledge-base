@@ -1,10 +1,10 @@
 import csv
 import pytest
-try:
-    from ..knowledge_base.scripts.is_results_page import is_results_page
-    # get_html
-except Exception:
-    from knowledge_base.knowledge_base.scripts.is_results_page import is_results_page
+# try:
+#     from ..knowledge_base.scripts.is_results_page import is_results_page
+#     # get_html
+# except Exception:
+from knowledge_base.knowledge_base.scripts.is_results_page import IsResultsPage
 from urllib.parse import urlparse
 
 
@@ -23,6 +23,7 @@ class TestResultsPage:
 
     # js problem for symantec
     domains_to_skip = ['www.symantec.com']
+    isResultsPage = IsResultsPage()
 
     def test_is_result_page(self):
         results = []
@@ -32,7 +33,7 @@ class TestResultsPage:
             domain = urlparse(url).netloc
             if domain not in self.domains_to_skip:
                 # if label:
-                res = is_results_page(url)
+                res = self.isResultsPage.is_results_page(url)
                 print(url, res == label)
                 print('--------------------------------------------------------------------------------------')
                 # assert res == label
@@ -54,7 +55,7 @@ class TestResultsPage:
             # print(domain)
             if domain not in site_domains:
                 if label:
-                    res = is_results_page(url)
+                    res = self.isResultsPage.is_results_page(url)
                     print(url, res == label)
                     print('--------------------------------------------------------------------------------------')
 
@@ -76,7 +77,7 @@ class TestResultsPage:
             domain = urlparse(url).netloc
             if domain not in self.domains_to_skip:
                 if not label:
-                    res = is_results_page(url)
+                    res = self.isResultsPage.is_results_page(url)
                     print(url, res == label)
                     print('--------------------------------------------------------------------------------------')
 

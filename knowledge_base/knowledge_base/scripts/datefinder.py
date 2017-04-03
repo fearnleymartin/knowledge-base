@@ -2,7 +2,7 @@ import copy
 import logging
 import regex as re
 from dateutil import tz, parser
-
+import datetime
 
 logger = logging.getLogger('datefinder')
 
@@ -11,6 +11,8 @@ class DateFinder(object):
     """
     Locates dates in a text
     """
+    max_year = datetime.datetime.today().year
+    min_year = 1970
 
     DIGITS_MODIFIER_PATTERN = '\d+st|\d+th|\d+rd|first|second|third|fourth|fifth|sixth|seventh|eighth|nineth|tenth|next|last'
     DIGITS_PATTERN = '\d+'
@@ -217,9 +219,65 @@ class DateFinder(object):
             as_dt = self._add_tzinfo(as_dt, tz_string)
         return as_dt
 
+    def hasNumbers(self, inputString):
+        return any(char.isdigit() for char in inputString)
+
+    def filter_date(self, match):
+        # TODO tidy up logic
+
+        if len(match.group(0)) < 6:
+            return False
+        if not self.hasNumbers(match.group(0)):
+            return False
+        # print(match.group(0))
+        # print(group)
+        captures = match.capturesdict()
+        # print('captures: ',captures)
+        # print("captures: ", captures)
+        digits = captures.get('digits')
+        months = captures.get('months')
+        delimiters = captures.get('delimiters')
+
+        if len(digits) == 3:
+            if len(delimiters) < 2:
+                return False
+
+        complete = False
+        ## 12-05-2015
+        if len(digits) == 3:
+            # print(digits)
+            complete = True
+        ## 19 February 2013 year 09:10
+        elif (len(months) == 1) and (len(digits) == 2):
+            complete = True
+
+        digit_min_len = False
+        for digit in digits:
+            if len(digit) > 1:
+                digit_min_len = True
+        complete = complete and digit_min_len
+
+
+
+        # TODO implement sanity check for dates
+        # matches = [match[0] for match in matches  and hasNumbers(match[1])]
+        # if not min_year <= match[0].year <= max_year
+
+        if not complete:
+            return False
+        else:
+            return True
+
     def contains_date_strings(self, text, strict=False):
-        # TODO implement the strict filtering
-        return self.DATE_REGEX.search(text) is not None
+        # TODO: Instead of filtering, need to improve the regex
+        groups = self.DATE_REGEX.finditer(text)
+        # print(groups)
+        # print(groups.capturesdict())
+        # if groups is not None:
+            # print("match: ", match.group(0))
+        groups = list(filter(self.filter_date, groups))
+        return len(groups) > 0
+        # return match is not None
 
 
     def extract_date_strings(self, text, strict=False):

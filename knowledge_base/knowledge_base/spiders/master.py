@@ -10,7 +10,7 @@ from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
 from ..items import QuestionAnswer
 from ..scripts.is_index_page import is_index_page as func_is_index_page
-from ..scripts.is_results_page import is_results_page as func_is_results_page
+from ..scripts.is_results_page import IsResultsPage
 
 class MasterSpider(CrawlSpider):
     """
@@ -25,18 +25,21 @@ class MasterSpider(CrawlSpider):
     allowed_domains = ['superuser.com', 'macrumors.com', 'answers.microsoft.com',
                        'tomsguide.com', 'cnet.com']
     custom_settings = {'DOWNLOAD_DELAY': 0.45,
-                       'LOG_FILE': 'logs/master_log.txt'
+                       'LOG_FILE': 'logs/master_simple_log.txt'
                        }
 
     gt = GenericTranslator()  # For converting css classes to xpaths
     rate_limit = False   # for imposing download rate limit (to avoid captchas)
 
-    classification_file = open('scraped_data/classification/{}_classification_file.csv'.format("toms_guide_home"), 'w')
-
     product = 'outlook'
     logger = logging.getLogger('datefinder')
     logger.setLevel(logging.INFO)
     start_urls = ['https://www.cnet.com/']
+
+    # classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(start_urls[0].replace('/', '_'))
+    # print(classification_file_path)
+    # classification_file = open(classification_file_path, 'w')
+
     # start_urls = ['http://superuser.com/search?q={}'.format(product)]
     # start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
     # start_urls = ['https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
@@ -45,6 +48,13 @@ class MasterSpider(CrawlSpider):
     allow = ()
     deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
     restrict_xpaths = ()
+
+    allow = ('threads', 'forum')
+    deny = ('members')
+    restrict_xpaths = (gt.css_to_xpath('.listBlock'),
+                       gt.css_to_xpath('.PageNav'))
+
+
     rules = (
         Rule(LinkExtractor(allow=allow,  # Allow index and results pages
                            deny=deny,  # Other pages
@@ -64,9 +74,11 @@ class MasterSpider(CrawlSpider):
             self.captcha_pause_time = 0
         # Initialise basic crawl starts
         self.index_page_count = 0
+        self.results_page_count = 0
         self.captcha_count = 0
         self.start_time = time.time()
         self.total_items = 0
+        self.isResultsPage = IsResultsPage()
 
     def parse_start_url(self, response):
         """For parsing the starting page"""
@@ -81,13 +93,17 @@ class MasterSpider(CrawlSpider):
         """
         # print("call back response is not none: {}".format(response is not None))
         # print("processing: {}".format(response.url))
-        if self.is_index_page(url=response.url, response=response):
-            self.process_index_page(response)
-        elif self.is_captcha_page(response.url, response):
-            self.process_captcha(response)
-        elif self.is_results_page(response.url, response):
-            items = self.process_question_answer_page(response)
-            return items
+        if self.initial_page_filter(response):
+            if self.is_index_page(url=response.url, response=response):
+                self.process_index_page(response)
+            elif self.is_captcha_page(response.url, response):
+                self.process_captcha(response)
+            elif self.is_results_page(response.url, response):
+                items = self.process_question_answer_page(response)
+                return items
+            else:
+                self.classification_file.write("other, {}\n".format(response.url))
+                print('other: {}'.format(response.url))
         else:
             self.classification_file.write("other, {}\n".format(response.url))
             print('other: {}'.format(response.url))
@@ -127,6 +143,7 @@ class MasterSpider(CrawlSpider):
         :param response:
         :return:
         """
+        self.results_page_count += 1
         self.classification_file.write("results, {}\n".format(response.url))
         logging.info('results: {}'.format(response.url))
         print("results: {}".format(response.url))
@@ -220,6 +237,13 @@ class MasterSpider(CrawlSpider):
         """
         pass
 
+    def initial_page_filter(self, response):
+        match = re.match('<xml', response.body)
+        if match:
+            return False
+        else:
+            return True
+
     ### Page identification functions
 
     def is_index_page(self, url, response=None):
@@ -265,11 +289,11 @@ class MasterSpider(CrawlSpider):
         #             return True
         #     return False
         # else:
-        result_clues = ['/questions', '/threads', '/forum']
-        for result_clue in result_clues:
-            if result_clue in url:
-                return True
-        return func_is_results_page(url, response)
+        # result_clues = ['/questions', '/threads', '/forum']
+        # for result_clue in result_clues:
+        #     if result_clue in url:
+        #         return True
+        return self.isResultsPage.is_results_page(url, response)
 
     def process_links(self, links):
         """
@@ -287,3 +311,7 @@ class MasterSpider(CrawlSpider):
             #     pass
             filtered_links.append(link)
         return filtered_links
+
+    ### Pre treatment functions
+
+

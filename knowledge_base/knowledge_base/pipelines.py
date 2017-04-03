@@ -12,15 +12,14 @@ from datetime import datetime
 from urllib.parse import urlparse
 from .utils import date_to_solr_format
 
-
-class JsonWriterPipeline(object):
-
+class GeneralPipeline(object):
     def open_spider(self, spider):
         self.file = open('scraped_data/{}_items_test.jl'.format(spider.name), 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))
-        logging.info('total search page count: {}'.format(spider.index_page_count))
+        logging.info('index page count: {}'.format(spider.index_page_count))
+        logging.info('results page count: {}'.format(spider.results_page_count))
         total_time = time.time() - spider.start_time
         logging.info('total time: {}'.format(total_time))
         logging.info('total items: {}'.format(spider.total_items))
@@ -30,6 +29,9 @@ class JsonWriterPipeline(object):
             pass
         self.file.close()
         spider.classification_file.close()
+
+
+class JsonWriterPipeline(GeneralPipeline):
 
     def process_item(self, item, spider):
         spider.total_items += 1
@@ -46,3 +48,23 @@ class JsonWriterPipeline(object):
         # print('line', line)
         self.file.write(line + '\n')
         return item
+
+class IsSiteValidPipeline(GeneralPipeline):
+
+    def close_spider(self, spider):
+        logging.info('captcha count: {}'.format(spider.captcha_count))
+        logging.info('index page count: {}'.format(spider.index_page_count))
+        logging.info('results page count: {}'.format(spider.results_page_count))
+        total_time = time.time() - spider.start_time
+        logging.info('total time: {}'.format(total_time))
+        logging.info('total items: {}'.format(spider.total_items))
+        try:
+            logging.info('crawl speed: {}'.format(spider.total_items/total_time))
+        except ZeroDivisionError:
+            pass
+        logging.info('results pages: {}'.format(spider.results_pages))
+        logging.info('index pages: {}'.format(spider.index_pages))
+        logging.info('other pages: {}'.format(spider.other_pages))
+        self.file.close()
+        spider.classification_file.close()
+
