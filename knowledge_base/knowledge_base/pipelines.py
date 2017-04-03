@@ -12,7 +12,13 @@ from datetime import datetime
 from urllib.parse import urlparse
 from .utils import date_to_solr_format
 
+
 class GeneralPipeline(object):
+    """
+    Base pipeline from which others inherit
+    Opens items csv
+    Logs crawl stats on spider close
+    """
     def open_spider(self, spider):
         url_path = spider.start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_')[:100]
         self.file = open('scraped_data/{}_items.jl'.format(url_path), 'w')
@@ -33,6 +39,9 @@ class GeneralPipeline(object):
 
 
 class JsonWriterPipeline(GeneralPipeline):
+    """
+    Processes items (Q/A pairs) and writes them to json
+    """
 
     def process_item(self, item, spider):
         spider.total_items += 1
@@ -46,12 +55,14 @@ class JsonWriterPipeline(GeneralPipeline):
         }
 
         line = json.dumps(question_answer_pair)
-        # print('line', line)
         self.file.write(line + '\n')
         return item
 
-class IsSiteValidPipeline(GeneralPipeline):
 
+class IsSiteValidPipeline(GeneralPipeline):
+    """
+    Prints some extra stats on crawl close
+    """
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))
         logging.info('index page count: {}'.format(spider.index_page_count))

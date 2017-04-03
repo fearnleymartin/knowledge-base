@@ -11,7 +11,9 @@ import logging
 
 class resultsScraper(MasterSpider):
     """
-    Will generalise to forum spider
+    This spider will crawl any webpage and extract Q/A pairs to a jsonlines file
+    It works by classifying the pages into index pages / results pages / other and parsing results pages with an algorithm using the html structure of the page
+    Specify the start_url and the allowed domain
     """
     isResultsPageLogger = logging.getLogger('isResultsPage')
     isResultsPageLogger.propagate = False
@@ -22,6 +24,7 @@ class resultsScraper(MasterSpider):
     product = "Unknown"
 
     allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com"]
+    # TODO: Bug : Not overriding main settings
     custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
 
@@ -34,13 +37,10 @@ class resultsScraper(MasterSpider):
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
     # TODO: improve parsing with regex
-    url_path = start_urls[0].replace('https://', '').replace('http://','').replace('/', '_')[:100]
-    print(url_path)
-    classification_file_path = 'scraped_data/classification/{}_classification_file2.csv'.format(url_path)
-    print(classification_file_path)
+    # Classification file is for keeping track of what each url has been classified as
+    modified_start_url = start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_')[:100]
+    classification_file_path = 'scraped_data/classification/{}_classification_file2.csv'.format(modified_start_url)
     classification_file = open(classification_file_path, 'w')
-
-    # TODO cheating for macrumors: to remove
 
 
     def __init__(self):
@@ -92,13 +92,11 @@ class resultsScraper(MasterSpider):
         # Process posts
         posts = self.isResultsPage.text_content
         question = posts[0]
-        # posts = response.xpath(self.gt.css_to_xpath('.messageText')).extract()
         question_answer_list = []
         question_answer = QuestionAnswer()
         question_answer = self.fill_question(response, question_answer, question)
 
         # Cycle through posts and build Q/A pairs
-        # posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
         posts = [post for post in posts[1:] if len(post) > 0]
         posts = self.filter_posts(response, posts)  # TODO implement function
         for answer_number in range(len(posts)):

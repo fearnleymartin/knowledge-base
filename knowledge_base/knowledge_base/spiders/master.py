@@ -49,10 +49,10 @@ class MasterSpider(CrawlSpider):
     deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
     restrict_xpaths = ()
 
-    allow = ('threads', 'forum')
-    deny = ('members')
-    restrict_xpaths = (gt.css_to_xpath('.listBlock'),
-                       gt.css_to_xpath('.PageNav'))
+    # allow = ('threads', 'forum')
+    # deny = ('members')
+    # restrict_xpaths = (gt.css_to_xpath('.listBlock'),
+    #                    gt.css_to_xpath('.PageNav'))
 
 
     rules = (
