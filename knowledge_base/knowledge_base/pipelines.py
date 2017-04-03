@@ -14,7 +14,8 @@ from .utils import date_to_solr_format
 
 class GeneralPipeline(object):
     def open_spider(self, spider):
-        self.file = open('scraped_data/{}_items_test.jl'.format(spider.name), 'w')
+        url_path = spider.start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_')[:100]
+        self.file = open('scraped_data/{}_items.jl'.format(url_path), 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))

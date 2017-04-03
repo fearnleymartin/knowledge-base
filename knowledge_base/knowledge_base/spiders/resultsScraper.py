@@ -21,7 +21,7 @@ class resultsScraper(MasterSpider):
     name = "resultsScraper"
     product = "Unknown"
 
-    allowed_domains = ["macrumors.com", "microsoft.com"]
+    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com"]
     custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
 
@@ -29,13 +29,16 @@ class resultsScraper(MasterSpider):
 
 
     start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
+    start_urls = ['http://stackoverflow.com/questions/tagged/regex']
     # start_urls = [
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
-    classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(
-        start_urls[0].replace('/', '_'))
+    # TODO: improve parsing with regex
+    url_path = start_urls[0].replace('https://', '').replace('http://','').replace('/', '_')[:100]
+    print(url_path)
+    classification_file_path = 'scraped_data/classification/{}_classification_file2.csv'.format(url_path)
     print(classification_file_path)
-    classification_file = open(classification_file_path[:15], 'w')
+    classification_file = open(classification_file_path, 'w')
 
     # TODO cheating for macrumors: to remove
 
