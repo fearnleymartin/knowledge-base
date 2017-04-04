@@ -9,8 +9,9 @@ import re
 from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
 from ..items import QuestionAnswer
-from ..scripts.is_index_page import is_index_page as func_is_index_page
+from ..scripts.is_index_page import IsIndexPage
 from ..scripts.is_results_page import IsResultsPage
+
 
 class MasterSpider(CrawlSpider):
     """
@@ -79,6 +80,7 @@ class MasterSpider(CrawlSpider):
         self.start_time = time.time()
         self.total_items = 0
         self.isResultsPage = IsResultsPage()
+        self.isIndexPage = IsIndexPage()
 
     def parse_start_url(self, response):
         """For parsing the starting page"""
@@ -91,8 +93,8 @@ class MasterSpider(CrawlSpider):
         :param response:
         :return:
         """
-        # print("call back response is not none: {}".format(response is not None))
-        # print("processing: {}".format(response.url))
+        print("processing: {}".format(response.url))
+
         if self.initial_page_filter(response):
             if self.is_index_page(url=response.url, response=response):
                 self.process_index_page(response)
@@ -238,6 +240,9 @@ class MasterSpider(CrawlSpider):
         pass
 
     def initial_page_filter(self, response):
+        """ To quickly filter out unsuitable pages"""
+        # TODO implement
+        return True
         match = re.match('<xml', response.body)
         if match:
             return False
@@ -260,11 +265,12 @@ class MasterSpider(CrawlSpider):
         #     return False
         # else:
             # print('response in master is not none for url{} : {}'.format(url, response is not None))
-        index_clues = ['/search', '/forums/']
-        for index_clue in index_clues:
-            if index_clue in url:
-                return True
-        return func_is_index_page(url, response)
+        # index_clues = ['/search', '/forums/']
+        # for index_clue in index_clues:
+        #     if index_clue in url:
+        #         return True
+        return self.isIndexPage.is_index_page(url, response)
+
 
     def is_captcha_page(self, url, response=None):
         """
@@ -294,6 +300,7 @@ class MasterSpider(CrawlSpider):
         #     if result_clue in url:
         #         return True
         return self.isResultsPage.is_results_page(url, response)
+        # return True
 
     def process_links(self, links):
         """

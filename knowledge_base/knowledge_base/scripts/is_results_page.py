@@ -6,24 +6,29 @@ import lxml.etree as etree
 # from lxml.cssselect import CSSSelector
 import datefinder
 try:  # scrapy giving import problems
-    from .is_index_page import is_index_page, get_html, map_ex, get_leafs, find_lists_of_links
+    from knowledge_base.knowledge_base.scripts.is_index_page import IsIndexPage
+    from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
+    from knowledge_base.knowledge_base.utils import extract_css_class, get_html
 except (SystemError, ImportError):
-    from is_index_page import is_index_page, get_html, map_ex, get_leafs, find_lists_of_links
+    from knowledge_base.scripts.is_index_page import IsIndexPage
+    from knowledge_base.scripts.datefinder import DateFinder
+    from knowledge_base.utils import extract_css_class, get_html
+
 import datetime
 import queue
 from copy import deepcopy
-try:
-    from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
-except:
-    from knowledge_base.scripts.datefinder import DateFinder
+# try:
+#     from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
+# except:
+#     from knowledge_base.scripts.datefinder import DateFinder
 from lxml.html.clean import Cleaner
 import logging
 import sys
 import re
-try:
-    from knowledge_base.knowledge_base.utils import extract_css_class
-except:
-    from knowledge_base.utils import extract_css_class
+# try:
+#     from knowledge_base.knowledge_base.utils import extract_css_class, get_html
+# except:
+#     from knowledge_base.utils import extract_css_class, get_html
 """
 We try to identify a results page contain question and answers
 We use a structural approach
@@ -35,6 +40,7 @@ We try to make sure each post in the block has a minimum text length (avoid inde
 
 # TODO: structure code into functions
 # TODO speed up code, avoid going through whole tree, but perhaps flatten with regexes
+
 
 class IsResultsPage(object):
 
@@ -56,10 +62,16 @@ class IsResultsPage(object):
 
     def __init__(self):
         self.text_content = []
+        self.isIndexPage = IsIndexPage()
+        self.reason = ''
 
     @staticmethod
     def hasNumbers(inputString):
         return any(char.isdigit() for char in inputString)
+
+    def set_reason(self, reason):
+        self.reason = reason
+        self.logger.info(reason)
 
     @staticmethod
     def print_link_list(link_list):
@@ -255,7 +267,7 @@ class IsResultsPage(object):
         list_len = 4  # avoid getting lists of links of minimum this length
         # print(child.tag, child.get('class'))
 
-        lists_of_links = find_lists_of_links(child, url, list_len)
+        lists_of_links = self.isIndexPage.find_lists_of_links(child, url, list_len)
         lists_of_links = list(filter(lambda x: len(x) > list_len, lists_of_links))
         # print('links counts: {}'.format(len(lists_of_links)))
         if len(lists_of_links) > 0:
@@ -284,25 +296,25 @@ class IsResultsPage(object):
         original_html = deepcopy(html)
         html = self.get_body(html)
         if html is None:
-            # print('no body')
-            self.logger.info('no body')
+            self.set_reason('no body')
             return False
 
         # TODO remove all js
         html = self.cleaner.clean_html(html)
         if html is None:
-            # print('only js')
-            self.logger.info('only js')
+            self.set_reason('only js')
             return False
 
         # Check url is not blacklisted
         if self.filter_by_url(url):
+            self.set_reason('url blacklisted')
             return False
 
         # Check is not index page
         # if is_index_page(url, input_html=original_html):  # TODO cleaning twice etc, can tidy this
-        #     # print('false because index page')
-        #     self.logger.info('false because index page')
+        #     reason = 'false because index page'
+        #     self.logger.info(reason)
+
         #     return False
 
         # change to BFS
@@ -349,13 +361,11 @@ class IsResultsPage(object):
 
         # we check that lowest block contains min length of text
         if lowest_block is not None:
-            pass
-            # print("final lowest block: ", lowest_block.tag, lowest_block.get('class'))
             self.logger.info('final lowest block: {}, {}'.format(lowest_block.tag, lowest_block.get('class')))
 
         else:
             # print('no lowest block, returning false')
-            self.logger.info('no lowest block, returning false')
+            self.set_reason('no lowest block')
             return False
 
         # matches = extract_dates(lowest_block)
@@ -409,41 +419,41 @@ class IsResultsPage(object):
 
             if text_len_bool and valid_content_bool:
                 correct_post_len_count += 1
-            # if not text_len_bool:
-            #     print('post length too long or too short')
-            #     return False
                 self.text_content.append(text_content)
-                # try:
-                #     print(text_content)
-                # except UnicodeEncodeError:
-                #     # print('text content found but unicode error')
-                #     self.logger.warning('text content found but unicode error')
                 dates = self.extract_dates(child)
                 self.logger.info(list(dates))
                 # print(list(dates))
                 self.logger.info('\n')
                 # print('\n')
         if correct_post_len_count < 2:
-            # print('post length too long or too short')
-            self.logger.info('not enough valid posts found')
+            self.set_reason('not enough valid posts found')
             return False
 
         # print(str(lowest_block.text_content()))
 
-        # if not min_text_len_bool:
-        #     print('text body too short')
-        return res # and min_text_len_bool
+        return res
 
 if __name__ == "__main__":
+    # Negatives
     # index_page_url = 'https://redditblog.com/2017/03/02/rnintendoswitch-celebrates-switchmas-with-charity-live-stream/'
     # index_page_url = 'https://community.mindjet.com/mindjet/details'
-    # index_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
     # index_page_url = 'https://www.cnet.com/es/noticias/ghost-in-the-shell-scarlett-johansson-se-convierte-en-robot/'
-    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    # index_page_url = "https://forums.macrumors.com/threads/dfu-restore-and-app-data.2036079/"
     # index_page_url = "https://forums.adobe.com/community/creative_cloud"
     # index_page_url = "https://www.macrumors.com/roundup/apple-pay/"
+    # index_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
+
+
+    # Positives
     index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
+    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
+    # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+
+
+    # Broken
+    # index_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
+    # index_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
+
+
     isResultsPage = IsResultsPage()
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     # isIndexPageLogger = logging.getLogger('indexPageLogger')
@@ -457,4 +467,5 @@ if __name__ == "__main__":
     # print("user:", contains_user(block))
     # print("valid block: ", is_valid_block(block))
     print(isResultsPage.is_results_page(index_page_url))
+    # print(isResultsPage.text_content)
 

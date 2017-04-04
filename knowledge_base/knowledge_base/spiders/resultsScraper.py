@@ -7,6 +7,7 @@ from ..items import QuestionAnswer
 from .master import MasterSpider
 # from ..utils import date_to_solr_format
 import logging
+import scrapy
 
 
 class resultsScraper(MasterSpider):
@@ -47,6 +48,8 @@ class resultsScraper(MasterSpider):
         self.rate_limit = False
         super().__init__()
 
+    rules = ()
+
     def identify_and_parse_page(self, response):
         """
         Identifies page type (index page, captcha, results page)
@@ -54,15 +57,19 @@ class resultsScraper(MasterSpider):
         :param response:
         :return:
         """
-        # print("call back response is not none: {}".format(response is not None))
         # print("processing: {}".format(response.url))
-        if self.is_index_page(url=response.url, response=response):
-            self.process_index_page(response)
-        elif self.is_captcha_page(response.url, response):
-            self.process_captcha(response)
-        elif self.is_results_page(response.url, response):
-            items = self.process_question_answer_page(response)
-            return items
+
+        if self.initial_page_filter(response):
+            if self.is_index_page(url=response.url, response=response):
+                return self.process_index_page(response)
+            elif self.is_captcha_page(response.url, response):
+                self.process_captcha(response)
+            elif self.is_results_page(response.url, response):
+                items = self.process_question_answer_page(response)
+                return items
+            else:
+                self.classification_file.write("other, {}\n".format(response.url))
+                print('other: {}'.format(response.url))
         else:
             self.classification_file.write("other, {}\n".format(response.url))
             print('other: {}'.format(response.url))
@@ -103,6 +110,20 @@ class resultsScraper(MasterSpider):
             question_answer = self.fill_answer(response, question_answer, posts[answer_number])
             question_answer_list.append(question_answer)
         return question_answer_list
+
+    def process_index_page(self, response):
+        """
+        At the moment just logs that we have an index page, and pauses
+        :return:
+        """
+        logging.info('index: {}'.format(response.url))
+        print('index: {}'.format(response.url))
+        self.classification_file.write("index, {}\n".format(response.url))
+        self.index_page_count += 1
+        result_links = self.isIndexPage.result_links
+        for result_link in result_links:
+            yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page)
+        # time.sleep(self.new_index_page_pause_time)
 
     ### Q/A parsing functions
 

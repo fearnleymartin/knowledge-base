@@ -1,5 +1,4 @@
-from is_index_page import is_index_page, get_html
-from is_results_page import get_html as get_html_results
+from knowledge_base.knowledge_base.scripts.is_index_page import IsIndexPage
 import pytest
 import csv
 
@@ -53,17 +52,18 @@ false_urls = [
 
 
 class TestIndex:
+    isIndexPage = IsIndexPage()
     def test_is_index_page(self):
         """Check we correctly identified index pages"""
         for url in true_urls:
-            res = is_index_page(url)
+            res = self.isIndexPage.is_index_page(url)
             print(res, url)
             assert(res)
 
     def test_is_not_index_page(self):
         """Check we correctly identify non-index pages"""
         for url in false_urls:
-            res = is_index_page(url)
+            res = self.isIndexPage.is_index_page(url)
             print(res, url)
             assert(not res)
 
@@ -82,7 +82,7 @@ class TestIndex:
                     results_page_urls.append(results_page_url)
         results = []
         for results_page_url in results_page_urls:
-            res = is_index_page(results_page_url)
+            res = self.isIndexPage.is_index_page(results_page_url)
             # assert
             print(results_page_url, res is False)
             results.append(res is False)
