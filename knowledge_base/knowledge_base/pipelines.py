@@ -11,6 +11,7 @@ import time
 from datetime import datetime
 from urllib.parse import urlparse
 from .utils import date_to_solr_format
+import uuid
 
 
 class GeneralPipeline(object):
@@ -20,7 +21,8 @@ class GeneralPipeline(object):
     Logs crawl stats on spider close
     """
     def open_spider(self, spider):
-        url_path = spider.start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_')[:100]
+        # TODO: regexify
+        url_path = spider.start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?','')[:100]
         self.file = open('scraped_data/{}_items.jl'.format(url_path), 'w')
 
     def close_spider(self, spider):
@@ -35,6 +37,10 @@ class GeneralPipeline(object):
         except ZeroDivisionError:
             pass
         self.file.close()
+        try:
+            logging.info('duplicate count: {}'.format(spider.duplicate_count))
+        except:
+            pass
         spider.classification_file.close()
 
 
@@ -46,6 +52,7 @@ class JsonWriterPipeline(GeneralPipeline):
     def process_item(self, item, spider):
         spider.total_items += 1
         question_answer_pair = {
+            'uid': str(uuid.uuid1()),
             'product': spider.product,
             'source_url': item['source_url'],
             'source_domain': urlparse(item['source_url']).netloc,
