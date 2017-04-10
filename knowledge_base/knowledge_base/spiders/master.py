@@ -11,7 +11,7 @@ from scrapy.linkextractors import LinkExtractor
 from ..items import QuestionAnswer
 from ..scripts.is_index_page import IsIndexPage
 from ..scripts.is_results_page import IsResultsPage
-
+from ..utils import url_to_short_file_name
 
 class MasterSpider(CrawlSpider):
     """
@@ -37,7 +37,7 @@ class MasterSpider(CrawlSpider):
     logger.setLevel(logging.INFO)
     start_urls = ['https://www.cnet.com/']
 
-    # classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(start_urls[0].replace('/', '_'))
+    # classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(url_to_short_file_name(start_urls[0]))
     # print(classification_file_path)
     # classification_file = open(classification_file_path, 'w')
 
@@ -93,7 +93,7 @@ class MasterSpider(CrawlSpider):
         :param response:
         :return:
         """
-        print("processing: {}".format(response.url))
+        # print("processing: {}".format(response.url))
 
         if self.initial_page_filter(response):
             if self.is_index_page(url=response.url, response=response):

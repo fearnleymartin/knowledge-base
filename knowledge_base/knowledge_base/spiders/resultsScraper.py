@@ -5,7 +5,7 @@ from ..items import QuestionAnswer
 # from bs4 import BeautifulSoup
 # import re
 from .master import MasterSpider
-# from ..utils import date_to_solr_format
+from ..utils import date_to_solr_format, url_to_short_file_name
 import logging
 import scrapy
 
@@ -32,17 +32,16 @@ class resultsScraper(MasterSpider):
                        }
 
 
-    start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
-    start_urls = ['http://stackoverflow.com/questions/tagged/regex']
-    # start_urls = [
-    #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
+    # start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
+    # start_urls = ['http://stackoverflow.com/questions/tagged/regex']
+    start_urls = [
+        'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as
-    modified_start_url = start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_')[:100]
-    classification_file_path = 'scraped_data/classification/{}_classification_file2.csv'.format(modified_start_url)
+    modified_start_url = url_to_short_file_name(start_urls[0])
+    classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(modified_start_url)
     classification_file = open(classification_file_path, 'w')
-
 
     def __init__(self):
         self.rate_limit = False
@@ -121,8 +120,11 @@ class resultsScraper(MasterSpider):
         self.classification_file.write("index, {}\n".format(response.url))
         self.index_page_count += 1
         result_links = self.isIndexPage.result_links
+        pagination_links = self.isIndexPage.pagination_links
         for result_link in result_links:
             yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page)
+        for pagination_link in pagination_links:
+            yield scrapy.Request(url=pagination_link, callback=self.identify_and_parse_page)
         # time.sleep(self.new_index_page_pause_time)
 
     ### Q/A parsing functions

@@ -126,7 +126,9 @@ class SuperUserSpider(MasterSpider):
             print('duplicate question')
             self.duplicate_count += 1
             print('duplicate question count: {}'.format(self.duplicate_count))
-            question_answer['original_question_url'] = duplicate_url
+            print(duplicate_url)
+            self.logger.info('duplicate url: {}'.format(duplicate_url))
+            question_answer['question_original_url'] = duplicate_url
 
 
         return question_answer

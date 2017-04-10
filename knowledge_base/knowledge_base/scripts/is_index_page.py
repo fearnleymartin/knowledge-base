@@ -6,6 +6,7 @@ except:
     from knowledge_base.utils import get_html, process_html, extract_css_class
 import sys
 import lxml.etree as etree
+from lxml.cssselect import CSSSelector
 
 
 
@@ -18,11 +19,15 @@ class IsIndexPage(object):
 
     tag_blacklist = ['footer']
     indexPageLogger = logging.getLogger('indexPageLogger')
+    min_pagination_link_count = 5
+    # TODO: can we avoid hardcoding this ?
+    pagination_classes = {'pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons', 'gotopage', 'pagenumber', 'paging'}
 
     def __init__(self):
         self.result_links = []
         # TODO implement pagination links
         self.pagination_links = []
+
 
     @staticmethod
     def map_ex(element_list):
@@ -232,12 +237,37 @@ class IsIndexPage(object):
         """
 
         # TODO improve with regexes
-        pagination_classes = set(['pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons'])
-        css_classes = extract_css_class(str(etree.tostring(html)))
-        for pagination_class in pagination_classes:
-            if pagination_class in css_classes:
-                self.indexPageLogger.info("pagination class: {}".format(pagination_class))
-                return True
+        css_classes = extract_css_class(str(etree.tostring(html))).split(' ')
+        print(css_classes)
+        css_classes_lower = list(map(lambda x: x.lower(), css_classes))
+        for pagination_class in self.pagination_classes:
+            for css_class_lower in css_classes_lower:
+                if pagination_class in css_class_lower:
+                    _pagination_class = css_classes[css_classes_lower.index(css_class_lower)]  # To get version with capitalisations
+                    print(_pagination_class)
+                    # TODO get pagination node
+                    # strategy: find lowest node with at least 5 links. Take this one as parent pagination node
+                    # might be some noise but doesn't really matter
+                    self.indexPageLogger.info("pagination class: {}".format(_pagination_class))
+                    sel = CSSSelector(".{}".format(_pagination_class))
+                    if len(sel(html)) > 0:
+                        pagination_node = list(sel(html))[0]
+                        link_count = len(list(pagination_node.iterlinks()))
+                        print(link_count)
+                        max_iters = 20
+                        iter_count = 0
+                        while link_count < self.min_pagination_link_count and iter_count < max_iters:
+                            pagination_node = pagination_node.getparent()
+                            link_count = len(list(pagination_node.iterlinks()))
+                            iter_count += 1
+                        if iter_count == max_iters:
+                            return False
+                        self.pagination_links = list(filter(lambda x: x is not None,map(lambda x:  x[2] if len(x) >= 2 else None, pagination_node.iterlinks())))
+                    else:
+                        return False
+
+                    return True
+
         return False
 
     def find_lists_of_links(self, html, index_page_url, list_len=9):
@@ -296,9 +326,10 @@ class IsIndexPage(object):
 
 if __name__ == "__main__":
     # index_page_url = 'https://forums.macrumors.com/threads/touch-id-problem-iphone-7.2034435/'
+    index_page_url = 'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1'
     # index_page_url = 'https://community.mindjet.com/mindjet/details'
-    index_page_url = "http://stackoverflow.com/questions/tagged/regex"
+    # index_page_url = "http://stackoverflow.com/questions/tagged/regex"
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     isIndexPage = IsIndexPage()
     print(isIndexPage.is_index_page(index_page_url))
-    print(isIndexPage.result_links)
+    print(isIndexPage.pagination_links)

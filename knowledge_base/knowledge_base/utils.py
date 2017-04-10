@@ -89,3 +89,6 @@ def process_html(html):
 def extract_css_class(string):
     pattern = r"class=\"+[^\"\r\n]*"
     return " ".join(list(map(lambda x: x.replace('class=', "").replace("\"", ''), re.findall(pattern, string))))
+
+def url_to_short_file_name(url):
+    return url.replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?','')[:100]

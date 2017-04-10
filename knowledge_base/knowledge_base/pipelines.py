@@ -10,7 +10,7 @@ import logging
 import time
 from datetime import datetime
 from urllib.parse import urlparse
-from .utils import date_to_solr_format
+from .utils import date_to_solr_format, url_to_short_file_name
 import uuid
 
 
@@ -22,8 +22,8 @@ class GeneralPipeline(object):
     """
     def open_spider(self, spider):
         # TODO: regexify
-        url_path = spider.start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?','')[:100]
-        self.file = open('scraped_data/{}_items.jl'.format(url_path), 'w')
+        url_path = url_to_short_file_name(spider.start_urls[0])
+        self.file = open('scraped_data/{}_items2.jl'.format(url_path), 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))
