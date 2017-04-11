@@ -12,6 +12,9 @@ from ..items import QuestionAnswer
 from ..scripts.is_index_page import IsIndexPage
 from ..scripts.is_results_page import IsResultsPage
 from ..utils import url_to_short_file_name
+import scrapy
+from scrapy_splash import SplashRequest
+
 
 class MasterSpider(CrawlSpider):
     """
@@ -84,7 +87,12 @@ class MasterSpider(CrawlSpider):
 
     def parse_start_url(self, response):
         """For parsing the starting page"""
-        return self.identify_and_parse_page(response)
+        # meta = {'splash': {'args': {'html': 1}}}
+        # yield scrapy.Request(url=response.url, callback=self.identify_and_parse_page, meta=meta)
+        yield SplashRequest(url=response.url, callback=self.identify_and_parse_page, args={'wait':0.5})
+
+
+        # return self.identify_and_parse_page(response)
 
     def identify_and_parse_page(self, response):
         """

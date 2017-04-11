@@ -8,6 +8,7 @@ from .master import MasterSpider
 from ..utils import date_to_solr_format, url_to_short_file_name
 import logging
 import scrapy
+from scrapy_splash import SplashRequest
 
 
 class resultsScraper(MasterSpider):
@@ -24,7 +25,7 @@ class resultsScraper(MasterSpider):
     name = "resultsScraper"
     product = "Unknown"
 
-    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com"]
+    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com"]
     # TODO: Bug : Not overriding main settings
     custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
@@ -34,8 +35,9 @@ class resultsScraper(MasterSpider):
 
     # start_urls = ['https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/']
     # start_urls = ['http://stackoverflow.com/questions/tagged/regex']
-    start_urls = [
-        'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
+    # start_urls = [
+    #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
+    start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
 
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as
@@ -121,10 +123,13 @@ class resultsScraper(MasterSpider):
         self.index_page_count += 1
         result_links = self.isIndexPage.result_links
         pagination_links = self.isIndexPage.pagination_links
+        meta = {'splash': {'args': {'html': 1}}}
         for result_link in result_links:
-            yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page)
+            # print("result link", result_link)
+            # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
+            yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         for pagination_link in pagination_links:
-            yield scrapy.Request(url=pagination_link, callback=self.identify_and_parse_page)
+            yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         # time.sleep(self.new_index_page_pause_time)
 
     ### Q/A parsing functions
