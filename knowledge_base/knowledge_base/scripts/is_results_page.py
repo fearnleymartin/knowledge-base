@@ -1,10 +1,14 @@
-# import requests
-# import lxml.html
+
 import lxml.etree as etree
-# from urllib.parse import urlparse
-# import os.path
-# from lxml.cssselect import CSSSelector
 import datefinder
+import datetime
+import queue
+from copy import deepcopy
+from lxml.html.clean import Cleaner
+import logging
+import sys
+import re
+from lxml.cssselect import CSSSelector
 try:  # scrapy giving import problems
     from knowledge_base.knowledge_base.scripts.is_index_page import IsIndexPage
     from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
@@ -14,21 +18,7 @@ except (SystemError, ImportError):
     from knowledge_base.scripts.datefinder import DateFinder
     from knowledge_base.utils import extract_css_class, get_html
 
-import datetime
-import queue
-from copy import deepcopy
-# try:
-#     from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
-# except:
-#     from knowledge_base.scripts.datefinder import DateFinder
-from lxml.html.clean import Cleaner
-import logging
-import sys
-import re
-# try:
-#     from knowledge_base.knowledge_base.utils import extract_css_class, get_html
-# except:
-#     from knowledge_base.utils import extract_css_class, get_html
+
 """
 We try to identify a results page contain question and answers
 We use a structural approach
@@ -62,6 +52,8 @@ class IsResultsPage(object):
 
     def __init__(self):
         self.text_content = []
+        self.parsed_text_content = []
+        self.valid_blocks = []
         self.isIndexPage = IsIndexPage()
         self.reason = ''
 
@@ -85,7 +77,7 @@ class IsResultsPage(object):
             print(el.get('href'))
             # indexPageLogger.info(el.get('href'))
 
-    def extract_dates(self, block):
+    def extract_dates(self, block, string=None):
         """
         Kind of deprecated, using contains_date simply
         Can be useful for actually getting dates to print them
@@ -96,8 +88,10 @@ class IsResultsPage(object):
         :param block: lxml node
         :return: list of python date time objects
         """
-        # TODO : important, have modified the source code of datefinder directly, should integrate this code into project code
-        block_string = str(etree.tostring(block))
+        if string:
+            block_string = string
+        else:
+            block_string = str(etree.tostring(block))
         # print(block_string)
         block_string = block_string.replace('Z', '')  # hacky
         matches = datefinder.find_dates(block_string, strict=True, source=True)
@@ -125,8 +119,26 @@ class IsResultsPage(object):
         res = df.contains_date_strings(block_string, strict=True)
         return res
 
-    @staticmethod
-    def contains_user(block):
+    def extract_user_node(self, block):
+        block_copy = deepcopy(block)
+        block_string = str(etree.tostring(block_copy))
+        css_classes_list = extract_css_class(block_string).split(' ')
+        user_css_class = None
+        # TODO user_css_class shouldn't be null but what if anyway ?
+        for css_class in css_classes_list:
+            if 'user' in css_class or 'author' in css_class:
+                user_css_class = css_class
+                break
+        # print("user css class", user_css_class)
+        # TODO should always contain element but never too sure
+        if user_css_class:
+            user_node = list(CSSSelector('.{}'.format(user_css_class))(block_copy))[0]
+            # print('user text', user_text)
+        else:
+            user_node = None
+        return user_node, user_css_class
+
+    def contains_user(self, block):
         """
         For detecting the presence of user in html block
         Often css class contain the word user
@@ -136,9 +148,12 @@ class IsResultsPage(object):
         # TODO improve strictness, is too large still
         # TODO would like to restrict to tag information (ie classes, tag attributes with user in them
         # TODO improve with regexes, I think there are major improvement to be made here
-        block_string = str(etree.tostring(block))
-        css_classes_string = extract_css_class(block_string)
-        return 'user' in css_classes_string or 'author' in css_classes_string
+        # block_string = str(etree.tostring(block))
+        # css_classes_string = extract_css_class(block_string)
+        # TODO extract link and check there is a link
+        # return 'user' in css_classes_string or 'author' in css_classes_string
+        user_node = self.extract_user_node(block)[0]
+        return user_node is not None
 
 
     def is_valid_block(self, block):
@@ -280,6 +295,100 @@ class IsResultsPage(object):
             return True
 
 
+    def parse_valid_block(self, valid_block):
+        """
+        Supposes the first date is the post date
+        :param text_content: String
+        :return: {'date':'example_date', 'author':'example_author', 'body': 'example_body'}
+        """
+        # extracted_dates = self.extract_dates(valid_block)
+        # Get user class
+        valid_block_copy = deepcopy(valid_block)
+        block_string = str(etree.tostring(valid_block_copy))
+        css_classes_list = extract_css_class(block_string).split(' ')
+        user_css_class = None
+        # TODO user_css_class shouldn't be null but what if anyway ?
+        for css_class in css_classes_list:
+            if 'user' in css_class or 'author' in css_class:
+                user_css_class = css_class
+                break
+        # print("user css class", user_css_class)
+        # TODO should always contain element but never too sure
+        if user_css_class:
+            user_node = list(CSSSelector('.{}'.format(user_css_class))(valid_block))[0]
+            user_text = self.extract_text_content(user_node)
+            # print('user text', user_text)
+        else:
+            user_text = None
+        # Find highest class which doesn't contain user and contains body text
+        node = valid_block_copy
+        condition = True
+        q = queue.Queue()
+        q.put(node)
+        # TODO make sure terminates correctly
+        # Normally at least one block has min required len and doesn't contain user class
+        final_node = None
+        while condition and not q.empty():
+            node = q.get()
+            # print(node, node.get('class'), 'node')
+            print(self.extract_text_content(node))
+            children = node.getchildren()
+            # print('children count', len(children))
+            # valid_children = []
+            for child in children:
+                # print(child, child.get('class'), 'child')
+                contains_user_node = len(list(CSSSelector('.{}'.format(user_css_class))(child))) > 0
+                # print('contains user node', contains_user_node)
+                valid_text_len = len(self.extract_text_content(child)) > self.min_text_len
+                # print('valid text len', valid_text_len)
+
+                if not contains_user_node and valid_text_len:
+                    final_node = child
+                    # print('final node:', final_node, final_node.get('class'))
+                    condition = False
+                    break
+                elif valid_text_len and contains_user_node:
+                    q.put(child)
+                else:
+                    pass
+                    # print('problem')
+        if final_node is not None:
+            text_content = self.extract_text_content(final_node)
+            # Now consider html structure without the final node. Parse this to extract date
+            final_node.getparent().remove(final_node)
+        else:
+            text_content = None
+        # date_text_container = self.extract_text_content(valid_block_copy)
+        # print('looking for dates in: ', self.extract_text_content(valid_block_copy))
+        dates = self.extract_dates(valid_block_copy)
+        # print('extracted dates', dates)
+        dates = [date_tuple[0] for date_tuple in dates]
+        dates = list(set(dates))
+        if len(dates) > 1:
+            self.logger.warning('multiple dates found: {}'.format(dates))
+            date = dates[0]
+        elif len(dates) == 1:
+            date = dates[0]
+        else:
+            self.logger.warning('no dates found !')
+            date = None
+        # print('extracted dates with duplicated removed: ', dates)
+        parsed_dict = {
+            'date': date,
+            'author': user_text,
+            'body': text_content
+        }
+        # print(parsed_dict)
+        # print('---------------------------------------')
+        # print('\n')
+        self.logger.info('parsed dict: {}'.format(parsed_dict))
+        return parsed_dict
+
+
+
+
+
+
     def is_results_page(self, url, response=None):
         """
         :param url:
@@ -332,12 +441,12 @@ class IsResultsPage(object):
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
+                self.set_reason('css check is false')
                 return False
 
             child_blocks = node.getchildren()
             child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]
             if len(child_blocks) > 0:
-
                 valid_block_count = 0
                 for child in child_blocks:
                     if isinstance(child, etree._Comment):
@@ -412,6 +521,7 @@ class IsResultsPage(object):
         for i, child in enumerate(new_child_blocks):
             # print("child {}: {}, {}".format(i, child.tag, child.get('class')))
             self.logger.info("child {}: {}, {}".format(i, child.tag, child.get('class')))
+            child_copy = deepcopy(child)
             text_content = self.extract_text_content(child)
             text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
             valid_content_bool = self.content_is_valid(text_content, child, url)
@@ -419,6 +529,7 @@ class IsResultsPage(object):
 
             if text_len_bool and valid_content_bool:
                 correct_post_len_count += 1
+                self.valid_blocks.append(child_copy)
                 self.text_content.append(text_content)
                 dates = self.extract_dates(child)
                 self.logger.info(list(dates))
@@ -428,7 +539,8 @@ class IsResultsPage(object):
         if correct_post_len_count < 2:
             self.set_reason('not enough valid posts found')
             return False
-
+        for block in self.valid_blocks:
+            self.parsed_text_content.append(self.parse_valid_block(block))
         # print(str(lowest_block.text_content()))
 
         return res
@@ -444,18 +556,22 @@ if __name__ == "__main__":
 
 
     # Positives
-    index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
+    # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+    index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
 
 
     # Broken
     # index_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
     # index_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
 
+    # Tests
+    # index_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
 
     isResultsPage = IsResultsPage()
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+    # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
     # isIndexPageLogger = logging.getLogger('indexPageLogger')
     # isIndexPageLogger.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     # index_page_url = "https://support.wix.com/en/ticket/c80d73fd-0599-4b07-a766-440ee5a6c720"
@@ -468,4 +584,6 @@ if __name__ == "__main__":
     # print("valid block: ", is_valid_block(block))
     print(isResultsPage.is_results_page(index_page_url))
     # print(isResultsPage.text_content)
+    print(isResultsPage.parsed_text_content)
+    print('finished')
 
