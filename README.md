@@ -45,7 +45,9 @@ to run crawler:
 CLOSESPIDER_PAGECOUNT : number of pages to crawl before stopping  
 HTTPCACHE_ENABLED : Enables caching. Saves downloaded pages. Makes recrawling faster, but can take a lot of space
 
+## Using splash
 
+`$ docker run -p 8050:8050 scrapinghub/splash`
 
 
 

@@ -9,6 +9,7 @@ import logging
 import sys
 import re
 from lxml.cssselect import CSSSelector
+from urllib.parse import urlparse
 try:  # scrapy giving import problems
     from knowledge_base.knowledge_base.scripts.is_index_page import IsIndexPage
     from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
@@ -51,6 +52,7 @@ class IsResultsPage(object):
 
 
     def __init__(self):
+        self.url = None
         self.text_content = []
         self.parsed_text_content = []
         self.valid_blocks = []
@@ -132,11 +134,45 @@ class IsResultsPage(object):
         # print("user css class", user_css_class)
         # TODO should always contain element but never too sure
         if user_css_class:
-            user_node = list(CSSSelector('.{}'.format(user_css_class))(block_copy))[0]
-            # print('user text', user_text)
+            # There could be possible user_nodes, we only take the one the satisfies extra criteria
+            user_nodes = list(CSSSelector('.{}'.format(user_css_class))(block_copy))
+            # TODO: check there is link to user page
+            valid_user_nodes = []
+            for _user_node in user_nodes:
+                links = _user_node.iterlinks()
+
+                filtered_links = []
+                # Filter links 1) on site 2) a tags 3) duplicates 4) text content not null 5) contains no dates
+                # Idea is when a user is mentioned, there is always a link to his profile
+                # print(_user_node, _user_node.get('class'), _user_node.get('id'))
+                # print([link for link in _user_node.iterlinks()])
+                for link in links:
+                    if link[0].tag == 'a':
+                        if urlparse(link[2]).netloc == urlparse(self.url).netloc:
+                            if link[1] not in [link[1] for link in filtered_links]:
+                                if len(self.extract_text_content(link[0])) > 0:
+                                    if not self.contains_date(link[0]):
+                                        filtered_links.append(link)
+                if len(filtered_links) > 0:
+                    valid_user_nodes.append((_user_node, filtered_links))
+                # print([link for link in filtered_links])
+            if len(valid_user_nodes) == 0:
+                user_node = None
+                user_link = None
+                user_text = None
+            else:
+                user_node_pair = valid_user_nodes[0]
+                user_node = user_node_pair[0]
+                filtered_links = user_node_pair[1]
+                if len(filtered_links) > 1:
+                    self.logger.info('multiple user  links found')
+                user_link = filtered_links[0][2]
+                user_text = self.extract_text_content(filtered_links[0][0])
         else:
             user_node = None
-        return user_node, user_css_class
+            user_link = None
+            user_text = None
+        return user_node, user_css_class, user_link, user_text
 
     def contains_user(self, block):
         """
@@ -298,29 +334,11 @@ class IsResultsPage(object):
     def parse_valid_block(self, valid_block):
         """
         Supposes the first date is the post date
-        :param text_content: String
+        :param valid_block: html node containing date, author and body information
         :return: {'date':'example_date', 'author':'example_author', 'body': 'example_body'}
         """
-        # extracted_dates = self.extract_dates(valid_block)
-        # Get user class
         valid_block_copy = deepcopy(valid_block)
-        block_string = str(etree.tostring(valid_block_copy))
-        css_classes_list = extract_css_class(block_string).split(' ')
-        user_css_class = None
-        # TODO user_css_class shouldn't be null but what if anyway ?
-        for css_class in css_classes_list:
-            if 'user' in css_class or 'author' in css_class:
-                user_css_class = css_class
-                break
-        # print("user css class", user_css_class)
-        # TODO should always contain element but never too sure
-        if user_css_class:
-            user_node = list(CSSSelector('.{}'.format(user_css_class))(valid_block))[0]
-            user_text = self.extract_text_content(user_node)
-            # print('user text', user_text)
-        else:
-            user_text = None
-        # Find highest class which doesn't contain user and contains body text
+        user_node, user_css_class, user_link, user_text = self.extract_user_node(valid_block_copy)
         node = valid_block_copy
         condition = True
         q = queue.Queue()
@@ -331,7 +349,7 @@ class IsResultsPage(object):
         while condition and not q.empty():
             node = q.get()
             # print(node, node.get('class'), 'node')
-            print(self.extract_text_content(node))
+            # print(self.extract_text_content(node))
             children = node.getchildren()
             # print('children count', len(children))
             # valid_children = []
@@ -376,12 +394,13 @@ class IsResultsPage(object):
         parsed_dict = {
             'date': date,
             'author': user_text,
+            'author_link': user_link,
             'body': text_content
         }
         # print(parsed_dict)
         # print('---------------------------------------')
         # print('\n')
-        self.logger.info('parsed dict: {}'.format(parsed_dict))
+        # self.logger.info('parsed dict: {}'.format(parsed_dict))
         return parsed_dict
 
 
@@ -400,6 +419,7 @@ class IsResultsPage(object):
         """
         # print('url', url)
         # print('response', response)
+        self.url = url
         self.text_content = []
         html = get_html(url, base_path='html_pages/results_{}.html', response=response)
         original_html = deepcopy(html)
@@ -437,7 +457,7 @@ class IsResultsPage(object):
             if node is None:
                 continue
             # print(node)
-            # print("curr_node", node.tag, node.get('class'))
+            # print("curr_node", node.tag, node.get('class'), node.get('id'))
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
@@ -453,6 +473,7 @@ class IsResultsPage(object):
                         continue
                     if self.is_valid_block(child):
                         valid_block_count += 1
+                        # print("valid_child", child.tag, child.get('class'), child.get('id'))
 
                         if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
                             q.put(child)  # a child can only be valid if parent is valid
@@ -464,13 +485,14 @@ class IsResultsPage(object):
                     # if contains_min_text(text, min_text_len):
                     lowest_block = node
                     # print("lowest block:", lowest_block.tag, lowest_block.get('class'))
-                    self.logger.info('lowest block: {}, {}'.format(lowest_block.tag, lowest_block.get('class')))
+                    self.logger.info('lowest block: {}, {}, {}'.format(lowest_block.tag, lowest_block.get('class'), lowest_block.get('id')))
 
 
 
         # we check that lowest block contains min length of text
         if lowest_block is not None:
-            self.logger.info('final lowest block: {}, {}'.format(lowest_block.tag, lowest_block.get('class')))
+            print('lowest block', lowest_block)
+            self.logger.info('final lowest block: {}, {}, {}'.format(lowest_block.tag, lowest_block.get('class'), lowest_block.get('id')))
 
         else:
             # print('no lowest block, returning false')
@@ -557,8 +579,8 @@ if __name__ == "__main__":
 
     # Positives
     # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
-    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+    index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
+    # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
 
 
     # Broken
@@ -570,7 +592,7 @@ if __name__ == "__main__":
 
     isResultsPage = IsResultsPage()
 
-    # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     # isIndexPageLogger = logging.getLogger('indexPageLogger')
     # isIndexPageLogger.basicConfig(stream=sys.stdout, level=logging.DEBUG)
