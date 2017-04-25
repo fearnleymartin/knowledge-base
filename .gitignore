@@ -128,3 +128,5 @@ ENV/
 /knowledge_base/Scripts/
 
 /knowledge_base/html_pages/*.html
+
+/aimlx-demos-master

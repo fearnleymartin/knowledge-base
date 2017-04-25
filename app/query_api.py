@@ -2,15 +2,14 @@
 Micro-service restful api for Q/A queries
 """
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful import Resource, Api, reqparse
-
 
 app = Flask(__name__)
 api = Api(app)
 
 
-class SolrQuery(Resource):
+class Query(Resource):
 	"""
 	"""
 	def __init__(self):
@@ -21,44 +20,13 @@ class SolrQuery(Resource):
 	def post(self):
 		args = self.reqparse.parse_args()
 		query = args['query']
-		# TODO insert SOLR query code here
-		#answer = solr_query(query)
-		answer = {'answer': 'test answer'}
-		return answer
-
-class RnnQuery(Resource):
-	"""
-	"""
-	def __init__(self):
-		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('query', type=list, required=True,
-								   location='json')
-
-	def post(self):
-		args = self.reqparse.parse_args()
-		query = args['query']
-		# TODO insert RNN query code here
-		#answer = rnn_query(query)
-		answer = {'answer': 'test answer'}
-		return answer
-
-
-class Neo4jQuery(Resource):
-	"""
-	"""
-	def __init__(self):
-		self.reqparse = reqparse.RequestParser()
-		self.reqparse.add_argument('query', type=list, required=True,
-								   location='json')
-
-
-
-	def post(self):
-		args = self.reqparse.parse_args()
-		query = args['query']
-		# TODO insert NEO4j query code here
-		#answer = neo4j_query(query)
-		answer = {'answer': 'test answer'}
+		# TODO insert query code here
+		# answer = {'solr': solr_query(query),
+		# 		   'rnn': rnn_query(query),
+		# 		  'neo4j': neo4j_query(query)}
+		answer = {'solr': ['test answer solr 1', 'test answer solr 2'],
+				  'rnn': ['test answer rnn 1', 'test answer rnn 2'],
+				  'neo4j': ['test answer neo4j 1', 'test answer neo4j 2']}
 		return answer
 
 
@@ -67,9 +35,12 @@ class Home(Resource):
 		return 'Q/A query stats api is up and running'
 
 
-api.add_resource(SolrQuery, '/solr')
-api.add_resource(RnnQuery, '/rnn')
-api.add_resource(Neo4jQuery, '/neo4j')
+@app.route('/frontend')
+def getfrontend():
+	return render_template('QAsystem.html')
+
+
+api.add_resource(Query, '/query')
 api.add_resource(Home, '/')
 
 if __name__ == '__main__':
