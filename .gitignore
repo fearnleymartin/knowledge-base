@@ -127,3 +127,4 @@ ENV/
 /knowledge_base/scraped_data/
 /knowledge_base/Scripts/
 
+/knowledge_base/html_pages/*.html

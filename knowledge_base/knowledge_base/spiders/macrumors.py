@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from ..items import QuestionAnswer
-from scrapy.spiders import Rule
-from scrapy.linkextractors import LinkExtractor
 from datetime import datetime
 from bs4 import BeautifulSoup
 import re
@@ -35,65 +33,44 @@ class MacRumorsSpider(MasterSpider):
         self.rate_limit = False
         super().__init__()
 
-    # @TODO: only extract relevant pages (e.g. has replies)
-    rules = (
-        Rule(LinkExtractor(allow=('threads','forum'),
-                           deny=('members'),
-                           restrict_xpaths=(MasterSpider.gt.css_to_xpath('.listBlock'),
-                                            MasterSpider.gt.css_to_xpath('.PageNav'))
-                           ),
-             callback="identify_and_parse_page",
-             follow=True),
-    )
-
-
-
-    def is_index_page(self, url):
-        """
-        @TODO: generalise
-        :param url:
-        :return: True if url is a page that list search results
-        """
-        return "forums.macrumors.com/forums" in url
-
-    def is_captcha_page(self, url):
-        """
-        @TODO generalise
-        :param url:
-        :return: True if request has been redirected to captcha
-        """
-        return "nocaptcha" in url
+    allow = ('threads', 'forum')
+    deny = ('members')
+    restrict_xpaths = (MasterSpider.gt.css_to_xpath('.listBlock'),
+                       MasterSpider.gt.css_to_xpath('.PageNav'))
 
     def process_question_answer_page(self, response):
         """
-        @TODO: implement going through pagination of forums responses
+        Once we have identified this is a results page,
+        We extract the information
         :param response:
-        :return:
+        :return: list of Q/A pairs
         """
-
+        # TODO: implement going through pagination of forums responses
         # All posts on page (might be posts on other pages though, )
-        # @TODO abstract  to is_page_relevant() and also check number of posts here
-        tags = list(set(
-                response.xpath('//*[@id="content"]/div/div/div[1]/nav/fieldset/span/span[3]/a/span/text()').extract()))
-        tags = [tag.lower() for tag in tags]
-        if self.product.lower() not in tags:  # check we are talking about the right thing
+
+        # Filters
+        if not self.is_page_relevant(response):  # check we are talking about the right thing
             return None
-        else:
-            posts = response.xpath(self.gt.css_to_xpath('.messageText')).extract()
-            if len(posts) < 1:  # Check there are posts with answers
-                return None
-            else:
-                question_answer_list = []
-                question_answer = QuestionAnswer()
-                question_answer = self.fill_question(response, question_answer)
-                # Cycle through posts and build Q/A pairs
-                posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
-                posts = [post for post in posts[1:] if len(post) > 0]
-                posts = self.filter_posts(response, posts)  # TODO implement function
-                for answer_number in range(len(posts)):
-                    question_answer = self.fill_question(response, question_answer)
-                    question_answer_list.append(question_answer)
-                return question_answer_list
+        if not self.page_contains_answers(response):
+            return None
+
+
+        # Process posts
+        posts = response.xpath(self.gt.css_to_xpath('.messageText')).extract()
+        question_answer_list = []
+        question_answer = QuestionAnswer()
+        question_answer = self.fill_question(response, question_answer)
+
+        # Cycle through posts and build Q/A pairs
+        posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
+        posts = [post for post in posts[1:] if len(post) > 0]
+        posts = self.filter_posts(response, posts)  # TODO implement function
+        for answer_number in range(len(posts)):
+            question_answer = self.fill_question(response, question_answer)
+            question_answer_list.append(question_answer)
+        return question_answer_list
+
+    ### Q/A parsing functions
 
     def fill_question(self, response, question_answer):
         """
@@ -152,6 +129,36 @@ class MacRumorsSpider(MasterSpider):
 
         return question_answer
 
+    ## Helper functions
+
+    ### Filter functions
+
+    def is_page_relevant(self, response):
+        """
+        Check product is in tags
+        :param response:
+        :return:
+        """
+        tags = list(set(
+            response.xpath('//*[@id="content"]/div/div/div[1]/nav/fieldset/span/span[3]/a/span/text()').extract()))
+        tags = [tag.lower() for tag in tags]
+        if self.product.lower() not in tags:  # check we are talking about the right thing
+            return False
+        else:
+            return True
+
+    def page_contains_answers(self, response):
+        """
+
+        :param response:
+        :return: true if page has more than one post
+        """
+        posts = response.xpath(self.gt.css_to_xpath('.messageText')).extract()
+        if len(posts) < 1:  # Check there are posts with answers
+            return False
+        else:
+            return True
+
     def filter_posts(self, response, posts):
         """
         TODO: implement
@@ -161,4 +168,30 @@ class MacRumorsSpider(MasterSpider):
         :return:
         """
         return posts
+
+    ### Page identification functions
+
+    def is_results_page(self, url, response=None):
+        # @TODO tidy up types
+        if type(url) is not str:
+            url = url.url
+        return "threads" in url
+
+    def is_index_page(self, url, response=None):
+        """
+        :param url:
+        :return: True if url is a page that list search results
+        """
+        # TODO: generalise
+        return "forums.macrumors.com/forums" in url
+
+    def is_captcha_page(self, url, response=None):
+        """
+        @TODO generalise
+        :param url:
+        :return: True if request has been redirected to captcha
+        """
+        return "nocaptcha" in url
+
+
 

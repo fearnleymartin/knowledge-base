@@ -1,4 +1,5 @@
 {  // Represents a question/answer pair found on forum or on Q/A site
+  "uid": "uid_string",
   "product": "product",  // node in graph database (product)
   "source_url": "www.example.com/path",  // handy for reviewing scraped data but not included in graph database
   "source_domain": "example.com",  // node in graph database (source)
@@ -42,7 +43,8 @@
         "likes_received": 10  // number of likes author's posts have received
       },
       "question_date": "2010-10-15 13:03:00",  // relation between documents (time closeness)
-      "question_extra_info": ["body1", "body2", "body3"]  // Can be stack overflow comments or extra clarification in forum discussion
+      "question_extra_info": ["body1", "body2", "body3"],  // Can be stack overflow comments or extra clarification in forum discussion
+      "question_original_url": "www.domain.com/original-question"
       // This is because in forums, often discussion takes place to clarify question before answer is given
     }
 }
