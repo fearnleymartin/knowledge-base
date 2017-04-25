@@ -51,8 +51,9 @@ def get_html(page_url, base_path='html_pages/{}.html', response=None):
         index_page_html = response.body
     else:
         if os.path.isfile(path):
-            # print('read_from_file')
+            print('read_from_file')
             utils_logger.info('read_from_file: {}'.format(path))
+            print(path)
             with open(path, encoding='utf-8') as html_file:
                     index_page_html = html_file.read()
                     # index_page_html = StringIO(path)

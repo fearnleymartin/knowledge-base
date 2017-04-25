@@ -238,13 +238,13 @@ class IsIndexPage(object):
 
         # TODO improve with regexes
         css_classes = extract_css_class(str(etree.tostring(html))).split(' ')
-        print(css_classes)
+        # print(css_classes)
         css_classes_lower = list(map(lambda x: x.lower(), css_classes))
         for pagination_class in self.pagination_classes:
             for css_class_lower in css_classes_lower:
                 if pagination_class in css_class_lower:
                     _pagination_class = css_classes[css_classes_lower.index(css_class_lower)]  # To get version with capitalisations
-                    print(_pagination_class)
+                    # print(_pagination_class)
                     # TODO get pagination node
                     # strategy: find lowest node with at least 5 links. Take this one as parent pagination node
                     # might be some noise but doesn't really matter
@@ -253,7 +253,7 @@ class IsIndexPage(object):
                     if len(sel(html)) > 0:
                         pagination_node = list(sel(html))[0]
                         link_count = len(list(pagination_node.iterlinks()))
-                        print(link_count)
+                        # print(link_count)
                         max_iters = 20
                         iter_count = 0
                         while link_count < self.min_pagination_link_count and iter_count < max_iters:
@@ -262,7 +262,9 @@ class IsIndexPage(object):
                             iter_count += 1
                         if iter_count == max_iters:
                             return False
-                        self.pagination_links = list(filter(lambda x: x is not None,map(lambda x:  x[2] if len(x) >= 2 else None, pagination_node.iterlinks())))
+                        self.indexPageLogger.info("final pagination class: {}".format(_pagination_class))
+                        # TODO filter links (ex: no pngs)
+                        self.pagination_links = list(filter(lambda x: x is not None, map(lambda x:  x[2] if len(x) >= 2 else None, pagination_node.iterlinks())))
                     else:
                         return False
 

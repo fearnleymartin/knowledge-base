@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from scrapy_splash import SplashRequest
 
 from ..items import QuestionAnswer
 from datetime import datetime
@@ -16,12 +17,12 @@ class SuperUserSpider(MasterSpider):
     """
     name = "superuser"
     allowed_domains = ["superuser.com"]
-    custom_settings = {'DOWNLOAD_DELAY': 0.45,
+    custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/superuser_log.txt'
                        }
 
     def __init__(self):
-        self.rate_limit = True
+        self.rate_limit = False
         super().__init__()
         self.duplicate_count = 0
 
@@ -129,7 +130,8 @@ class SuperUserSpider(MasterSpider):
             print(duplicate_url)
             self.logger.info('duplicate url: {}'.format(duplicate_url))
             question_answer['question_original_url'] = duplicate_url
-
+            # TODO: issue request for duplicate url
+            # yield SplashRequest(url=response.url, callback=self.identify_and_parse_page, args={'wait': 0.5})
 
         return question_answer
 

@@ -25,7 +25,7 @@ class resultsScraper(MasterSpider):
     name = "resultsScraper"
     product = "Unknown"
 
-    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com"]
+    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
     # TODO: Bug : Not overriding main settings
     custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
@@ -37,7 +37,8 @@ class resultsScraper(MasterSpider):
     # start_urls = ['http://stackoverflow.com/questions/tagged/regex']
     # start_urls = [
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
-    start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
+    # start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
+    start_urls = ["http://en.community.dell.com/support-forums/laptop/f/3518"]
 
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as

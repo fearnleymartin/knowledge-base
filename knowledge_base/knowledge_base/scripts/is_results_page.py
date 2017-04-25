@@ -126,16 +126,20 @@ class IsResultsPage(object):
         block_string = str(etree.tostring(block_copy))
         css_classes_list = extract_css_class(block_string).split(' ')
         user_css_class = None
+        user_css_classes = []
         # TODO user_css_class shouldn't be null but what if anyway ?
         for css_class in css_classes_list:
             if 'user' in css_class or 'author' in css_class:
-                user_css_class = css_class
-                break
-        # print("user css class", user_css_class)
+                user_css_classes.append(css_class)
+        # print("user css class", user_css_classes)
+        # TODO speed up because can be a lot of user css classes
         # TODO should always contain element but never too sure
-        if user_css_class:
+        if len(user_css_classes) > 0:
             # There could be possible user_nodes, we only take the one the satisfies extra criteria
-            user_nodes = list(CSSSelector('.{}'.format(user_css_class))(block_copy))
+            user_nodes = []
+            for user_css_class in user_css_classes:
+                user_nodes += list(CSSSelector('.{}'.format(user_css_class))(block_copy))
+            # print("user nodes count", len(user_nodes))
             # TODO: check there is link to user page
             valid_user_nodes = []
             for _user_node in user_nodes:
@@ -155,6 +159,7 @@ class IsResultsPage(object):
                                         filtered_links.append(link)
                 if len(filtered_links) > 0:
                     valid_user_nodes.append((_user_node, filtered_links))
+                    break
                 # print([link for link in filtered_links])
             if len(valid_user_nodes) == 0:
                 user_node = None
@@ -457,7 +462,7 @@ class IsResultsPage(object):
             if node is None:
                 continue
             # print(node)
-            # print("curr_node", node.tag, node.get('class'), node.get('id'))
+            print("curr_node", node.tag, node.get('class'), node.get('id'))
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
@@ -469,6 +474,8 @@ class IsResultsPage(object):
             if len(child_blocks) > 0:
                 valid_block_count = 0
                 for child in child_blocks:
+                    print("child", child.tag, child.get('class'), child.get('id'))
+
                     if isinstance(child, etree._Comment):
                         continue
                     if self.is_valid_block(child):
@@ -579,8 +586,10 @@ if __name__ == "__main__":
 
     # Positives
     # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
-    index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
+    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
     # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+    # index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
+
 
 
     # Broken
