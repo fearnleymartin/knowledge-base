@@ -54,3 +54,9 @@ HTTPCACHE_ENABLED : Enables caching. Saves downloaded pages. Makes recrawling fa
 # Json formats
 
 The different json formats are detailed in the directory json_formats.
+
+# Flask api
+
+`python app/query_api`
+
+To open page go to 127.0.0.1:5000/frontend
