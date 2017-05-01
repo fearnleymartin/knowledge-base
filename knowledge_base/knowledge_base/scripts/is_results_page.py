@@ -425,7 +425,11 @@ class IsResultsPage(object):
         # print('url', url)
         # print('response', response)
         self.url = url
+        # make sure previous blocks are wiped
         self.text_content = []
+        self.valid_blocks = []
+        self.parsed_text_content = []
+
         html = get_html(url, base_path='html_pages/results_{}.html', response=response)
         original_html = deepcopy(html)
         html = self.get_body(html)
@@ -498,7 +502,7 @@ class IsResultsPage(object):
 
         # we check that lowest block contains min length of text
         if lowest_block is not None:
-            print('lowest block', lowest_block)
+            # print('lowest block', lowest_block)
             self.logger.info('final lowest block: {}, {}, {}'.format(lowest_block.tag, lowest_block.get('class'), lowest_block.get('id')))
 
         else:

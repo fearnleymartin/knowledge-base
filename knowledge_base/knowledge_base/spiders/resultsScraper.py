@@ -135,7 +135,7 @@ class resultsScraper(MasterSpider):
             # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
             yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         for pagination_link in pagination_links:
-            print("pagination link", pagination_link)
+            # print("pagination link", pagination_link)
             yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         # time.sleep(self.new_index_page_pause_time)
 
