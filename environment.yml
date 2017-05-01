@@ -1,4 +1,5 @@
 name: swisscom
+
 channels: !!python/tuple
 - !!python/unicode
   'conda-forge'
@@ -64,4 +65,3 @@ dependencies:
   - scrapy-splash==0.7.2
   - service-identity==16.0.0
 prefix: C:\Users\Fearnley\Anaconda2\envs\swisscom
-

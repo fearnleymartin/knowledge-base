@@ -17,6 +17,9 @@ Setup conda environment using environment.yml.
 
 conda env create -f environment.yml
 
+# Scraper Class
+This class represent a scraper objbect on which we can perform the requests to obtain the n first url given a word search
+
 
 # Solr
 Solr config files for the project
