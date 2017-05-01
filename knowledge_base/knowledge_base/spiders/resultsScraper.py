@@ -9,6 +9,7 @@ from ..utils import date_to_solr_format, url_to_short_file_name
 import logging
 import scrapy
 from scrapy_splash import SplashRequest
+from urllib.parse import urlparse
 
 
 class resultsScraper(MasterSpider):
@@ -18,14 +19,16 @@ class resultsScraper(MasterSpider):
     Specify the start_url and the allowed domain
     """
     isResultsPageLogger = logging.getLogger('isResultsPage')
-    isResultsPageLogger.propagate = False
+    isResultsPageLogger.setLevel(logging.CRITICAL)
     isIndexPageLogger = logging.getLogger('isIndexPage')
-    isIndexPageLogger.propagate = False
+    isIndexPageLogger.setLevel(logging.CRITICAL)
+    dupefilterLogger = logging.getLogger('scrapy.dupefilters')
+    dupefilterLogger.setLevel(logging.CRITICAL)
 
     name = "resultsScraper"
     product = "Unknown"
 
-    allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
+    # allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
     # TODO: Bug : Not overriding main settings
     custom_settings = {'DOWNLOAD_DELAY': 0,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
@@ -38,8 +41,9 @@ class resultsScraper(MasterSpider):
     # start_urls = [
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
     # start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
-    start_urls = ["http://en.community.dell.com/support-forums/laptop/f/3518"]
-
+    start_urls = ["https://www.reddit.com/r/iphonehelp/"]
+    allowed_domains = [urlparse(url).netloc for url in start_urls]
+    print('allowed domains', allowed_domains)
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as
     modified_start_url = url_to_short_file_name(start_urls[0])
@@ -99,7 +103,7 @@ class resultsScraper(MasterSpider):
 
 
         # Process posts
-        posts = self.isResultsPage.text_content
+        posts = self.isResultsPage.parsed_text_content
         question = posts[0]
         question_answer_list = []
         question_answer = QuestionAnswer()
@@ -125,11 +129,13 @@ class resultsScraper(MasterSpider):
         result_links = self.isIndexPage.result_links
         pagination_links = self.isIndexPage.pagination_links
         meta = {'splash': {'args': {'html': 1}}}
+        # TODO make sure links are properly formatted (i.e. include scheme)
         for result_link in result_links:
             # print("result link", result_link)
             # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
             yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         for pagination_link in pagination_links:
+            print("pagination link", pagination_link)
             yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
         # time.sleep(self.new_index_page_pause_time)
 
@@ -147,7 +153,7 @@ class resultsScraper(MasterSpider):
         # question_answer['question_title'] = response.xpath(
         #     '//*[@id="content"]/div/div/div[2]/div/div[1]/div/h1/text()').extract_first()
 
-        question_answer['question_body'] = question
+        question_answer['question_body'] = question['body']
 
         # BeautifulSoup(response.xpath(self.gt.css_to_xpath('.messageText')).extract_first()).text.replace("\t", "").replace("\n", "").replace("\u00a0", "")
 
@@ -155,27 +161,11 @@ class resultsScraper(MasterSpider):
         #     response.xpath('//*[@id="content"]/div/div/div[1]/nav/fieldset/span/span[3]/a/span/text()').extract()))
         # tags = [tag.lower() for tag in tags]
         # question_answer['question_tags'] = tags
-
-        # TODO: remove in general case
-        author_name = response.xpath(self.gt.css_to_xpath('.username') + '/text()').extract_first()
-        question_answer['question_author'] = {'author_id': '{}_{}'.format(self.allowed_domains[0], author_name),
-                                              'author_name': author_name}
-
-        # mac_rumors_date_format = '%b %d, %Y at %I:%M %p'
-        # mac_rumors_date_format2 = '%b %d, %Y'
-
-        # date = response.xpath(self.gt.css_to_xpath('.messageDetails .DateTime') + '/@data-datestring').extract_first()
-        # if date:
-        #     date = re.sub('^0|(?<= )0', '', date)
-        #     question_answer['question_date'] = date_to_solr_format(datetime.strptime(date, mac_rumors_date_format2))
-        # else:
-        #     date = response.xpath(
-        #         self.gt.css_to_xpath('.messageDetails .DateTime') + '/@title').extract_first()
-        #     if date:
-        #         date = re.sub('^0|(?<= )0', '', date)
-        #         question_answer['question_date'] = date_to_solr_format(datetime.strptime(date, mac_rumors_date_format))
-        #     else:
-        #         pass
+        if question['author']:
+            question_answer['question_author'] = {'author_id': '{}_{}'.format(urlparse(self.start_urls[0]).netloc, question['author']),
+                                              'author_name': question['author']}
+        if question['date']:
+            question_answer['question_date'] = date_to_solr_format(question['date'])
 
         return question_answer
 
@@ -191,7 +181,13 @@ class resultsScraper(MasterSpider):
         # posts = [BeautifulSoup(post).text.replace("\t", "").replace("\n", "").replace("\u00a0", "") for post in posts]
         # posts = [post for post in posts[1:] if len(post) > 0]
 
-        question_answer['answer_body'] = answer
+        question_answer['answer_body'] = answer['body']
+        if answer['author']:
+            question_answer['answer_author'] = {
+                'author_id': '{}_{}'.format(urlparse(self.start_urls[0]).netloc, answer['author']),
+                'author_name': answer['author']}
+        if answer['date']:
+            question_answer['answer_date'] = date_to_solr_format(answer['date'])
 
         return question_answer
 

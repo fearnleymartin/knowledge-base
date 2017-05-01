@@ -23,7 +23,9 @@ class GeneralPipeline(object):
     def open_spider(self, spider):
         # TODO: regexify
         url_path = url_to_short_file_name(spider.start_urls[0])
-        self.file = open('scraped_data/{}_items2.jl'.format(url_path), 'w')
+        items_file_path = 'scraped_data/{}_items2.jl'.format(url_path)
+        print('items file path', items_file_path)
+        self.file = open(items_file_path, 'w')
 
     def close_spider(self, spider):
         logging.info('captcha count: {}'.format(spider.captcha_count))

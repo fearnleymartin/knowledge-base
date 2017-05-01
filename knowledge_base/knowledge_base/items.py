@@ -23,6 +23,7 @@ class QuestionAnswer(scrapy.Item):
     question_original_url = scrapy.Field()
 
     answer_number = scrapy.Field()
+    answer_author = scrapy.Field()
     answer_body = scrapy.Field()
     answer_accepted = scrapy.Field()
     answer_upvotes = scrapy.Field()

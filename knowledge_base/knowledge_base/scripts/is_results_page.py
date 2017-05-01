@@ -462,7 +462,7 @@ class IsResultsPage(object):
             if node is None:
                 continue
             # print(node)
-            print("curr_node", node.tag, node.get('class'), node.get('id'))
+            # print("curr_node", node.tag, node.get('class'), node.get('id'))
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
@@ -474,7 +474,7 @@ class IsResultsPage(object):
             if len(child_blocks) > 0:
                 valid_block_count = 0
                 for child in child_blocks:
-                    print("child", child.tag, child.get('class'), child.get('id'))
+                    # print("child", child.tag, child.get('class'), child.get('id'))
 
                     if isinstance(child, etree._Comment):
                         continue
@@ -588,13 +588,14 @@ if __name__ == "__main__":
     # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
     # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
-    # index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
+    index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
 
 
 
     # Broken
     # index_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
     # index_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
+    index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/671umq/iphone_just_froze_then_after_a_while_the_screen/'
 
     # Tests
     # index_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
