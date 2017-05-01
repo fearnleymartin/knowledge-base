@@ -19,9 +19,12 @@ class IsIndexPage(object):
 
     tag_blacklist = ['footer']
     indexPageLogger = logging.getLogger('indexPageLogger')
-    min_pagination_link_count = 5
+    min_pagination_link_count = 1
+    max_pagination_link_count = 12
     # TODO: can we avoid hardcoding this ?
     pagination_classes = {'pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons', 'gotopage', 'pagenumber', 'paging'}
+    user_page_url_blacklist = ['/member/', '/members', '/user/', '/users/']
+    url_blacklist = ['javascript:', 'mailto']
 
     def __init__(self):
         self.result_links = []
@@ -140,19 +143,18 @@ class IsIndexPage(object):
                 res.append(links)
         return res
 
-    @staticmethod
-    def filter_links_list(link_list, index_page_url):
+    def filter_links_list(self, link_list, index_page_url):
         """
         :param link_list: list of links (lxml nodes)
         :param index_page_url:
         :return: the list with the following filtered out:
         blacklisted terms
-        links which are notto the same domain
+        links which are not to the same domain
         remove duplicates
         """
         res = []
         # res_urls = set()
-        blacklist = ['javascript:','mailto']
+        blacklist = self.url_blacklist + self.user_page_url_blacklist
         for link in link_list:
             val = True
             for el in blacklist:  # for removing javascript links
@@ -219,7 +221,6 @@ class IsIndexPage(object):
                 return True
         return False
 
-
     def filter_subnode_links(self, subnode_links):
         """
         :param subnode_links: list of lxml node
@@ -227,6 +228,12 @@ class IsIndexPage(object):
         """
         return [subnode for subnode in subnode_links if self.subnode_is_index(subnode)]
 
+    def remove_user_page_links(self, link_list):
+        filtered_link_list = []
+        for link in link_list:
+            if '/user/' not in link and '/member/' not in link:
+                filtered_link_list.append(link)
+        return filtered_link_list
 
     def contains_pagination(self, html):
         """
@@ -249,22 +256,33 @@ class IsIndexPage(object):
                     # strategy: find lowest node with at least 5 links. Take this one as parent pagination node
                     # might be some noise but doesn't really matter
                     self.indexPageLogger.info("pagination class: {}".format(_pagination_class))
+                    # print("pagination class: {}".format(_pagination_class))
+
                     sel = CSSSelector(".{}".format(_pagination_class))
                     if len(sel(html)) > 0:
                         pagination_node = list(sel(html))[0]
-                        link_count = len(list(pagination_node.iterlinks()))
-                        # print(link_count)
+                        link_count = len(self.remove_user_page_links(list(pagination_node.iterlinks())))
+                        # print('link count', link_count)
+                        # print(list(pagination_node.iterlinks()))
+                        # print(etree.tostring(pagination_node))
                         max_iters = 20
                         iter_count = 0
                         while link_count < self.min_pagination_link_count and iter_count < max_iters:
-                            pagination_node = pagination_node.getparent()
-                            link_count = len(list(pagination_node.iterlinks()))
+                            parent_pagination_node = pagination_node.getparent()
+                            # print('current pagination node', pagination_node.tag, pagination_node.get('class'), pagination_node.get('id'))
+                            link_count = len(self.remove_user_page_links(list(parent_pagination_node.iterlinks())))
+                            if link_count > self.max_pagination_link_count:
+                                pagination_node = parent_pagination_node
                             iter_count += 1
                         if iter_count == max_iters:
+                            self.indexPageLogger.info('not enough links or too many links in pagination')
+                            # print('not enough links or too many links in pagination')
                             return False
-                        self.indexPageLogger.info("final pagination class: {}".format(_pagination_class))
+                        self.indexPageLogger.info("final pagination class: {}, {}".format(pagination_node.get('class'), pagination_node.get('id')))
+                        # print("final pagination class: {}, {}".format(pagination_node.get('class'),
+                        #                                                                   pagination_node.get('id')))
                         # TODO filter links (ex: no pngs)
-                        self.pagination_links = list(filter(lambda x: x is not None, map(lambda x:  x[2] if len(x) >= 2 else None, pagination_node.iterlinks())))
+                        self.pagination_links = list(filter(lambda x: x is not None, map(lambda x:  x[2] if len(x) >= 2 else None, self.remove_user_page_links(pagination_node.iterlinks()))))
                     else:
                         return False
 
@@ -328,10 +346,14 @@ class IsIndexPage(object):
 
 if __name__ == "__main__":
     # index_page_url = 'https://forums.macrumors.com/threads/touch-id-problem-iphone-7.2034435/'
-    index_page_url = 'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1'
+    # index_page_url = 'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1'
     # index_page_url = 'https://community.mindjet.com/mindjet/details'
     # index_page_url = "http://stackoverflow.com/questions/tagged/regex"
+    index_page_url = "http://en.community.dell.com#c.Section3"
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     isIndexPage = IsIndexPage()
     print(isIndexPage.is_index_page(index_page_url))
+    print('----------------------------------------')
+    print(isIndexPage.result_links)
+    print('-----------------------------------------')
     print(isIndexPage.pagination_links)
