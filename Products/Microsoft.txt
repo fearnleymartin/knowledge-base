@@ -18,7 +18,6 @@ Outlook
 Outlook 2016 for Mac
 PowerPoint
 OneNote
-Show more
 Email & Communications
 Outlook.com
 Outlook
@@ -43,7 +42,6 @@ Microsoft Band
 Microsoft mouse, keyboards & accessories
 Perceptive Pixel
 HoloLens
-Servers
 Windows Server Technical Preview
 Windows Server 2016
 Windows Server
@@ -77,9 +75,6 @@ Xbox
 PC Games
 Groove Music
 Movies & TV
-Other Support Topics
 Microsoft account
-Store
 HealthVault
 Product Activation
-Daylight Savings Time (DST)
