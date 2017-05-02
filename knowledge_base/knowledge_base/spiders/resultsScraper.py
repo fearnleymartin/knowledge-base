@@ -26,7 +26,7 @@ class resultsScraper(MasterSpider):
     dupefilterLogger.setLevel(logging.CRITICAL)
 
     name = "resultsScraper"
-    product = "Unknown"
+    product = "iphone"
 
     # allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
     # TODO: Bug : Not overriding main settings
@@ -133,10 +133,10 @@ class resultsScraper(MasterSpider):
         for result_link in result_links:
             # print("result link", result_link)
             # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
-            yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
+            yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 1})
         for pagination_link in pagination_links:
             # print("pagination link", pagination_link)
-            yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 0.5})
+            yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 1})
         # time.sleep(self.new_index_page_pause_time)
 
     ### Q/A parsing functions

@@ -51,13 +51,15 @@ class IsResultsPage(object):
     cleaner.style = True
 
 
-    def __init__(self):
+    def __init__(self, product=None):
         self.url = None
         self.text_content = []
         self.parsed_text_content = []
         self.valid_blocks = []
         self.isIndexPage = IsIndexPage()
         self.reason = ''
+        self.product = product
+        self.html = None
 
     @staticmethod
     def hasNumbers(inputString):
@@ -335,6 +337,19 @@ class IsResultsPage(object):
         else:
             return True
 
+    def content_contains_product(self, text_content):
+        """
+        Check a block contains the product keyword
+        :param text_content: the text content of a block
+        :return: bool
+        """
+        product_words = self.product.split(' ')
+        product_bool = False
+        for product_word in product_words:
+            if product_word.lower() in text_content.lower():
+                product_bool = True
+        return product_bool
+
 
     def parse_valid_block(self, valid_block):
         """
@@ -350,6 +365,7 @@ class IsResultsPage(object):
         q.put(node)
         # TODO make sure terminates correctly
         # Normally at least one block has min required len and doesn't contain user class
+        # Here we look for the block that contains just the user information but not date or author
         final_node = None
         while condition and not q.empty():
             node = q.get()
@@ -380,7 +396,8 @@ class IsResultsPage(object):
             # Now consider html structure without the final node. Parse this to extract date
             final_node.getparent().remove(final_node)
         else:
-            text_content = None
+            # Better to return too much text (i.e. with author and date) than none at all
+            text_content = self.extract_text_content(valid_block)
         # date_text_container = self.extract_text_content(valid_block_copy)
         # print('looking for dates in: ', self.extract_text_content(valid_block_copy))
         dates = self.extract_dates(valid_block_copy)
@@ -442,6 +459,8 @@ class IsResultsPage(object):
         if html is None:
             self.set_reason('only js')
             return False
+
+        self.html = html  # store html to later filter page for content
 
         # Check url is not blacklisted
         if self.filter_by_url(url):
@@ -569,11 +588,25 @@ class IsResultsPage(object):
                 # print(list(dates))
                 self.logger.info('\n')
                 # print('\n')
+
         if correct_post_len_count < 2:
             self.set_reason('not enough valid posts found')
             return False
         for block in self.valid_blocks:
             self.parsed_text_content.append(self.parse_valid_block(block))
+        if len(self.parsed_text_content) < 2:
+            self.set_reason('not enough valid blocks found')
+            return False
+        # Filter by product, i.e. make sure at least one block contains the product keyword
+        if self.product:
+            product_keyword_count = 0
+            for block in self.parsed_text_content:
+                if self.content_contains_product(block['body']):
+                    product_keyword_count += 1
+            if product_keyword_count < 1:
+                self.set_reason('is results page but product not mentioned')
+                return False
+
         # print(str(lowest_block.text_content()))
 
         return res
@@ -599,12 +632,13 @@ if __name__ == "__main__":
     # Broken
     # index_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
     # index_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
-    index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/671umq/iphone_just_froze_then_after_a_while_the_screen/'
+    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/671umq/iphone_just_froze_then_after_a_while_the_screen/'
 
     # Tests
     # index_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
 
-    isResultsPage = IsResultsPage()
+    product = 'Dell Inspiron'
+    isResultsPage = IsResultsPage(product=product)
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 

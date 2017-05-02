@@ -111,4 +111,4 @@ SPIDER_MIDDLEWARES = {
 
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
-DUPEFILTER_DEBUG = True
+DUPEFILTER_DEBUG = False

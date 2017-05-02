@@ -79,7 +79,7 @@ def process_html(html):
     if html is None:
         utils_logger.info('no body')
         # print('no body')
-        return False
+
 
     html = cleaner.clean_html(html)
     if html is None:
