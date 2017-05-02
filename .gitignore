@@ -102,45 +102,45 @@ ENV/
 
 /aimlx-demos-master
 
-/solr-6.4.1 14.31.10/Old_file/Second_Pipeline/
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/Output_duplicat/
+/solr/Old_file/Second_Pipeline/
+/solr/Old_file/EvaluationDB/Output_duplicat/
 
-/solr-6.4.1 14.31.10/bin/
-/solr-6.4.1 14.31.10/contrib/
-/solr-6.4.1 14.31.10/dist/
-/solr-6.4.1 14.31.10/docs/
-/solr-6.4.1 14.31.10/example/
-/solr-6.4.1 14.31.10/licenses/
-!/solr-6.4.1 14.31.10/server/solr/Evaluation/
-/solr-6.4.1 14.31.10/usr/
-/solr-6.4.1 14.31.10/server/contexts/
-/solr-6.4.1 14.31.10/server/etc/
-/solr-6.4.1 14.31.10/server/lib/
-/solr-6.4.1 14.31.10/server/logs/
-/solr-6.4.1 14.31.10/server/modules/
-/solr-6.4.1 14.31.10/server/resources/
-/solr-6.4.1 14.31.10/server/scripts/
-/solr-6.4.1 14.31.10/server/solr/ProductDB/
-/solr-6.4.1 14.31.10/server/solr/TestCore/
-/solr-6.4.1 14.31.10/server/solr/configsets/
-/solr-6.4.1 14.31.10/server/solr/gettingstarted/
-/solr-6.4.1 14.31.10/.idea/
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/.ipynb_checkpoints/
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/duplicates_and_original_questions.json
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/Evaluation(COPY).ipynb
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/evaluation.json
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/evaluationCopy.json
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/evaluationWithOnlyDuplicate.csv
-/solr-6.4.1 14.31.10/Old_file/EvaluationDB/schema.json
-/solr-6.4.1 14.31.10/server/solr-webapp/
-/solr-6.4.1 14.31.10/server/solr/Evaluation/data/
-/solr-6.4.1 14.31.10/server/solr/Evaluation/conf/lang/
-/solr-6.4.1 14.31.10/chatbot-information-retrieval/ubuntu-ranking-dataset-creator/
+/solr/bin/
+/solr/contrib/
+/solr/dist/
+/solr/docs/
+/solr/example/
+/solr/licenses/
+!/solr/server/solr/Evaluation/
+/solr/usr/
+/solr/server/contexts/
+/solr/server/etc/
+/solr/server/lib/
+/solr/server/logs/
+/solr/server/modules/
+/solr/server/resources/
+/solr/server/scripts/
+/solr/server/solr/ProductDB/
+/solr/server/solr/TestCore/
+/solr/server/solr/configsets/
+/solr/server/solr/gettingstarted/
+/solr/.idea/
+/solr/Old_file/EvaluationDB/.ipynb_checkpoints/
+/solr/Old_file/EvaluationDB/duplicates_and_original_questions.json
+/solr/Old_file/EvaluationDB/Evaluation(COPY).ipynb
+/solr/Old_file/EvaluationDB/evaluation.json
+/solr/Old_file/EvaluationDB/evaluationCopy.json
+/solr/Old_file/EvaluationDB/evaluationWithOnlyDuplicate.csv
+/solr/Old_file/EvaluationDB/schema.json
+/solr/server/solr-webapp/
+/solr/server/solr/Evaluation/data/
+/solr/server/solr/Evaluation/conf/lang/
+/solr/chatbot-information-retrieval/ubuntu-ranking-dataset-creator/
 
-/solr-6.4.1 14.31.10/chatbot-information-retrieval/scripts/data/
-/solr-6.4.1 14.31.10/chatbot-information-retrieval/scripts/superuser/
-/solr-6.4.1 14.31.10/chatbot-information-retrieval/runs/
-/solr-6.4.1 14.31.10/chatbot-information-retrieval/superuser.com_questions_tagged_ubuntu_items.json
+/solr/chatbot-information-retrieval/scripts/data/
+/solr/chatbot-information-retrieval/scripts/superuser/
+/solr/chatbot-information-retrieval/runs/
+/solr/chatbot-information-retrieval/superuser.com_questions_tagged_ubuntu_items.json
 /Neo4j/certificates/
 /Neo4j/index/
 /Neo4j/logs/
@@ -194,3 +194,7 @@ ENV/
 /Neo4j/neostore.propertystore.db.index.keys.id
 /Neo4j/store_lock
 /Neo4j/term_frequency/en_full.txt
+/solr/server/solr/
+/Neo4j/default.graphdb/
+/Neo4j/.neo4j-community.vmoptions
+/Neo4j/.neo4j.conf
