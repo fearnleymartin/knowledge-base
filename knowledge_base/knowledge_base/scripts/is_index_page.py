@@ -283,6 +283,7 @@ class IsIndexPage(object):
                         #                                                                   pagination_node.get('id')))
                         # TODO filter links (ex: no pngs)
                         self.pagination_links = list(filter(lambda x: x is not None, map(lambda x:  x[2] if len(x) >= 2 else None, self.remove_user_page_links(pagination_node.iterlinks()))))
+                        self.indexPageLogger.info("extracted {} paginationlinks".format(len(self.pagination_links)))
                     else:
                         return False
 
@@ -326,6 +327,8 @@ class IsIndexPage(object):
 
         # TODO abstract out processing of html with making links absolute too
         html = process_html(html)
+        if html is None:
+            return False
 
         if not self.contains_pagination(html):
             self.indexPageLogger.info('no pagination')
@@ -349,7 +352,8 @@ if __name__ == "__main__":
     # index_page_url = 'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1'
     # index_page_url = 'https://community.mindjet.com/mindjet/details'
     # index_page_url = "http://stackoverflow.com/questions/tagged/regex"
-    index_page_url = "http://en.community.dell.com#c.Section3"
+    # index_page_url = "http://en.community.dell.com#c.Section3"
+    index_page_url = "https://discussions.apple.com/search.jspa?currentPage=1&includeResultCount=true&q=outlook+problems"
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     isIndexPage = IsIndexPage()
     print(isIndexPage.is_index_page(index_page_url))

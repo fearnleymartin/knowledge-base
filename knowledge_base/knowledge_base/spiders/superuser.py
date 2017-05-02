@@ -39,7 +39,7 @@ class SuperUserSpider(MasterSpider):
     restrict_xpaths = (MasterSpider.gt.css_to_xpath('.result-link'), MasterSpider.gt.css_to_xpath('.pager'),
                        MasterSpider.gt.css_to_xpath('.question-hyperlink'))
 
-    modified_start_url = start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?','')[:100]
+    modified_start_url = start_urls[0].replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?', '')[:100]
     classification_file_path = 'scraped_data/classification/{}_classification_file2.csv'.format(modified_start_url)
     classification_file = open(classification_file_path, 'w')
 

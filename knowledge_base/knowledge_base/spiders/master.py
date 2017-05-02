@@ -82,7 +82,7 @@ class MasterSpider(CrawlSpider):
         self.captcha_count = 0
         self.start_time = time.time()
         self.total_items = 0
-        self.isResultsPage = IsResultsPage()
+        self.isResultsPage = IsResultsPage(product=self.product)
         self.isIndexPage = IsIndexPage()
 
     def parse_start_url(self, response):
