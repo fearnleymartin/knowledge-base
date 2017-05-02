@@ -41,7 +41,7 @@ def get_html(page_url, base_path='html_pages/{}.html', response=None):
     parsed_url = urlparse(page_url)
     scheme, domain, path = parsed_url.scheme, parsed_url.netloc, parsed_url.path
     base_href = scheme + '://' + domain
-    base_dir_path = 'C:/Users/Fearnley/Documents/Swisscom/knowledge-base/knowledge_base/'
+    base_dir_path = '/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/'
     path = base_dir_path+base_path.format(domain+path.replace('/', '_'))
 
     html = None

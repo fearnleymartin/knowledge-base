@@ -92,9 +92,9 @@ HTTPCACHE_IGNORE_HTTP_CODES = []
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 
-CLOSESPIDER_PAGECOUNT = 50
+CLOSESPIDER_PAGECOUNT = 100000
 
-LOG_FILE = 'logs/log.txt'
+LOG_FILE = '/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/knowledge_base/logs/log.txt'
 LOG_ENABLED = True
 
 SPLASH_URL = 'http://192.168.99.100:8050'
