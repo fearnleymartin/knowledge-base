@@ -49,9 +49,14 @@ class MasterSpider(CrawlSpider):
     # start_urls = ['https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
     # These allows define the crawling
-    allow = ()
-    deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
-    restrict_xpaths = ()
+    # allow = ()
+    # deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
+    # restrict_xpaths = ()
+
+    allow = ('/t/', '/p/', '/f/')
+
+    deny = ('/tags/')
+    restrict_xpaths = (gt.css_to_xpath('.post-name'), gt.css_to_xpath('.pager'))
 
     # allow = ('threads', 'forum')
     # deny = ('members')
