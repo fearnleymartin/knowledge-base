@@ -26,7 +26,7 @@ class resultsScraper(MasterSpider):
     dupefilterLogger.setLevel(logging.CRITICAL)
 
     name = "resultsScraper"
-    product = "iphone"
+    product = None
 
     # allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
     # TODO: Bug : Not overriding main settings
@@ -41,20 +41,21 @@ class resultsScraper(MasterSpider):
     # start_urls = [
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
     # start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
-    start_urls = ["https://www.reddit.com/r/iphonehelp/"]
+    start_urls = ["https://community.dynamics.com/crm/f/117"]
     allowed_domains = [urlparse(url).netloc for url in start_urls]
     print('allowed domains', allowed_domains)
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as
     modified_start_url = url_to_short_file_name(start_urls[0])
-    classification_file_path = 'scraped_data/classification/{}_classification_file.csv'.format(modified_start_url)
+    classification_file_path = 'scraped_data/classification/{}_classification_file_urls.csv'.format(modified_start_url)
     classification_file = open(classification_file_path, 'w')
+
 
     def __init__(self):
         self.rate_limit = False
         super().__init__()
 
-    rules = ()
+    # rules = ()
 
     def identify_and_parse_page(self, response):
         """
@@ -66,9 +67,9 @@ class resultsScraper(MasterSpider):
         # print("processing: {}".format(response.url))
 
         if self.initial_page_filter(response):
-            if self.is_index_page(url=response.url, response=response):
-                return self.process_index_page(response)
-            elif self.is_captcha_page(response.url, response):
+            # if self.is_index_page(url=response.url, response=response):
+            #     return self.process_index_page(response)
+            if self.is_captcha_page(response.url, response):
                 self.process_captcha(response)
             elif self.is_results_page(response.url, response):
                 items = self.process_question_answer_page(response)
