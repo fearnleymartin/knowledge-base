@@ -22,15 +22,16 @@ class IsIndexPage(object):
     min_pagination_link_count = 1
     max_pagination_link_count = 12
     # TODO: can we avoid hardcoding this ?
-    pagination_classes = {'pagination', 'pagenav', 'page-numbers', 'pager', 'next-button', 'nav-buttons', 'gotopage', 'pagenumber', 'paging'}
+    pagination_classes = ['pagination', 'pagenav', 'pager', 'page-numbers', 'next-button', 'nav-buttons', 'gotopage', 'pagenumber', 'paging']
     user_page_url_blacklist = ['/member/', '/members', '/user/', '/users/']
     url_blacklist = ['javascript:', 'mailto']
 
-    def __init__(self):
+    def __init__(self, product=None):
         self.result_links = []
         # TODO implement pagination links
         self.pagination_links = []
-
+        self.product = product
+        self.is_pertinent = True
 
     @staticmethod
     def map_ex(element_list):
@@ -291,6 +292,19 @@ class IsIndexPage(object):
 
         return False
 
+    def links_contains_product(self, link_text):
+        """
+        Check a block contains the product keyword
+        :param text_content: the text content of a block
+        :return: bool
+        """
+        product_words = self.product.split(' ')
+        product_bool = False
+        for product_word in product_words:
+            if product_word.lower() in link_text.lower():
+                product_bool = True
+        return product_bool
+
     def find_lists_of_links(self, html, index_page_url, list_len=9):
         """
         :param html:
@@ -319,6 +333,8 @@ class IsIndexPage(object):
         # if response:
         #     # print('enter response of is index page')
         #     html = get_html(index_page_url, response=response)
+        self.is_pertinent = True
+
         if input_html is not None:
             html = input_html
         else:
@@ -341,6 +357,14 @@ class IsIndexPage(object):
 
         index = self.filter_subnode_links(lists_of_links)
         if len(index) > 0:
+            if self.product:  # filter out non pertinent links (i.e. not related to product)
+                product_count = 0
+                for link in index[0]:
+                    print(link.text_content())
+                    if self.links_contains_product(link.text_content()) or self.links_contains_product(link.get('href')):
+                        product_count += 1
+                if product_count == 0:
+                    self.is_pertinent = False
             self.result_links = list(map(lambda x: x.get('href'), index[0]))
             self.indexPageLogger.info("extracted {} links from index page".format(len(index[0])))
         # print("is index page: ", len(index)>0)
@@ -351,11 +375,11 @@ if __name__ == "__main__":
     # index_page_url = 'https://forums.macrumors.com/threads/touch-id-problem-iphone-7.2034435/'
     # index_page_url = 'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1'
     # index_page_url = 'https://community.mindjet.com/mindjet/details'
-    # index_page_url = "http://stackoverflow.com/questions/tagged/regex"
+    index_page_url = "http://stackoverflow.com/questions/tagged/iphone"
     # index_page_url = "http://en.community.dell.com#c.Section3"
-    index_page_url = "https://discussions.apple.com/search.jspa?currentPage=1&includeResultCount=true&q=outlook+problems"
+    # index_page_url = "https://discussions.apple.com/search.jspa?currentPage=1&includeResultCount=true&q=outlook+problems"
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    isIndexPage = IsIndexPage()
+    isIndexPage = IsIndexPage(product="iphone")
     print(isIndexPage.is_index_page(index_page_url))
     print('----------------------------------------')
     print(isIndexPage.result_links)

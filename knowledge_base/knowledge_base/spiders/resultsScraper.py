@@ -10,6 +10,7 @@ import logging
 import scrapy
 from scrapy_splash import SplashRequest
 from urllib.parse import urlparse
+import time
 
 
 class resultsScraper(MasterSpider):
@@ -30,7 +31,7 @@ class resultsScraper(MasterSpider):
 
     # allowed_domains = ["macrumors.com", "microsoft.com", "stackoverflow.com", "forum.mailenable.com", "dell.com" ]
     # TODO: Bug : Not overriding main settings
-    custom_settings = {'DOWNLOAD_DELAY': 0,
+    custom_settings = {'DOWNLOAD_DELAY': 1,
                        'LOG_FILE': 'logs/{}_log.txt'.format(name)
 
                        }
@@ -41,7 +42,8 @@ class resultsScraper(MasterSpider):
     # start_urls = [
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
     # start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
-    start_urls = ["https://www.reddit.com/r/iphonehelp/"]
+    # start_urls = ["https://www.reddit.com/r/iphonehelp/", "https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109"]
+    start_urls = ["http://stackoverflow.com/questions/tagged/iphone"]
     allowed_domains = [urlparse(url).netloc for url in start_urls]
     print('allowed domains', allowed_domains)
     # TODO: improve parsing with regex
@@ -51,7 +53,7 @@ class resultsScraper(MasterSpider):
     classification_file = open(classification_file_path, 'w')
 
     def __init__(self):
-        self.rate_limit = False
+        self.rate_limit = True
         super().__init__()
 
     rules = ()
@@ -63,7 +65,7 @@ class resultsScraper(MasterSpider):
         :param response:
         :return:
         """
-        # print("processing: {}".format(response.url))
+        print("processing: {}".format(response.url))
 
         if self.initial_page_filter(response):
             if self.is_index_page(url=response.url, response=response):
@@ -92,52 +94,63 @@ class resultsScraper(MasterSpider):
         # All posts on page (might be posts on other pages though, )
 
         self.results_page_count += 1
-        self.classification_file.write("results, {}\n".format(response.url))
-        logging.info('results: {}'.format(response.url))
-        print("results: {}".format(response.url))
-        # Filters
-        if not self.is_page_relevant(response):  # check we are talking about the right thing
-            return None
-        if not self.page_contains_answers(response):
-            return None
+        if self.isResultsPage.is_pertinent:
+            self.classification_file.write("results, {}\n".format(response.url))
+            logging.info('results: {}'.format(response.url))
+            print("results: {}".format(response.url))
+            # Filters
+            if not self.is_page_relevant(response):  # check we are talking about the right thing
+                return None
+            if not self.page_contains_answers(response):
+                return None
 
+            # Process posts
+            posts = self.isResultsPage.parsed_text_content
+            question = posts[0]
+            question_answer_list = []
+            question_answer = QuestionAnswer()
+            question_answer = self.fill_question(response, question_answer, question)
 
-        # Process posts
-        posts = self.isResultsPage.parsed_text_content
-        question = posts[0]
-        question_answer_list = []
-        question_answer = QuestionAnswer()
-        question_answer = self.fill_question(response, question_answer, question)
+            # Cycle through posts and build Q/A pairs
+            posts = [post for post in posts[1:] if len(post) > 0]
+            posts = self.filter_posts(response, posts)  # TODO implement function
+            for answer_number in range(len(posts)):
+                question_answer = self.fill_answer(response, question_answer, posts[answer_number])
+                question_answer_list.append(question_answer)
+            return question_answer_list
+        else:
+            self.classification_file.write("results (off topic), {}\n".format(response.url))
+            logging.info('results (off topic): {}'.format(response.url))
+            print("results (off topic): {}".format(response.url))
 
-        # Cycle through posts and build Q/A pairs
-        posts = [post for post in posts[1:] if len(post) > 0]
-        posts = self.filter_posts(response, posts)  # TODO implement function
-        for answer_number in range(len(posts)):
-            question_answer = self.fill_answer(response, question_answer, posts[answer_number])
-            question_answer_list.append(question_answer)
-        return question_answer_list
 
     def process_index_page(self, response):
         """
         At the moment just logs that we have an index page, and pauses
         :return:
         """
-        logging.info('index: {}'.format(response.url))
-        print('index: {}'.format(response.url))
-        self.classification_file.write("index, {}\n".format(response.url))
         self.index_page_count += 1
-        result_links = self.isIndexPage.result_links
-        pagination_links = self.isIndexPage.pagination_links
-        meta = {'splash': {'args': {'html': 1}}}
-        # TODO make sure links are properly formatted (i.e. include scheme)
-        for result_link in result_links:
-            # print("result link", result_link)
-            # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
-            yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 1})
-        for pagination_link in pagination_links:
-            # print("pagination link", pagination_link)
-            yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 1})
-        # time.sleep(self.new_index_page_pause_time)
+        if self.isIndexPage.is_pertinent:
+            logging.info('index: {}'.format(response.url))
+            print('index: {}'.format(response.url))
+            self.classification_file.write("index, {}\n".format(response.url))
+            result_links = self.isIndexPage.result_links
+            pagination_links = self.isIndexPage.pagination_links
+            meta = {'splash': {'args': {'html': 1}}}
+            # TODO make sure links are properly formatted (i.e. include scheme)
+            for result_link in result_links:
+                # print("result link", result_link)
+                # yield scrapy.Request(url=result_link, callback=self.identify_and_parse_page, meta=meta)
+                yield SplashRequest(url=result_link, callback=self.identify_and_parse_page, args={'wait': 1})
+            for pagination_link in pagination_links:
+                print("pagination link", pagination_link)
+                yield SplashRequest(url=pagination_link, callback=self.identify_and_parse_page, args={'wait': 1})
+            time.sleep(self.new_index_page_pause_time)
+        else:
+            logging.info('index (off topic): {}'.format(response.url))
+            print('index (off topic): {}'.format(response.url))
+            self.classification_file.write("index (off topic), {}\n".format(response.url))
+
 
     ### Q/A parsing functions
 

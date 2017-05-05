@@ -60,6 +60,7 @@ class IsResultsPage(object):
         self.reason = ''
         self.product = product
         self.html = None
+        self.is_pertinent = True
 
     @staticmethod
     def hasNumbers(inputString):
@@ -446,6 +447,7 @@ class IsResultsPage(object):
         self.text_content = []
         self.valid_blocks = []
         self.parsed_text_content = []
+        self.is_pertinent = True
 
         html = get_html(url, base_path='html_pages/results_{}.html', response=response)
         original_html = deepcopy(html)
@@ -605,7 +607,7 @@ class IsResultsPage(object):
                     product_keyword_count += 1
             if product_keyword_count < 1:
                 self.set_reason('is results page but product not mentioned')
-                return False
+                self.is_pertinent = False
 
         # print(str(lowest_block.text_content()))
 

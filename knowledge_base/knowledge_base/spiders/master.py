@@ -83,7 +83,7 @@ class MasterSpider(CrawlSpider):
         self.start_time = time.time()
         self.total_items = 0
         self.isResultsPage = IsResultsPage(product=self.product)
-        self.isIndexPage = IsIndexPage()
+        self.isIndexPage = IsIndexPage(product=self.product)
 
     def parse_start_url(self, response):
         """For parsing the starting page"""
