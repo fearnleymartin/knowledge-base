@@ -10,7 +10,7 @@
 from solr_query import SolrQuery
 SOLR_CORE_NAME = 'Evaluation'
 SOLR_ADRESSE  = 'localhost:8983'
-DOCPATH = 'Old_file/EvaluationDB/duplicates_and_original_questions.json'
+DOCPATH = 'Old_file/Data/superuser.json'
 
 ## Creating SolrQuery object, this object will be used for all our query
 solquery = SolrQuery(SOLR_ADRESSE,SOLR_CORE_NAME)

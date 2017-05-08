@@ -102,8 +102,8 @@ ENV/
 
 /aimlx-demos-master
 
-/solr/Old_file/Second_Pipeline/
-/solr/Old_file/EvaluationDB/Output_duplicat/
+/solr/Evaluation/Second_Pipeline/
+/solr/Evaluation/EvaluationDB/Output_duplicat/
 
 /solr/bin/
 /solr/contrib/
@@ -125,13 +125,13 @@ ENV/
 /solr/server/solr/configsets/
 /solr/server/solr/gettingstarted/
 /solr/.idea/
-/solr/Old_file/EvaluationDB/.ipynb_checkpoints/
-/solr/Old_file/EvaluationDB/duplicates_and_original_questions.json
-/solr/Old_file/EvaluationDB/Evaluation(COPY).ipynb
-/solr/Old_file/EvaluationDB/evaluation.json
-/solr/Old_file/EvaluationDB/evaluationCopy.json
-/solr/Old_file/EvaluationDB/evaluationWithOnlyDuplicate.csv
-/solr/Old_file/EvaluationDB/schema.json
+/solr/Evaluation/EvaluationDB/.ipynb_checkpoints/
+/solr/Evaluation/EvaluationDB/duplicates_and_original_questions.json
+/solr/Evaluation/EvaluationDB/Evaluation(COPY).ipynb
+/solr/Evaluation/EvaluationDB/evaluation.json
+/solr/Evaluation/EvaluationDB/evaluationCopy.json
+/solr/Evaluation/EvaluationDB/evaluationWithOnlyDuplicate.csv
+/solr/Evaluation/EvaluationDB/schema.json
 /solr/server/solr-webapp/
 /solr/server/solr/Evaluation/data/
 /solr/server/solr/Evaluation/conf/lang/
@@ -199,3 +199,7 @@ ENV/
 /Neo4j/.neo4j-community.vmoptions
 /Neo4j/.neo4j.conf
 /knowledge_base/knowledge_base/logs/log.txt
+/solr/Evaluation/Data/super_user.jl
+/solr/chatbot-information-retrieval/superuser.json
+/solr/Old_file/Data/superuser.json
+/solr/Old_file/Data/test.json

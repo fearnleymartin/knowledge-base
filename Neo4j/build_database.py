@@ -8,6 +8,7 @@
 from neo4j.v1 import GraphDatabase, basic_auth,ClientError
 import neo4j.v1
 import json
+import nltk
 from nltk.corpus import stopwords
 import uuid
 import string
@@ -16,11 +17,15 @@ import string
 from nltk.stem.snowball import SnowballStemmer
 import pandas as pd
 
-if __name__ == 'main':
+if __name__ == '__main__':
+
+    #nltk.download()
+
     # Constants :
-    number_of_doc =10000  # number of docs you want to post
+    number_of_doc =1000000  # number of docs you want to post
     error = 0 # number of errors
     i=0
+
 
 
     # set stemmer to english
@@ -29,14 +34,14 @@ if __name__ == 'main':
 
 
     # Connection to Neo4j DB
-    driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
+    driver = GraphDatabase.driver("bolt://localhost:7474",basic_auth =  basic_auth("neo4j", "neo4j") )
     session = driver.session()
 
     # Delete all existing nodes
     session.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
 
     # Post the docs
-    with open('../solr-6.4.1 14.31.10/Old_file/EvaluationDB/duplicates_and_original_questions.json') as f:
+    with open('../solr/Old_File/Data/superuser.json') as f:
         for line in f:
 
             # after n documents we break

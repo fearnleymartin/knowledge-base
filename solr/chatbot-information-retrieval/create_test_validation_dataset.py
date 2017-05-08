@@ -11,16 +11,16 @@ import json
 import random
 
 
-if __name__ =='main' :
+if __name__ == '__main__':
 
     # Constants :
 
-    path_data_set = 'superuser.com_questions_tagged_ubuntu_items.json'
+    path_data_set = '../Old_file/Data/superuser.json'
     path_train_output_directory = 'scripts/superuser/train.csv'
     path_test_output_directory = 'scripts/superuser/test.csv'
     path_valid_output_directory = 'scripts/superuser/valid.csv'
 
-    ratio_test_valid = 0.1
+    ratio_test_valid = 0.5
 
     #################################################################
     ################### Create Test and Valid set ###################
@@ -34,6 +34,7 @@ if __name__ =='main' :
     with open(path_data_set) as f:
         data = pd.DataFrame(json.loads(line) for line in f)
 
+    data = data[0:500]
     for e in data['question'] :
         l_question_title.append(e['question_title'])
         l_question_body.append(e['question_body'])
@@ -56,15 +57,13 @@ if __name__ =='main' :
     'Distractor_7','Distractor_8','Distractor_9'
     ]].iloc[:int(data.shape[0]*ratio_test_valid)].to_csv(path_test_output_directory,index=False)
 
-    data[['Distractor_0','Distractor_1','Distractor_2','Distractor_3','Distractor_4','Distractor_5','Distractor_6',
-    'Distractor_7','Distractor_8','Distractor_9','Ground Truth Utterance','Context'
+    data[['Context','Ground Truth Utterance','Distractor_0','Distractor_1','Distractor_2','Distractor_3','Distractor_4','Distractor_5','Distractor_6',
+    'Distractor_7','Distractor_8','Distractor_9'
     ]].iloc[int(data.shape[0]*ratio_test_valid):].to_csv(path_valid_output_directory,index=False)
 
-
-
-    ########################################################
-    ################### Create Train Set ###################
-    ########################################################
+    #################################################################
+    ################### Create Train Set ############################
+    #################################################################
 
     print('Create Train Set')
     l_question_title = []
@@ -74,6 +73,7 @@ if __name__ =='main' :
     # Open the json and store the title and the body of the question
     with open(path_data_set) as f:
         data = pd.DataFrame(json.loads(line) for line in f)
+    data = data[0:5000]
     for e in data['question'] :
         l_question_title.append(e['question_title'])
         l_question_body.append(e['question_body'])

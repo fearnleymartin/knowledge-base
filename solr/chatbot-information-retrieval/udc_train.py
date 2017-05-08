@@ -3,15 +3,13 @@ import time
 import itertools
 import sys
 import tensorflow as tf
-sys.path.append('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/chatbot-retrieval/')
 import udc_model
 import udc_hparams
 import udc_metrics
 import udc_inputs
 
-sys.path.append('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/chatbot-retrieval/models')
 
-from dual_encoder import dual_encoder_model
+from models.dual_encoder import dual_encoder_model
 
 tf.flags.DEFINE_string("input_dir", "scripts/superuser", "Directory containing input data files 'train.tfrecords' and 'validation.tfrecords'")
 tf.flags.DEFINE_string("model_dir", None, "Directory to store model checkpoints (defaults to ./runs)")
