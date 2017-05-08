@@ -53,15 +53,43 @@ class MasterSpider(CrawlSpider):
     # deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
     # restrict_xpaths = ()
 
-    allow = ('/t/', '/p/', '/f/')
+    # community dynamics
+    # allow = ('/t/', '/p/', '/f/')
+    # deny = ('/tags/')
+    # restrict_xpaths = (gt.css_to_xpath('.post-name'), gt.css_to_xpath('.pager'))
 
-    deny = ('/tags/')
-    restrict_xpaths = (gt.css_to_xpath('.post-name'), gt.css_to_xpath('.pager'))
+    # mac rumors
+    # allow = ('threads', 'forum')
+    # deny = ('members')
+    # restrict_xpaths = (gt.css_to_xpath('.listBlock'),
+    #                    gt.css_to_xpath('.PageNav'))
+
+    # reddit
+    # allow = ('/r/iphonehelp/')
+    # deny = ('/user/', "/login", )
+    # restrict_xpaths = (gt.css_to_xpath('.entry'),
+    #                    gt.css_to_xpath('.nav-buttons'))
+
+    # spiceworks
+    # allow = ('/topic/', '/windows')
+    # deny = ('/people/', "/pages", 'service-providers', )
+    # restrict_xpaths = (gt.css_to_xpath('.topics'),
+    #                    gt.css_to_xpath('.sui-pagination'))
+
+    # eset
+    allow = ('/topic/', '/forum')
+    deny = ('/login', "/profile",)
+    restrict_xpaths = (gt.css_to_xpath('.ipsDataItem_main'),
+                       gt.css_to_xpath('.ipsPagination'))
 
     # allow = ('threads', 'forum')
     # deny = ('members')
     # restrict_xpaths = (gt.css_to_xpath('.listBlock'),
     #                    gt.css_to_xpath('.PageNav'))
+
+    # allow = ()
+    # deny = ()
+    # restrict_xpaths = ()
 
 
     rules = (

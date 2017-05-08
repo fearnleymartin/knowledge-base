@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 
 data = []
-with open('BDD-Q-A.csv','r') as csvfile:
+with open('BDD-Q-A_with_extra_criteria.csv','r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
     for row in csvreader:
         if 'Yes' in row[1]:
@@ -26,6 +26,7 @@ class TestResultsPage:
     isResultsPage = IsResultsPage()
 
     def test_is_result_page(self):
+        print("started")
         results = []
         count = 0
         for url_pair in data:
@@ -91,5 +92,7 @@ class TestResultsPage:
         assert expected_count == true_count
 
 
-
+if __name__ == "__main__":
+    t = TestResultsPage()
+    t.test_is_result_page()
 

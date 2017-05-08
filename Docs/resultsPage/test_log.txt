@@ -1,0 +1,667 @@
+/Users/fearnleymartin/anaconda/envs/swisscom/bin/python /Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/tests/test_is_results_page.py
+started
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5z2o1r_two_problems_iphone_6_and_iphone_7_.html
+multiple dates found: [datetime.datetime(2017, 3, 13, 2, 43, 49, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 2, 43, 49)]
+multiple dates found: [datetime.datetime(2017, 3, 13, 5, 10, 44, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 5, 10, 44)]
+https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5z21w8_iphone_shared_album_.html
+https://www.reddit.com/r/iphonehelp/comments/5z21w8/iphone_shared_album/ False
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5z1yje_water_damaged_se_.html
+multiple dates found: [datetime.datetime(2017, 3, 13, 5, 21, 33, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 5, 21, 33)]
+multiple dates found: [datetime.datetime(2017, 3, 13, 0, 34, 14), datetime.datetime(2017, 3, 13, 0, 34, 14, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 9, 44, 32, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 9, 44, 32)]
+https://www.reddit.com/r/iphonehelp/comments/5z1yje/water_damaged_se/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5z0keu_iphone_se_will_charge_but_not_sync_with_devices_.html
+multiple dates found: [datetime.datetime(2017, 3, 12, 22, 48, 14), datetime.datetime(2017, 3, 12, 22, 48, 14, tzinfo=tzutc())]
+https://www.reddit.com/r/iphonehelp/comments/5z0keu/iphone_se_will_charge_but_not_sync_with_devices/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yz45b_iphone_7_plus_i_woke_up_and_my_messages_were_all_.html
+multiple dates found: [datetime.datetime(2017, 3, 13, 0, 7, 21, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 0, 7, 21)]
+https://www.reddit.com/r/iphonehelp/comments/5yz45b/iphone_7_plus_i_woke_up_and_my_messages_were_all/ False
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yz04d_whenever_i_press_voicemail_this_comes_up_can_.html
+multiple dates found: [datetime.datetime(2017, 3, 12, 20, 56, 13), datetime.datetime(2017, 3, 12, 20, 56, 13, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 5, 24, 44, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 5, 24, 44)]
+https://www.reddit.com/r/iphonehelp/comments/5yz04d/whenever_i_press_voicemail_this_comes_up_can/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yzpnz_iphone_6s_my_phone_doesnt_give_me_any_.html
+multiple dates found: [datetime.datetime(2017, 3, 12, 20, 55, 3, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 20, 55, 3)]
+https://www.reddit.com/r/iphonehelp/comments/5yzpnz/iphone_6s_my_phone_doesnt_give_me_any/ True
+multiple dates found: [datetime.datetime(2017, 3, 12, 21, 2, 16, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 21, 2, 16)]
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yxs4q_my_sister_put_her_iphone_into_lost_mode_in_an_.html
+multiple dates found: [datetime.datetime(2017, 3, 12, 21, 14, 14), datetime.datetime(2017, 3, 12, 21, 14, 14, tzinfo=tzutc())]
+https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yp3la_is_this_for_real_i_got_two_different_thing_on_my_.html
+multiple dates found: [datetime.datetime(2017, 3, 13, 8, 19, 2), datetime.datetime(2017, 3, 13, 8, 19, 2, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 11, 5, 22, 46, tzinfo=tzutc()), datetime.datetime(2017, 3, 10, 22, 40, 11), datetime.datetime(2017, 3, 10, 22, 40, 11, tzinfo=tzutc()), datetime.datetime(2017, 3, 11, 5, 22, 46)]
+https://www.reddit.com/r/iphonehelp/comments/5yp3la/is_this_for_real_i_got_two_different_thing_on_my/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.reddit.com_r_iphonehelp_comments_5yqtlm_iphone_wont_turn_on_if_left_alone_for_a_few_.html
+multiple dates found: [datetime.datetime(2017, 3, 11, 5, 1, tzinfo=tzutc()), datetime.datetime(2017, 3, 11, 5, 1), datetime.datetime(2017, 3, 11, 5, 23, 21), datetime.datetime(2017, 3, 11, 5, 23, 21, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 11, 6, 6, 28, tzinfo=tzutc()), datetime.datetime(2017, 3, 11, 6, 6, 28)]
+multiple dates found: [datetime.datetime(2017, 3, 11, 6, 8, 2, tzinfo=tzutc()), datetime.datetime(2017, 3, 11, 6, 8, 2), datetime.datetime(2017, 3, 11, 15, 16, 2, tzinfo=tzutc())]
+https://www.reddit.com/r/iphonehelp/comments/5yqtlm/iphone_wont_turn_on_if_left_alone_for_a_few/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_03_07_reddits-heading-to-sxsw_.html
+https://redditblog.com/2017/03/07/reddits-heading-to-sxsw/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_03_02_rnintendoswitch-celebrates-switchmas-with-charity-live-stream_.html
+https://redditblog.com/2017/03/02/rnintendoswitch-celebrates-switchmas-with-charity-live-stream/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_03_02_a-look-back-at-black-history-month-at-reddit_.html
+https://redditblog.com/2017/03/02/a-look-back-at-black-history-month-at-reddit/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_02_22_imdb-users-find-new-home-for-movie-commentary-on-reddit_.html
+https://redditblog.com/2017/02/22/imdb-users-find-new-home-for-movie-commentary-on-reddit/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_02_15_redditors-take-home-innovation-award-at-spacexs-hyperloop-competition_.html
+https://redditblog.com/2017/02/15/redditors-take-home-innovation-award-at-spacexs-hyperloop-competition/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_02_08_announcing-reddits-new-partnership-with-crowdtangle_.html
+https://redditblog.com/2017/02/08/announcing-reddits-new-partnership-with-crowdtangle/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2017_01_31_redditors-respond-to-alexis-ohanians-open-letter-by-sharing-their-immigration-stories_.html
+https://redditblog.com/2017/01/31/redditors-respond-to-alexis-ohanians-open-letter-by-sharing-their-immigration-stories/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_redditblog.com_2016_10_25_extra-life-is-almost-here_.html
+https://redditblog.com/2016/10/25/extra-life-is-almost-here/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_enter-sim-pin-without-restarting.453861_.html
+multiple dates found: [datetime.datetime(2008, 3, 23, 0, 0), datetime.datetime(2008, 3, 23, 21, 24)]
+https://forums.macrumors.com/threads/enter-sim-pin-without-restarting.453861/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_message-app-chinese-character-greetings-disappeared.2036518_.html
+https://forums.macrumors.com/threads/message-app-chinese-character-greetings-disappeared.2036518/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_touch-id-problem-iphone-7.2034435_.html
+multiple dates found: [datetime.datetime(2009, 3, 10, 0, 0), datetime.datetime(2017, 3, 1, 0, 0), datetime.datetime(2017, 3, 1, 3, 32)]
+https://forums.macrumors.com/threads/touch-id-problem-iphone-7.2034435/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_dfu-restore-and-app-data.2036079_.html
+https://forums.macrumors.com/threads/dfu-restore-and-app-data.2036079/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_is-this-normal-battery-drain.2035995_.html
+https://forums.macrumors.com/threads/is-this-normal-battery-drain.2035995/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_gold-iphone-6-plus-headphones-do-not-fit.2034263_.html
+https://forums.macrumors.com/threads/gold-iphone-6-plus-headphones-do-not-fit.2034263/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_facebook-calendar-dissapeared-from-ios.2035914_.html
+https://forums.macrumors.com/threads/facebook-calendar-dissapeared-from-ios.2035914/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_caller-given-a-option-to-press-a-key-to-go-through-with-the-call-or-go-to-voice-mail-ideas.2034115_.html
+https://forums.macrumors.com/threads/caller-given-a-option-to-press-a-key-to-go-through-with-the-call-or-go-to-voice-mail-ideas.2034115/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_do-not-disturb-email-notification.2035861_.html
+no dates found !
+https://forums.macrumors.com/threads/do-not-disturb-email-notification.2035861/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_icloud-backup.2035643_.html
+https://forums.macrumors.com/threads/icloud-backup.2035643/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_anyway-to-disable-bluetooth-auto-connect.1764085_.html
+https://forums.macrumors.com/threads/anyway-to-disable-bluetooth-auto-connect.1764085/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_forums_iphone-tips-help-and-troubleshooting.109_.html
+multiple dates found: [datetime.datetime(2017, 5, 5, 4, 30), datetime.datetime(2017, 5, 4, 8, 16)]
+https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/ False
+multiple dates found: [datetime.datetime(2017, 4, 25, 17, 12), datetime.datetime(2017, 4, 25, 0, 0), datetime.datetime(2013, 3, 27, 0, 0)]
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.macrumors.com_mac_.html
+multiple dates found: [datetime.datetime(2017, 5, 4, 0, 0), datetime.datetime(2017, 5, 4, 2, 41)]
+multiple dates found: [datetime.datetime(2017, 4, 28, 4, 31), datetime.datetime(2017, 4, 28, 0, 0)]
+multiple dates found: [datetime.datetime(2017, 4, 26, 6, 17), datetime.datetime(2017, 4, 26, 0, 0)]
+multiple dates found: [datetime.datetime(2017, 4, 24, 0, 0), datetime.datetime(2017, 4, 24, 7, 30)]
+https://www.macrumors.com/mac/ False
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_spy_.html
+https://forums.macrumors.com/spy/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_posts_24388996_.html
+https://forums.macrumors.com/posts/24388996/ True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.macrumors.com_threads_screen-brightness-control-disappeared-after-upgrading-to-10-9-cinema-adc.1668735_.html
+https://forums.macrumors.com/threads/screen-brightness-control-disappeared-after-upgrading-to-10-9-cinema-adc.1668735/#post-24389000 True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 0, 0), datetime.datetime(2017, 3, 13, 4, 32)]
+https://forums.macrumors.com/threads/ww-the-presidents-cabinet.2034928/page-2#post-24388999 True
+--------------------------------------------------------------------------------------
+https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998 True
+--------------------------------------------------------------------------------------
+https://forums.macrumors.com/threads/to-conscript-or-not-to-conscript.2036395/page-2#post-24388997 True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2013, 2, 7, 20, 57), datetime.datetime(2013, 2, 7, 20, 57, 24), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 18, 0, 35), datetime.datetime(2013, 6, 18, 0, 35, 58), datetime.datetime(2013, 6, 18, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 2, 7, 21, 6), datetime.datetime(2013, 2, 7, 21, 6, 47), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 18, 0, 35), datetime.datetime(2013, 6, 18, 0, 35, 58), datetime.datetime(2013, 6, 18, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 7, 18), datetime.datetime(2013, 4, 16, 7, 18, 32)]
+multiple dates found: [datetime.datetime(2013, 2, 7, 20, 57), datetime.datetime(2013, 2, 7, 20, 57, 24), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52)]
+multiple dates found: [datetime.datetime(2013, 4, 19, 15, 46, 12), datetime.datetime(2013, 4, 19, 0, 0), datetime.datetime(2013, 4, 19, 15, 46)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52)]
+multiple dates found: [datetime.datetime(2013, 2, 7, 20, 57), datetime.datetime(2013, 2, 7, 20, 57, 24), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 6, 24, 20, 56), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52), datetime.datetime(2013, 6, 24, 20, 56, 18), datetime.datetime(2013, 6, 24, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 7, 2, 20, 47), datetime.datetime(2013, 4, 19, 15, 46), datetime.datetime(2013, 7, 2, 20, 47, 48), datetime.datetime(2013, 7, 2, 0, 0), datetime.datetime(2013, 4, 19, 15, 46, 12), datetime.datetime(2013, 4, 19, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 2, 8, 5, 30, 3), datetime.datetime(2013, 2, 8, 5, 30), datetime.datetime(2013, 2, 8, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 5, 14, 14, 41, 8), datetime.datetime(2013, 5, 14, 0, 0), datetime.datetime(2013, 5, 14, 14, 41)]
+multiple dates found: [datetime.datetime(2013, 2, 7, 20, 57), datetime.datetime(2013, 2, 7, 20, 57, 24), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 2, 8, 5, 30, 3), datetime.datetime(2013, 2, 8, 5, 30), datetime.datetime(2013, 2, 8, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 8, 26, 0, 0), datetime.datetime(2013, 8, 26, 1, 7), datetime.datetime(2013, 8, 26, 1, 7, 27)]
+multiple dates found: [datetime.datetime(2013, 5, 15, 20, 24), datetime.datetime(2013, 5, 15, 0, 0), datetime.datetime(2013, 5, 15, 20, 24, 5)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52)]
+multiple dates found: [datetime.datetime(2013, 2, 14, 11, 52, 7), datetime.datetime(2013, 2, 14, 11, 52), datetime.datetime(2013, 2, 14, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 12, 11, 5, 42), datetime.datetime(2013, 12, 11, 0, 0), datetime.datetime(2013, 12, 11, 5, 42, 54)]
+https://forum.eset.com/topic/353-forum-feedback/ True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 5, 15, 20, 24), datetime.datetime(2013, 5, 15, 0, 0), datetime.datetime(2013, 5, 15, 20, 24, 5)]
+multiple dates found: [datetime.datetime(2013, 12, 27, 0, 0), datetime.datetime(2013, 5, 22, 15, 16), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 12, 27, 20, 27), datetime.datetime(2013, 12, 27, 20, 27, 44)]
+multiple dates found: [datetime.datetime(2014, 4, 12, 12, 59), datetime.datetime(2014, 4, 12, 0, 0), datetime.datetime(2014, 4, 12, 12, 59, 10)]
+multiple dates found: [datetime.datetime(2013, 5, 15, 20, 24), datetime.datetime(2013, 5, 15, 0, 0), datetime.datetime(2013, 5, 15, 20, 24, 5)]
+multiple dates found: [datetime.datetime(2017, 1, 17, 0, 19), datetime.datetime(2017, 1, 17, 0, 19, 7)]
+multiple dates found: [datetime.datetime(2013, 2, 8, 0, 0), datetime.datetime(2013, 2, 8, 12, 49, 6), datetime.datetime(2013, 2, 8, 12, 49)]
+https://forum.eset.com/topic/1591-licensing-faq/ True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2013, 2, 7, 20, 57), datetime.datetime(2013, 2, 7, 20, 57, 24), datetime.datetime(2013, 2, 7, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 11, 20, 48), datetime.datetime(2013, 6, 11, 0, 0), datetime.datetime(2013, 6, 11, 20, 48, 48)]
+multiple dates found: [datetime.datetime(2013, 6, 16, 1, 57, 54), datetime.datetime(2013, 6, 16, 2, 17, 20), datetime.datetime(2013, 6, 16, 0, 0), datetime.datetime(2013, 6, 16, 1, 57), datetime.datetime(2013, 6, 16, 2, 17)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 6, 21, 0, 0), datetime.datetime(2013, 6, 21, 14, 15), datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 6, 21, 14, 15, 56)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 6, 21, 14, 52, 13), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 6, 21, 0, 0), datetime.datetime(2013, 4, 16, 5, 52), datetime.datetime(2013, 6, 21, 14, 52)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 7, 18), datetime.datetime(2013, 4, 16, 7, 18, 32)]
+multiple dates found: [datetime.datetime(2013, 6, 10, 17, 6, 50), datetime.datetime(2013, 6, 10, 17, 6), datetime.datetime(2013, 6, 10, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16)]
+multiple dates found: [datetime.datetime(2013, 7, 23, 21, 0, 54), datetime.datetime(2013, 7, 23, 21, 0), datetime.datetime(2013, 7, 23, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 7, 29, 12, 14, 35), datetime.datetime(2013, 7, 29, 12, 14), datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 7, 29, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 8, 19, 11, 8, 14), datetime.datetime(2013, 8, 19, 0, 0), datetime.datetime(2013, 8, 19, 11, 8)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 8, 19, 11, 8, 14), datetime.datetime(2013, 8, 19, 0, 0), datetime.datetime(2013, 8, 19, 11, 8)]
+multiple dates found: [datetime.datetime(2013, 8, 25, 16, 6, 29), datetime.datetime(2013, 8, 25, 16, 6), datetime.datetime(2013, 8, 25, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 8, 26, 0, 0), datetime.datetime(2013, 8, 26, 1, 12, 52), datetime.datetime(2013, 8, 26, 1, 12), datetime.datetime(2013, 8, 26, 1, 7), datetime.datetime(2013, 8, 26, 1, 7, 27)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+https://forum.eset.com/topic/352-introduce-yourself/ True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2013, 2, 8, 0, 0), datetime.datetime(2013, 2, 8, 12, 49, 6), datetime.datetime(2013, 2, 8, 12, 49)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 7, 18), datetime.datetime(2013, 4, 16, 7, 18, 32)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 5, 22, 15, 16, 58), datetime.datetime(2013, 5, 22, 0, 0), datetime.datetime(2013, 5, 22, 15, 16)]
+multiple dates found: [datetime.datetime(2013, 5, 15, 20, 24), datetime.datetime(2013, 5, 15, 0, 0), datetime.datetime(2013, 5, 15, 20, 24, 5)]
+multiple dates found: [datetime.datetime(2013, 12, 11, 5, 42), datetime.datetime(2013, 12, 11, 0, 0), datetime.datetime(2013, 12, 11, 5, 42, 54)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 9, 20, 0, 0), datetime.datetime(2013, 9, 20, 14, 8), datetime.datetime(2013, 9, 20, 14, 8, 27)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2014, 5, 21, 0, 0), datetime.datetime(2013, 6, 25, 9, 28), datetime.datetime(2014, 5, 21, 22, 44), datetime.datetime(2014, 5, 21, 22, 44, 8)]
+multiple dates found: [datetime.datetime(2013, 6, 14, 20, 2), datetime.datetime(2013, 6, 14, 0, 0), datetime.datetime(2013, 6, 14, 20, 2, 3)]
+multiple dates found: [datetime.datetime(2014, 7, 13, 4, 41, 49), datetime.datetime(2014, 7, 13, 4, 41), datetime.datetime(2014, 7, 13, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2014, 2, 14, 2, 35, 4), datetime.datetime(2014, 2, 14, 2, 35), datetime.datetime(2014, 2, 14, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2014, 5, 30, 11, 56, 15), datetime.datetime(2014, 5, 30, 11, 56), datetime.datetime(2014, 5, 30, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2014, 5, 30, 11, 56, 15), datetime.datetime(2014, 5, 30, 11, 56), datetime.datetime(2014, 5, 30, 0, 0)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2013, 6, 17, 21, 2, 58), datetime.datetime(2013, 6, 17, 0, 0), datetime.datetime(2013, 6, 17, 21, 2)]
+multiple dates found: [datetime.datetime(2014, 6, 3, 0, 0), datetime.datetime(2014, 6, 3, 16, 6), datetime.datetime(2014, 6, 3, 16, 6, 5)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28)]
+multiple dates found: [datetime.datetime(2014, 6, 3, 0, 0), datetime.datetime(2014, 6, 3, 16, 6), datetime.datetime(2014, 6, 3, 16, 6, 5)]
+multiple dates found: [datetime.datetime(2013, 6, 25, 0, 0), datetime.datetime(2013, 6, 25, 9, 28, 6), datetime.datetime(2014, 8, 26, 16, 27, 44), datetime.datetime(2014, 8, 26, 0, 0), datetime.datetime(2014, 8, 26, 16, 27), datetime.datetime(2013, 6, 25, 9, 28)]
+https://forum.eset.com/topic/1484-two-factor-authentication-are-you-using-it/ True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2013, 2, 8, 0, 0), datetime.datetime(2013, 2, 8, 12, 49, 6), datetime.datetime(2013, 2, 8, 12, 49)]
+multiple dates found: [datetime.datetime(2013, 4, 16, 5, 52, 59), datetime.datetime(2013, 4, 16, 0, 0), datetime.datetime(2013, 4, 16, 5, 52)]
+https://forum.eset.com/topic/2330-goexplorenet-celebrates-the-best-of-the-web/ True
+--------------------------------------------------------------------------------------
+https://forum.eset.com/topic/351-general-discussion-guidelines/ True
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi/issues/300 True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 4, 10, 0, 0), datetime.datetime(2014, 10, 1, 0, 0)]
+https://github.com/jitsi/jitsi/issues/305 True
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi/issues/311 False
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi/issues/321 True
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi/issues/322 True
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi/issues/327 False
+--------------------------------------------------------------------------------------
+https://github.com/jitsi/jitsi True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 4, 30, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 4, 30, 13, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 4, 32, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 4, 32, 47, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 4, 50, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 4, 50, 52, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 7, 49, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 7, 49, 27, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 11, 45, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 11, 45, 24, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 9, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 9, 11, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 24, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 24, 21, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 47, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 47, 42, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 49, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 49, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 3, 11, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 15, 11, 9, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 15, 13, 14, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 3, 13, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 4, 46, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 16, 46, 3, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 5, 24, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 17, 24, 38, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 5, 56, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 17, 56, 27, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 14, 1, 31, 48, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 1, 31, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 1, 53, 40, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 1, 53, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 2, 18, 57, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 2, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 2, 42, 22, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 2, 42, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+https://community.spiceworks.com/topic/1973594-is-there-any-way-to-prevent-user-from-running-any-exe-file True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 12, 11, 44, 51, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 11, 44, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 12, 11, 53, 2, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 11, 53, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 12, 12, 7, 47, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 12, 7, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 12, 19, 18, 57, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 7, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 9, 10, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 14, 9, 10, 11, tzinfo=tzutc())]
+https://community.spiceworks.com/topic/1973512-connect-existing-pc-s-to-new-sbs2011-install True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 12, 16, 39, 26, tzinfo=tzutc()), datetime.datetime(2017, 3, 12, 4, 39, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 12, 7, 34, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 12, 19, 34, 29, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 12, 19, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 0, 19, 59, tzinfo=tzutc())]
+https://community.spiceworks.com/topic/1973523-user-in-administrators-group-can-t-open-folder-under-c-users True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 11, 16, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 11, 16, 18, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 11, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 11, 18, 9, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 11, 21, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 11, 21, 43, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 11, 24, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 11, 24, 14, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 12, 36, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 12, 36, 33, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 13, 1, 48, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 1, 1, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+https://community.spiceworks.com/topic/1973677-is-it-possible-to-use-nfc-to-start-tasks-on-a-pc True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 12, 9, 23, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 12, 9, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 12, 20, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 12, 20, 41, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 17, 18, 16, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 5, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 20, 23, 38, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 8, 23, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 10, 7, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 14, 10, 7, 3, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 14, 10, 26, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 14, 10, 26, 59, tzinfo=tzutc())]
+https://community.spiceworks.com/topic/1973703-start-menu-layout-gpo-not-being-enforced-on-windows-10-anniversary-edition True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 13, 5, 31, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 1, 5, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 13, 15, 13, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 1, 15, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 36, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 36, 57, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 13, 46, 48, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 1, 46, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 17, 1, 41, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 17, 13, 41, 30, tzinfo=tzutc())]
+https://community.spiceworks.com/topic/1973715-domain-member-remote-access True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 14, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 14, 22, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 13, 14, 40, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 1, 14, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 17, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 17, 25, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 18, 1, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 26, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 26, 9, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 31, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 31, 59, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 48, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 48, 30, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 1, 59, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 13, 59, 33, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 2, 3, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 14, 3, 40, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 15, 23, 31, tzinfo=tzutc()), datetime.datetime(2017, 3, 13, 3, 23, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 13, 7, 16, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 19, 16, 30, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 13, 10, 24, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 13, 22, 24, 30, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 14, 0, 40, 30, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 12, 40, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 14, 4, 35, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 14, 16, 35, 22, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 14, 7, 37, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 3, 14, 19, 37, 19, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 3, 14, 19, 38, 45, tzinfo=tzutc()), datetime.datetime(2017, 3, 14, 7, 38, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 3, 20, 13, 51, 44, tzinfo=tzutc()), datetime.datetime(2017, 3, 20, 1, 51, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+https://community.spiceworks.com/topic/1973720-unable-to-take-ownership True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 1, 10, 0, 0), datetime.datetime(2017, 5, 2, 20, 46, 27, tzinfo=tzutc()), datetime.datetime(2017, 5, 2, 8, 46, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 5, 1, 53, 6, tzinfo=tzutc()), datetime.datetime(2017, 5, 5, 1, 53, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 4, 6, 21, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 4, 18, 21, 33, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 5, 5, 10, 27, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 5, 10, 27, 51, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 5, 5, 9, 21, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 5, 9, 21, 2, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 5, 5, 9, 18, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 5, 9, 18, 24, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 5, 5, 9, 2, 17, tzinfo=tzutc()), datetime.datetime(2017, 5, 5, 9, 2, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 4, 9, 41, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 4, 21, 41, 19, tzinfo=tzutc())]
+multiple dates found: [datetime.datetime(2017, 5, 5, 1, 56, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 5, 1, 56, 19, tzinfo=tzutc())]
+https://community.spiceworks.com/windows?source=navbar-subnav False
+--------------------------------------------------------------------------------------
+https://docs.python.org/3/library/urllib.parse.html True
+--------------------------------------------------------------------------------------
+https://support.wix.com/en/ticket/c80d73fd-0599-4b07-a766-440ee5a6c720 False
+--------------------------------------------------------------------------------------
+http://www.wix.com/website/templates/ True
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/forum True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/827208 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/441159 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/303113 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/878211 True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_forums.adobe.com_thread_878211.html
+https://forums.adobe.com/thread/878211 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/914975 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/597753 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/472922 True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/news True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/welcome True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/thread/305705# True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/community/creative_cloud True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/community/download_install_setup True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/community/flashplayer True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/community/adobe_reader_forums True
+--------------------------------------------------------------------------------------
+https://forums.adobe.com/community/lightroom True
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/reinnstalling_old_version_after_breakdown False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/determine_size_of_clickable_map_when_exporting_to_the_web False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/how_can_i_change_a_hyperlink_icon False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/improve_support_for_macros_visibility_deployment_and_triggering False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/create_a_corporate_connect_cloud_offering_that_can_be_centrally_managed_by_a_customer_it_group False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/im_stuck-1579m8 False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/major_usability_problem_in_mindmanager_9 False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/categories True
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/details True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 5, 5, 7, 56, 29, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 3, 7, 47, 20, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 25, 18, 34, 26, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 4, 19, 2, 43, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 3, 11, 7, 35, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 3, 12, 7, 48, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 3, 6, 23, 3, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2001, 5, 1, 0, 0), datetime.datetime(2017, 5, 3, 8, 43, 22, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 1, 23, 56, 40, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 1, 0, 50, 34, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 1, 23, 20, 5, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 19, 26, 51, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 1, 20, 21, 40, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 1, 16, 53, 43, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2013, 1, 22, 11, 58, 16, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 1, 17, 20, 40, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 29, 19, 9, 47, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 5, 1, 10, 15, 14, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 5, 1, 6, 26, 30, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2015, 8, 6, 17, 50, 6, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 27, 20, 42, 49, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 29, 12, 14, 48, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 27, 0, 18, 35, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2016, 10, 23, 11, 58, 57, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 25, 10, 20, 4, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 16, 13, 4, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 26, 14, 13, 21, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 9, 43, 54, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 26, 10, 47, 27, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 14, 12, 41, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2016, 11, 29, 16, 50, 59, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 10, 8, 10, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 26, 8, 59, 17, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 4, 26, 9, 36, 7, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 25, 21, 0, 43, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2015, 10, 6, 17, 9, 36, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 25, 13, 40, 6, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2017, 6, 4, 0, 0), datetime.datetime(2017, 4, 25, 14, 54, 48, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+multiple dates found: [datetime.datetime(2017, 4, 24, 14, 56, 58, tzinfo=tzfile('/usr/share/zoneinfo/UTC')), datetime.datetime(2015, 10, 22, 7, 35, 43, tzinfo=tzfile('/usr/share/zoneinfo/UTC'))]
+https://community.mindjet.com/mindjet False
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/support_multiple_monitors-mu7cz True
+--------------------------------------------------------------------------------------
+https://community.mindjet.com/mindjet/topics/mindjet-mindmanager-for-windows-floating-topic-no-keyboard-shortcuts True
+--------------------------------------------------------------------------------------
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/506813-oscdimg-and-an-iso-label-with-the-udf-1-02-system-file True
+--------------------------------------------------------------------------------------
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/509663-sysprep-errors-for-windows-10-64-bit-ver-1607-corp-image False
+--------------------------------------------------------------------------------------
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/507277-windows-10-on-my-dell-latitude-e6420-help-needed True
+--------------------------------------------------------------------------------------
+no dates found !
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/507335-how-to-repair-dual-boot-on-a-second-hard-drive-when-the-primary-boot-disk-failed True
+--------------------------------------------------------------------------------------
+no dates found !
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/507588-cellular-connection-gpo-control True
+--------------------------------------------------------------------------------------
+no dates found !
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/507027-windows-10-rdp False
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/507025-enterprise-n-the-anniversary-update False
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/forum/client-operating-systems/windows-10/506779-upgrade-to-larger-hard-drive False
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/ True
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/search?searchJSON=%7B%22last%22%3A%7B%22from%22%3A%22lastDay%22%7D%2C%22view%22%3A%22topic%22%2C%22starter_only%22%3A+1%2C%22sort%22%3A%7B%22lastcontent%22%3A%22desc%22%7D%2C%22exclude_type%22%3A%5B%22vBForum_PrivateMessage%22%5D%7D True
+--------------------------------------------------------------------------------------
+https://www.petri.com/forums/memberlist True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/19985641 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/19985640 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/ True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/w/laptop True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/ True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/dell-blogs/ True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/techcenter/ True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/owners-club/ False
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/p/dell_technologies_faqs?dgc=IR&cid=304513&lid=5776115 True
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 4, 48), datetime.datetime(2015, 10, 15, 0, 0), datetime.datetime(2015, 7, 15, 0, 0)]
+http://en.community.dell.com/support-forums/laptop/f/3518/t/19645547 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007327 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007698 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007696 False
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007541 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/19999789 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007521 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007682 True
+--------------------------------------------------------------------------------------
+http://en.community.dell.com/support-forums/laptop/f/3518/t/20007661 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765618/how-to-see-regression-effects-on-the-effects-plot-without-hovering False
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765616/opening-a-3d-scene-in-wpf-using-webbrowser-control True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765615/how-to-remove-all-formats-except-embeds False
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765614/triggering-click-on-label-does-not-run-ng-change-on-its-radio-button True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765608/drools-complex-rule-advice-on-accumulating-facts True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765603/incremental-loading-winrt-gridviews-load-new-items-on-scrolling-horizontally False
+--------------------------------------------------------------------------------------
+multiple dates found: [datetime.datetime(2017, 3, 13, 14, 4, 47), datetime.datetime(2017, 3, 13, 14, 51, 8)]
+http://stackoverflow.com/questions/42765595/unable-to-cast-com-object-of-type-rdpcomapilib-rdpsessionclass-to-interface-ty True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/questions/42765597/angular-2-setting-app-routing-issue True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs/137574/senior-python-developer-f-m-delivery-hero-gmbh?offset=-1 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs/137577/decentralized-systems-engineer-bigchaindb?offset=1 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs/135389/data-model-engineer-epfl-blue-brain-project?offset=4 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs/137123/software-engineer-continuous-deployment-epfl-blue-brain-project?offset=5 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs/137122/big-data-software-developer-epfl-blue-brain-project?offset=6 True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/jobs?med=site-ui&ref=jobs-tab True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/documentation True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/documentation/android/topics True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/documentation/ios/topics True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/tags True
+--------------------------------------------------------------------------------------
+http://stackoverflow.com/users True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31299307-Password-reset-required-Spybot True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31293419-Free-Tor-Browser-6-5-1-is-released False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31292808-Spybot-Search-Destroy-Weekly-Update-March-8-2017 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31289734-Free-Svchost-Process-Analyzer-1-3-NEW False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31258513-App-Update-Belarc-Advisor-Security-Def-2017-2-x-FEB True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31267647-SpywareBlaster-Database-Update-February-22-2017 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31268120-Free-PuTTY-v0-68 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31267372-Spybot-Search-Destroy-Weekly-Update-February-22-2017 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31241948-Free-Paid-Free-Akick-Total-Security-v1-4 False
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forum/r31261351-Malwarebytes-Anti-Malware-v-3-0-6-1469-BETA-l-Preview True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/speedtest True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/tools True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/news True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/forums/all True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/faqnew True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/about True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/reviews/2956 True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/reviews/2568 True
+--------------------------------------------------------------------------------------
+http://www.dslreports.com/reviews/2911 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229741 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229821 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229815 False
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229701 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229827 False
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229803 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229824 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229818 False
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229823 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/f/117/t/229659 True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/b True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/b/crmvideos True
+--------------------------------------------------------------------------------------
+https://community.dynamics.com/crm/p/experts True
+--------------------------------------------------------------------------------------
+https://cloud.microsoft.com/en-us/#fbid=JuAXHbXOkon True
+--------------------------------------------------------------------------------------
+https://products.office.com/en-us/business/enterprise-productivity-tools True
+--------------------------------------------------------------------------------------
+https://www.google.ch/?gfe_rd=cr&ei=w6nGWKatIuPI8gfNqLrICg True
+--------------------------------------------------------------------------------------
+read_from_file
+/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/html_pages/results_www.google.ch_.html
+https://www.google.ch/?gfe_rd=cr&ei=w6nGWKatIuPI8gfNqLrICg#q=page+no+result&* True
+--------------------------------------------------------------------------------------
+https://baymard.com/ecommerce-search/benchmark/page-types/no-search-results-page True
+--------------------------------------------------------------------------------------
+https://www.nngroup.com/articles/search-no-results-serp/ True
+--------------------------------------------------------------------------------------
+http://www.sigmaaldrich.com/catalog/NoSearchResults.jsp?term=3m60007000seriesfilters1234598765&interface=Substance&N=0+&mode=boolean&lang=en&region=US&focus=product&lang=en&region=US True
+--------------------------------------------------------------------------------------
+https://books.google.ch/books?id=rA6GQqvXiSEC&pg=PA21&lpg=PA21&dq=page+no+result&source=bl&ots=rG9Qn5HsNN&sig=PajJVAmI41FGtTI01erwfa7Fi-o&hl=fr&sa=X&ved=0ahUKEwjUy4jl1dPSAhUEVxoKHRssBs0Q6AEIODAE#v=onepage&q=page%20no%20result&f=false True
+--------------------------------------------------------------------------------------
+https://support.google.com/webmasters/answer/34444?hl=en True
+--------------------------------------------------------------------------------------
+https://support.google.com/websearch/answer/35891?hl=en True
+--------------------------------------------------------------------------------------
+147
+183
+Traceback (most recent call last):
+  File "/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/tests/test_is_results_page.py", line 97, in <module>
+    t.test_is_result_page()
+  File "/Users/fearnleymartin/Documents/swisscom/knowledge-base/knowledge_base/tests/test_is_results_page.py", line 47, in test_is_result_page
+    assert expected_count == true_count
+AssertionError
+
+Process finished with exit code 1
