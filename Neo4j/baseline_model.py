@@ -7,7 +7,7 @@
 #################################################
 
 
-from page_rank import word_page_rank,author_page_rank,comput_tf_idf
+from Neo4j.page_rank import word_page_rank,author_page_rank,comput_tf_idf
 import string
 from neo4j.v1 import GraphDatabase, basic_auth,ClientError
 from nltk.corpus import stopwords

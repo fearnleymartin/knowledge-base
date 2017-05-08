@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import sys
 import numpy as np
-sys.path.append('/Users/pierrecolombo/Documents/knowledge-base/Neo4j/')
+
 from baseline_model import find_best_doc_page_rank,find_best_doc_tf
 
 def find_first_match(input_dataFrame,ref_uid,recall_at):

@@ -135,12 +135,12 @@ ENV/
 /solr/server/solr-webapp/
 /solr/server/solr/Evaluation/data/
 /solr/server/solr/Evaluation/conf/lang/
-/solr/chatbot-information-retrieval/ubuntu-ranking-dataset-creator/
+/solr/chatbotInformationRetrieval/ubuntu-ranking-dataset-creator/
 
-/solr/chatbot-information-retrieval/scripts/data/
-/solr/chatbot-information-retrieval/scripts/superuser/
-/solr/chatbot-information-retrieval/runs/
-/solr/chatbot-information-retrieval/superuser.com_questions_tagged_ubuntu_items.json
+/solr/chatbotInformationRetrieval/scripts/data/
+/solr/chatbotInformationRetrieval/scripts/superuser/
+/solr/chatbotInformationRetrieval/runs/
+/solr/chatbotInformationRetrieval/superuser.com_questions_tagged_ubuntu_items.json
 /Neo4j/certificates/
 /Neo4j/index/
 /Neo4j/logs/
@@ -200,6 +200,11 @@ ENV/
 /Neo4j/.neo4j.conf
 /knowledge_base/knowledge_base/logs/log.txt
 /solr/Evaluation/Data/super_user.jl
-/solr/chatbot-information-retrieval/superuser.json
+/solr/chatbotInformationRetrieval/superuser.json
 /solr/Old_file/Data/superuser.json
 /solr/Old_file/Data/test.json
+/solr/Old_file/Data/train.json
+/solr/chatbotInformationRetrieval/scripts/super_user_big_dataset/
+/solr/chatbotInformationRetrieval/runs/1490608921/
+/solr/chatbotInformationRetrieval/runs/1493320213/
+/solr/chatbotInformationRetrieval/runs/1494252297/

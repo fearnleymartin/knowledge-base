@@ -22,11 +22,9 @@ if __name__ == '__main__':
     #nltk.download()
 
     # Constants :
-    number_of_doc =1000000  # number of docs you want to post
+    number_of_doc =6000  # number of docs you want to post
     error = 0 # number of errors
     i=0
-
-
 
     # set stemmer to english
     stemmer = SnowballStemmer("english", ignore_stopwords=True)
@@ -34,14 +32,14 @@ if __name__ == '__main__':
 
 
     # Connection to Neo4j DB
-    driver = GraphDatabase.driver("bolt://localhost:7474",basic_auth =  basic_auth("neo4j", "neo4j") )
+    driver = GraphDatabase.driver("bolt://localhost:7687",basic_auth =  basic_auth("neo4j", "neo4j") )
     session = driver.session()
 
     # Delete all existing nodes
     session.run("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
 
     # Post the docs
-    with open('../solr/Old_File/Data/superuser.json') as f:
+    with open('../solr/Old_File/Data/test.json') as f:
         for line in f:
 
             # after n documents we break
