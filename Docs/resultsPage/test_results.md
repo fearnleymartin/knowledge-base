@@ -1,6 +1,14 @@
 # Classification problem
-161/183
 
+161/180
+
+false positives: 8
+false negatives: 11
+true positives: 74
+true negatives: 87
+recall: 87%
+precision: 90%
+accuracy: 89%
 
 ## False Positives
 https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109/

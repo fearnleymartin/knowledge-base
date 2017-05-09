@@ -20,7 +20,7 @@ def stats():
                     label = True
                 else:
                     label = False
-                result = result_.split(', ')[1].replace('\n','')
+                result = result_.split(',')[1].replace('\n','')
                 if result == 'True':
                     result = True
                 else:
@@ -47,6 +47,8 @@ def stats():
     print('recall: {}'.format(recall))
     print('precision: {}'.format(precision))
     print('accuracy: {}'.format(accuracy))
+    print('correctly identified: {}'.format(true_positives + true_negatives))
+    print('total: {}'.format(total))
 
 
 if __name__=="__main__":
