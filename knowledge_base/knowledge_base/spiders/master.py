@@ -49,37 +49,37 @@ class MasterSpider(CrawlSpider):
     # start_urls = ['https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
 
     # These allows define the crawling
-    # allow = ()
-    # deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
-    # restrict_xpaths = ()
+    allow = ()
+    deny = ('login', 'password', 'misc', 'members', 'register', 'contact',)
+    restrict_xpaths = ()
 
     # community dynamics
-    # allow = ('/t/', '/p/', '/f/')
-    # deny = ('/tags/')
-    # restrict_xpaths = (gt.css_to_xpath('.post-name'), gt.css_to_xpath('.pager'))
+    # allow += ('/t/', '/p/', '/f/')
+    # deny += ('/tags/',)
+    # restrict_xpaths += (gt.css_to_xpath('.post-name'), gt.css_to_xpath('.pager'))
 
     # mac rumors
-    # allow = ('threads', 'forum')
-    # deny = ('members')
-    # restrict_xpaths = (gt.css_to_xpath('.listBlock'),
+    # allow += ('threads', 'forum')
+    # deny += ('members',)
+    # restrict_xpaths += (gt.css_to_xpath('.listBlock'),
     #                    gt.css_to_xpath('.PageNav'))
 
     # reddit
-    # allow = ('/r/iphonehelp/')
-    # deny = ('/user/', "/login", )
-    # restrict_xpaths = (gt.css_to_xpath('.entry'),
+    # allow += ('/r/iphonehelp/',)
+    # deny += ('/user/', "/login", )
+    # restrict_xpaths += (gt.css_to_xpath('.entry'),
     #                    gt.css_to_xpath('.nav-buttons'))
 
     # spiceworks
-    # allow = ('/topic/', '/windows')
-    # deny = ('/people/', "/pages", 'service-providers', )
-    # restrict_xpaths = (gt.css_to_xpath('.topics'),
+    # allow += ('/topic/', '/windows')
+    # deny += ('/people/', "/pages", 'service-providers', )
+    # restrict_xpaths += (gt.css_to_xpath('.topics'),
     #                    gt.css_to_xpath('.sui-pagination'))
 
     # eset
-    allow = ('/topic/', '/forum')
-    deny = ('/login', "/profile",)
-    restrict_xpaths = (gt.css_to_xpath('.ipsDataItem_main'),
+    allow += ('/topic/', '/forum')
+    deny += ('/login', "/profile",)
+    restrict_xpaths += (gt.css_to_xpath('.ipsDataItem_main'),
                        gt.css_to_xpath('.ipsPagination'))
 
     # allow = ('threads', 'forum')

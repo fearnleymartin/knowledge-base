@@ -43,13 +43,20 @@ class resultsScraper(MasterSpider):
     #     'https://answers.microsoft.com/en-us/search/search?SearchTerm=powerpoint&IsSuggestedTerm=false&tab=&CurrentScope.ForumName=msoffice&CurrentScope.Filter=msoffice_powerpoint-mso_win10-mso_o365b&ContentTypeScope=&auth=1#/msoffice/msoffice_powerpoint-mso_win10-mso_o365b//1']
     # start_urls = ['http://forum.mailenable.com/viewforum.php?f=2&sid=805e9ea1611daf70a515c16519f48513']
 
-    start_urls = ["https://community.dynamics.com/crm/f/117"]
+    start_urls = [
+                  # "https://community.dynamics.com/crm/f/117",
+                  # "https://www.reddit.com/r/iphonehelp/",
+                  # "https://forums.macrumors.com/forums/iphone-tips-help-and-troubleshooting.109",
+                  # "https://community.spiceworks.com/windows?source=navbar-subnav",
+                  "https://forum.eset.com/forum/49-general-discussion/"
+    ]
     allowed_domains = [urlparse(url).netloc for url in start_urls]
     print('allowed domains', allowed_domains)
     # TODO: improve parsing with regex
     # Classification file is for keeping track of what each url has been classified as
     modified_start_url = url_to_short_file_name(start_urls[0])
     classification_file_path = 'scraped_data/classification/{}_classification_file_urls.csv'.format(modified_start_url)
+    # classification_file_path = 'scraped_data/classification/multi_site_classification_file_urls.csv'
     classification_file = open(classification_file_path, 'w')
 
 

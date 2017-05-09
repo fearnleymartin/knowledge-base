@@ -7,7 +7,8 @@ import pytest
 from knowledge_base.knowledge_base.scripts.is_results_page import IsResultsPage
 from urllib.parse import urlparse
 
-
+results_output_path = 'results_output.csv'
+items_output_path = 'test.jl'
 
 data = []
 with open('BDD-Q-A_with_extra_criteria.csv','r') as csvfile:
@@ -29,17 +30,22 @@ class TestResultsPage:
         print("started")
         results = []
         count = 0
-        for url_pair in data:
-            url, label = url_pair[0], url_pair[1]
-            domain = urlparse(url).netloc
-            if domain not in self.domains_to_skip:
-                # if label:
-                res = self.isResultsPage.is_results_page(url)
-                print(url, res == label)
-                print('--------------------------------------------------------------------------------------')
-                # assert res == label
-                results.append(res == label)
-                count += 1
+        with open(items_output_path, 'w') as f_items:
+            with open(results_output_path, 'w') as f_results:
+                for url_pair in data:
+                    url, label = url_pair[0], url_pair[1]
+                    domain = urlparse(url).netloc
+                    if domain not in self.domains_to_skip:
+                        # if label:
+                        res = self.isResultsPage.is_results_page(url)
+                        print(url, res == label)
+                        print('--------------------------------------------------------------------------------------')
+                        # assert res == label
+                        results.append(res == label)
+                        count += 1
+                        f_results.write('{},{}\n'.format(url, res))
+                        # item = {url: self.isResultsPage.parsed_text_content}
+                        # f_items.write('{}\n'.format(item))
         true_count = results.count(True)
         print(true_count)
         print(count)
