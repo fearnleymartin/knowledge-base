@@ -23,7 +23,8 @@ class GeneralPipeline(object):
     def open_spider(self, spider):
         # TODO: regexify
         url_path = url_to_short_file_name(spider.start_urls[0])
-        items_file_path = 'scraped_data/{}_items2.jl'.format(url_path)
+        items_file_path = 'scraped_data/{}_items.jl'.format(url_path)
+        # items_file_path = 'scraped_data/multi_site_items.jl'
         print('items file path', items_file_path)
         self.file = open(items_file_path, 'w')
 

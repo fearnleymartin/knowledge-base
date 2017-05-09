@@ -7,10 +7,11 @@ import pytest
 from knowledge_base.knowledge_base.scripts.is_results_page import IsResultsPage
 from urllib.parse import urlparse
 
-
+results_output_path = 'results_output.csv'
+items_output_path = 'test.jl'
 
 data = []
-with open('BDD-Q-A.csv','r') as csvfile:
+with open('BDD-Q-A_with_extra_criteria.csv','r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
     for row in csvreader:
         if 'Yes' in row[1]:
@@ -26,19 +27,25 @@ class TestResultsPage:
     isResultsPage = IsResultsPage()
 
     def test_is_result_page(self):
+        print("started")
         results = []
         count = 0
-        for url_pair in data:
-            url, label = url_pair[0], url_pair[1]
-            domain = urlparse(url).netloc
-            if domain not in self.domains_to_skip:
-                # if label:
-                res = self.isResultsPage.is_results_page(url)
-                print(url, res == label)
-                print('--------------------------------------------------------------------------------------')
-                # assert res == label
-                results.append(res == label)
-                count += 1
+        with open(items_output_path, 'w') as f_items:
+            with open(results_output_path, 'w') as f_results:
+                for url_pair in data:
+                    url, label = url_pair[0], url_pair[1]
+                    domain = urlparse(url).netloc
+                    if domain not in self.domains_to_skip:
+                        # if label:
+                        res = self.isResultsPage.is_results_page(url)
+                        print(url, res == label)
+                        print('--------------------------------------------------------------------------------------')
+                        # assert res == label
+                        results.append(res == label)
+                        count += 1
+                        f_results.write('{},{}\n'.format(url, res))
+                        # item = {url: self.isResultsPage.parsed_text_content}
+                        # f_items.write('{}\n'.format(item))
         true_count = results.count(True)
         print(true_count)
         print(count)
@@ -91,5 +98,7 @@ class TestResultsPage:
         assert expected_count == true_count
 
 
-
+if __name__ == "__main__":
+    t = TestResultsPage()
+    t.test_is_result_page()
 

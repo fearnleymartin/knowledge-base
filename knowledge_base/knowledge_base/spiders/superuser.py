@@ -9,6 +9,9 @@ from ..utils import date_to_solr_format
 import logging
 from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
+from scrapy import Request
+from urllib.parse import urlparse
+
 
 
 class SuperUserSpider(MasterSpider):
@@ -17,7 +20,7 @@ class SuperUserSpider(MasterSpider):
     """
     name = "superuser"
     allowed_domains = ["superuser.com"]
-    custom_settings = {'DOWNLOAD_DELAY': 0,
+    custom_settings = {'DOWNLOAD_DELAY': 2,
                        'LOG_FILE': 'logs/superuser_log.txt'
                        }
 
@@ -25,9 +28,10 @@ class SuperUserSpider(MasterSpider):
         self.rate_limit = False
         super().__init__()
         self.duplicate_count = 0
+        self.duplicate_url = None
 
     product = 'outlook'
-    product = 'ubuntu'
+    # product = 'ubuntu'
     # start_urls = ['http://superuser.com/search?q={}'.format(product)]
 
     start_urls = ['https://superuser.com/questions/tagged/{}'.format(product)]
@@ -52,6 +56,34 @@ class SuperUserSpider(MasterSpider):
              follow=True),
     )
 
+    def identify_and_parse_page(self, response):
+        """
+        Identifies page type (index page, captcha, results page)
+        and runs corresponding parsing procedure
+        :param response:
+        :return:
+        """
+        # print("processing: {}".format(response.url))
+
+        if self.initial_page_filter(response):
+            if self.is_index_page(url=response.url, response=response):
+                self.process_index_page(response)
+            elif self.is_captcha_page(response.url, response):
+                self.process_captcha(response)
+            elif self.is_results_page(response.url, response):
+                items = self.process_question_answer_page(response)
+                if self.duplicate_url:
+                    yield Request(url=self.duplicate_url, callback=self.identify_and_parse_page)
+                    self.duplicate_url = None
+                for item in items:
+                    yield item
+            else:
+                self.classification_file.write("other, {}\n".format(response.url))
+                print('other: {}'.format(response.url))
+        else:
+            self.classification_file.write("other, {}\n".format(response.url))
+            print('other: {}'.format(response.url))
+
     def process_question_answer_page(self, response):
         """
         Extracts Q/A pairs and parses them to scrapy's items pipeline
@@ -68,7 +100,7 @@ class SuperUserSpider(MasterSpider):
 
         # Filters
         if not self.page_contains_answers(response):
-            return None
+            return []
 
         # Process posts
         question_answer_list = []
@@ -122,16 +154,16 @@ class SuperUserSpider(MasterSpider):
         except (ValueError, TypeError):
             pass
         # Look for duplicates
-        duplicate_url = response.xpath(self.gt.css_to_xpath('.question-originals-of-duplicate')+'/ul/li/a/@href').extract()
+        duplicate_url = response.xpath(self.gt.css_to_xpath('.question-originals-of-duplicate')+'/ul/li/a/@href').extract_first()
         if duplicate_url:
             print('duplicate question')
             self.duplicate_count += 1
             print('duplicate question count: {}'.format(self.duplicate_count))
+            duplicate_url = "https://superuser.com" + duplicate_url
             print(duplicate_url)
             self.logger.info('duplicate url: {}'.format(duplicate_url))
             question_answer['question_original_url'] = duplicate_url
-            # TODO: issue request for duplicate url
-            # yield SplashRequest(url=response.url, callback=self.identify_and_parse_page, args={'wait': 0.5})
+            self.duplicate_url = duplicate_url
 
         return question_answer
 
