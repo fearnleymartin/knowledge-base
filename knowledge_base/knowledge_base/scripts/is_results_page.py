@@ -21,7 +21,10 @@ except (SystemError, ImportError):
 
 
 """
-We try to identify a results page contain question and answers
+The method `is_results_page`: identifies a results page containing question and answers (from the url): True or False
+The class stores the questions and answers in the list `parsed_text_content`
+This list contains dictionaries of the form {'date' : '...', 'author': '...', 'author_link': '...', 'body': '...'}
+
 We use a structural approach
 We try to detect a list of Q/A or forum posts
 We look for a list of >= 2 posts, containing a date and user information
@@ -37,6 +40,7 @@ class IsResultsPage(object):
 
     logger = logging.getLogger('isResultsPage')
 
+    # params
     min_text_len = 150
     max_text_len = 4000
     nodes_to_ignore = ['text/javascript']
@@ -52,20 +56,30 @@ class IsResultsPage(object):
 
 
     def __init__(self, product=None):
-        self.url = None
-        self.text_content = []
-        self.parsed_text_content = []
-        self.valid_blocks = []
+        self.url = None  # url of page to analyse
+        self.text_content = []  # contains the non-parsed posts
+        self.parsed_text_content = []  # contains the parsed posts
+        self.valid_blocks = []  # contains the non parsed posts
         self.isIndexPage = IsIndexPage()
-        self.reason = ''
-        self.product = product
+        self.reason = ''  # Why the page was classified as results or not
+        self.product = product  # Product to filter by, will only keep pages that contain the product text
         self.html = None
 
     @staticmethod
     def hasNumbers(inputString):
+        """
+        Checks if a string contains numbers
+        :param inputString: 
+        :return: True if inputString contains numbers, False otherwise
+        """
         return any(char.isdigit() for char in inputString)
 
     def set_reason(self, reason):
+        """
+        Helper function to print log reason for classification
+        :param reason: 
+        :return: 
+        """
         self.reason = reason
         self.logger.info(reason)
 
@@ -124,8 +138,20 @@ class IsResultsPage(object):
         return res
 
     def extract_user_node(self, block):
+        """
+        Step 1: Look for all css classes corresponding to possible user blocks
+        Step 2: Find valid user nodes out of possible nodes (needs to contain link to user profile)
+        Step 3: Once valid block identified, extract and return corresponding information
+        :param block: lxml node corresponding to a block
+        :return: a tuple containing:
+        - the lxml node corresponding the user block inside the input block
+        - the corresponding user css class
+        - the link to the user's profile
+        - the text inside the user block (usually the user name)
+        """
         block_copy = deepcopy(block)
         block_string = str(etree.tostring(block_copy))
+        # Step 1
         css_classes_list = extract_css_class(block_string).split(' ')
         user_css_class = None
         user_css_classes = []
@@ -137,16 +163,16 @@ class IsResultsPage(object):
         # TODO speed up because can be a lot of user css classes
         # TODO should always contain element but never too sure
         if len(user_css_classes) > 0:
+
+            # Step 2
             # There could be possible user_nodes, we only take the one the satisfies extra criteria
             user_nodes = []
             for user_css_class in user_css_classes:
                 user_nodes += list(CSSSelector('.{}'.format(user_css_class))(block_copy))
             # print("user nodes count", len(user_nodes))
-            # TODO: check there is link to user page
-            valid_user_nodes = []
+            valid_user_nodes = []  # list of tuples containing (user node, list of links in user node)
             for _user_node in user_nodes:
                 links = _user_node.iterlinks()
-
                 filtered_links = []
                 # Filter links 1) on site 2) a tags 3) duplicates 4) text content not null 5) contains no dates
                 # Idea is when a user is mentioned, there is always a link to his profile
@@ -163,19 +189,21 @@ class IsResultsPage(object):
                     valid_user_nodes.append((_user_node, filtered_links))
                     break
                 # print([link for link in filtered_links])
+
+            # Step 3
             if len(valid_user_nodes) == 0:
                 user_node = None
                 user_link = None
                 user_text = None
-            else:
-                user_node_pair = valid_user_nodes[0]
+            else:  # No valid user nodes
+                user_node_pair = valid_user_nodes[0]  # Take the first node
                 user_node = user_node_pair[0]
                 filtered_links = user_node_pair[1]
                 if len(filtered_links) > 1:
                     self.logger.info('multiple user  links found')
                 user_link = filtered_links[0][2]
                 user_text = self.extract_text_content(filtered_links[0][0])
-        else:
+        else:  # No valid user nodes
             user_node = None
             user_link = None
             user_text = None
@@ -625,8 +653,8 @@ if __name__ == "__main__":
     # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
     # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
-    index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
-
+    # index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
+    index_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
 
 
     # Broken
@@ -638,6 +666,7 @@ if __name__ == "__main__":
     # index_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
 
     product = 'Dell Inspiron'
+    product = None
     isResultsPage = IsResultsPage(product=product)
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
