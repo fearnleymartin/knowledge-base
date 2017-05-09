@@ -93,3 +93,6 @@ def extract_css_class(string):
 
 def url_to_short_file_name(url):
     return url.replace('https://', '').replace('http://', '').replace('/', '_').replace('=', '').replace('?','')[:100]
+
+def format_html_node_for_print(node, text):
+    return '{}: {}, {}, {}'.format(text, node.tag, node.get('class'),node.get('id'))

@@ -13,11 +13,11 @@ from urllib.parse import urlparse
 try:  # scrapy giving import problems
     from knowledge_base.knowledge_base.scripts.is_index_page import IsIndexPage
     from knowledge_base.knowledge_base.scripts.datefinder import DateFinder
-    from knowledge_base.knowledge_base.utils import extract_css_class, get_html
+    from knowledge_base.knowledge_base.utils import extract_css_class, get_html, format_html_node_for_print
 except (SystemError, ImportError):
     from knowledge_base.scripts.is_index_page import IsIndexPage
     from knowledge_base.scripts.datefinder import DateFinder
-    from knowledge_base.utils import extract_css_class, get_html
+    from knowledge_base.utils import extract_css_class, get_html, format_html_node_for_print
 
 
 """
@@ -455,22 +455,25 @@ class IsResultsPage(object):
         return parsed_dict
 
 
-
-
-
-
     def is_results_page(self, url, response=None):
         """
-        :param url:
+        :param url: a url (string) which will be used for a http request
+        :param response: scrapy response can be passed directly to avoid redoing the request
         :return: true if page is a results page, false otherwise
         We search for certain structure:
         A page must contain at least 2 valid blocks
         These are html nodes which contain a date and a user
         as is always the case for forum posts and Q/A sites
+        Step 1: (Re-)Initialise class and clean html
+        Step 2: Identify lowest html node (container) which contains all the posts of the page (blocks)
+        Step 3: Extract valid blocks from container
+        Step 4: Filter valid blocks
+        Step 5: Parse blocks to extract text content
+        Step 6: Step 6 (optional): Filter on product, i.e. make sure at least one block contains the product keyword
         """
-        # print('url', url)
-        # print('response', response)
+        # Step 1: (Re-)Initialise class and clean html
         self.url = url
+
         # make sure previous blocks are wiped
         self.text_content = []
         self.valid_blocks = []
@@ -484,7 +487,6 @@ class IsResultsPage(object):
             self.set_reason('no body')
             return False
 
-        # TODO remove all js
         html = self.cleaner.clean_html(html)
         if html is None:
             self.set_reason('only js')
@@ -504,14 +506,22 @@ class IsResultsPage(object):
 
         #     return False
 
-        # change to BFS
+        # Step 2: Identify lowest html node (container) which contains all the posts of the page (blocks)
+        # Each block must contain an author, a post date and a text body
+        # We recursively traverse the html tree. For each node, we want to check if it is a valid container.
+        # A valid container has at least 2 valid blocks amongst its children.
+        # If we find at least 2 valid blocks, we consider the node to be a valid container.
+        # We then iterate the process on all the children nodes of the candidate valid container to see if we can find
+        # a valid container lower in the hierarchy.
+        # We proceed in a breadth first search fashion, and at the end, we return the lowest valid container we can find
+
+        # Init queue for breath first search over html node to find lowest valid container in html tree hierarchy
         q = queue.Queue()
         q.put(html)
 
-        res = False
-        lowest_block = None
+        lowest_valid_container = None
         while not q.empty():
-            node = q.get()
+            node = q.get()  # These are potential valid containers
             if node is None:
                 continue
             # print(node)
@@ -523,111 +533,107 @@ class IsResultsPage(object):
                 return False
 
             child_blocks = node.getchildren()
-            child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]
+            child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]  # Filter out blocks (empirical criteria)
             if len(child_blocks) > 0:
                 valid_block_count = 0
                 for child in child_blocks:
-                    # print("child", child.tag, child.get('class'), child.get('id'))
+                    # print(format_html_node_for_print(child, 'child'))
 
                     if isinstance(child, etree._Comment):
                         continue
                     if self.is_valid_block(child):
                         valid_block_count += 1
-                        # print("valid_child", child.tag, child.get('class'), child.get('id'))
+                        # print(format_html_node_for_print(child, 'valid child'))
 
                         if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
                             q.put(child)  # a child can only be valid if parent is valid
 
                 if valid_block_count >= 2:
-                    res = True
-                    # text = extract_text_content(node)
-                    # TODO move condition to each individual block
-                    # if contains_min_text(text, min_text_len):
-                    lowest_block = node
-                    # print("lowest block:", lowest_block.tag, lowest_block.get('class'))
-                    self.logger.info('lowest block: {}, {}, {}'.format(lowest_block.tag, lowest_block.get('class'), lowest_block.get('id')))
+                    lowest_valid_container = node
+                    # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                    self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
 
-
-
-        # we check that lowest block contains min length of text
-        if lowest_block is not None:
-            # print('lowest block', lowest_block)
-            self.logger.info('final lowest block: {}, {}, {}'.format(lowest_block.tag, lowest_block.get('class'), lowest_block.get('id')))
+        if lowest_valid_container is not None:
+            self.logger.info(format_html_node_for_print(lowest_valid_container, 'final lowest_valid_container'))
 
         else:
-            # print('no lowest block, returning false')
-            self.set_reason('no lowest block')
+            self.set_reason('no lowest_valid_container')
             return False
 
-        # matches = extract_dates(lowest_block)
-        # print(list(matches))
+        # Step 3: Extract valid blocks from container
+        # The container may contain more content than we actually need
+        # We go through each block and extract the lowest html node contain all essential information
+        # i.e. author, date, body which respond to certain criteria
+        # This is because usually the child node of a container doesn't correspond to the lowest level node containing the block
+        # Each child block node tends to have multiple children nodes itself, but only one of these node usually tend to contain the actual block
+        # We recursively work our way down the html tree of the block until we find the lowest node containing all the information a valid block should have
+        # These new blocks are stored in the list new_child_blocks
 
         # TODO in first text, check for a question/problem
-        # TODO put all these checks into is valid block check
-        # min_text_len_bool = contains_min_text(lowest_block, min_text_len, print_bool=False)
-        # text
-        # correct_text_len = is_over_min_text_len()
-        correct_post_len_count = 0
-        # print("\n")
         self.logger.info("\n")
-        child_blocks = list(filter(self.is_valid_block, lowest_block.getchildren()))
+
+        child_blocks = list(filter(self.is_valid_block, lowest_valid_container.getchildren()))  # Initialise with child blocks of container
         new_child_blocks = {}
-        ## get smallest valid blocks
+
+        # For each block, extract the smallest valid node inside it
+        # We construct a dictionary where the keys are the original child blocks and the values are the list of valid blocks in the hierarchy of the original child block
+        # We then take the final element of this list to get the lowest block
         for index, child_block in enumerate(child_blocks):
             new_child_blocks[index] = [child_block]
-            self.logger.info("child {}, {}".format(child_block.tag, child_block.get('class')))
+            self.logger.info(format_html_node_for_print(child_block, 'child'))
             exists_valid_grandchild = True
             while exists_valid_grandchild:
-                # print('exists valid grand child')
                 children_count = len(child_block.getchildren())
                 if children_count > 0:
                     invalid_children = 0
                     for grandchild_block in child_block.getchildren():
                         if self.is_valid_block(grandchild_block):
-                            new_child_blocks[index].append(grandchild_block)
-                            child_block = grandchild_block
-                            # new_child_blocks.append(child_block)
-
-                            # print("replacing with {} {}".format(child_block.tag, child_block.get('class')))
-                            break
+                            new_child_blocks[index].append(grandchild_block)  # We have found a new valid block lower down in the hierarchy
+                            child_block = grandchild_block  # We iterate the search on the grandchild block to see if it has children again
+                            break  # If we find a valid block, we stop looking at the other children and continue using this block
                         else:
                             invalid_children += 1
-
-                if invalid_children == children_count:
+                if invalid_children == children_count:  # When all children of current block are invalid we exit the search
                     exists_valid_grandchild = False
 
-        # print(new_child_blocks)
         new_child_blocks = list(map(lambda x: x[-1], new_child_blocks.values()))
-        # print(new_child_blocks)
-        # print("children count: {}".format(len(new_child_blocks)))
+
+
+
+        # Step 4: Filter valid blocks
+        # We re-run some checks over the block to check they are valid (text length, text content) and filter only valid blocks
+
+        correct_post_len_count = 0
         for i, child in enumerate(new_child_blocks):
-            # print("child {}: {}, {}".format(i, child.tag, child.get('class')))
-            self.logger.info("child {}: {}, {}".format(i, child.tag, child.get('class')))
+            self.logger.info(format_html_node_for_print(child, 'child {}'.format(i)))
             child_copy = deepcopy(child)
             text_content = self.extract_text_content(child)
-            text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
-            valid_content_bool = self.content_is_valid(text_content, child, url)
             self.logger.info(text_content)
 
+            text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
+            valid_content_bool = self.content_is_valid(text_content, child, url)
             if text_len_bool and valid_content_bool:
                 correct_post_len_count += 1
                 self.valid_blocks.append(child_copy)
                 self.text_content.append(text_content)
                 dates = self.extract_dates(child)
                 self.logger.info(list(dates))
-                # print(list(dates))
                 self.logger.info('\n')
-                # print('\n')
 
         if correct_post_len_count < 2:
             self.set_reason('not enough valid posts found')
             return False
+
+        # Step 5: Parse blocks to extract text content
+
         for block in self.valid_blocks:
             self.parsed_text_content.append(self.parse_valid_block(block))
+
         if len(self.parsed_text_content) < 2:
             self.set_reason('not enough valid blocks found')
             return False
-        # Filter by product, i.e. make sure at least one block contains the product keyword
+
+        # Step 6 (optional): Filter on product, i.e. make sure at least one block contains the product keyword
         if self.product:
             product_keyword_count = 0
             for block in self.parsed_text_content:
@@ -637,37 +643,37 @@ class IsResultsPage(object):
                 self.set_reason('is results page but product not mentioned')
                 self.is_pertinent = False
 
-        # print(str(lowest_block.text_content()))
-
-        return res
+        # If we make it to here, all the criteria are verified and we have a results page
+        return True
 
 if __name__ == "__main__":
     # Negatives
-    # index_page_url = 'https://redditblog.com/2017/03/02/rnintendoswitch-celebrates-switchmas-with-charity-live-stream/'
-    # index_page_url = 'https://community.mindjet.com/mindjet/details'
-    # index_page_url = 'https://www.cnet.com/es/noticias/ghost-in-the-shell-scarlett-johansson-se-convierte-en-robot/'
-    # index_page_url = "https://forums.adobe.com/community/creative_cloud"
-    # index_page_url = "https://www.macrumors.com/roundup/apple-pay/"
-    # index_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
+    # results_page_url = 'https://redditblog.com/2017/03/02/rnintendoswitch-celebrates-switchmas-with-charity-live-stream/'
+    # results_page_url = 'https://community.mindjet.com/mindjet/details'
+    # results_page_url = 'https://www.cnet.com/es/noticias/ghost-in-the-shell-scarlett-johansson-se-convierte-en-robot/'
+    # results_page_url = "https://forums.adobe.com/community/creative_cloud"
+    # results_page_url = "https://www.macrumors.com/roundup/apple-pay/"
+    # results_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
 
 
     # Positives
-    # index_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
-    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    # index_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
-    # index_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
-    index_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
+    # results_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
+    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
+    # results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+    # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
+    # results_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
 
 
     # Broken
-    # index_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
-    # index_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
-    # index_page_url = 'https://www.reddit.com/r/iphonehelp/comments/671umq/iphone_just_froze_then_after_a_while_the_screen/'
+    # results_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
+    # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
+    results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
+    # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
 
     # Tests
-    # index_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
+    # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
 
-    product = 'Dell Inspiron'
+    # product = 'Dell Inspiron'
     product = None
     isResultsPage = IsResultsPage(product=product)
 
@@ -675,16 +681,11 @@ if __name__ == "__main__":
 
     # isIndexPageLogger = logging.getLogger('indexPageLogger')
     # isIndexPageLogger.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    # index_page_url = "https://support.wix.com/en/ticket/c80d73fd-0599-4b07-a766-440ee5a6c720"
-    print(index_page_url)
-    # html = get_html(index_page_url)
-    # print(etree.tostring(html))
+    # results_page_url = "https://support.wix.com/en/ticket/c80d73fd-0599-4b07-a766-440ee5a6c720"
+    print('source url', results_page_url)
 
-    # print("date:", contains_date(block))
-    # print("user:", contains_user(block))
-    # print("valid block: ", is_valid_block(block))
-    print(isResultsPage.is_results_page(index_page_url))
-    # print(isResultsPage.text_content)
+    print('is results page bool: ', isResultsPage.is_results_page(results_page_url))
     print(isResultsPage.parsed_text_content)
+    print('blocks count: ', len(isResultsPage.parsed_text_content))
     print('finished')
 
