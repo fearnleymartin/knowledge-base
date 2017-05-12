@@ -53,6 +53,7 @@ class IsResultsPage(object):
     cleaner = Cleaner()
     cleaner.javascript = True
     cleaner.style = True
+    cleaner.forms = False
 
 
     def __init__(self, product=None):
@@ -227,21 +228,27 @@ class IsResultsPage(object):
         user_node = self.extract_user_node(block)[0]
         return user_node is not None
 
-
     def is_valid_block(self, block):
         """
         :param block: lxml node
         :return: true if block contains user and date information
         """
-        # print(contains_date(block))
-        # print(contains_user(block))
         text = self.extract_text_content(block)
-
-        return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len)
-
+        # We black list certain things we don't want to find in blocks
+        # Search bar, login etc
+        # print(format_html_node_for_print(block, 'current block'))
+        # print(etree.tostring(block))
+        # TODO tidy
+        block_string = etree.fromstring(etree.tostring(block))
+        input_nodes = block_string.xpath('//input')
+        input_nodes = [i for i in input_nodes if i.get('type') != 'hidden']
+        # print('inputs: {}'.format(input_nodes))
+        doesnt_contain_input_nodes = len(input_nodes) == 0
+        return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len) and doesnt_contain_input_nodes
 
     def get_text_leafs(self, html):
         """
+        DEPRECATED (TO DELETE?)
         We want to extract all leaf nodes that contain text
         This is because usually text is located in leaf node
         :param html: lxml root node containing html
@@ -312,7 +319,6 @@ class IsResultsPage(object):
         # TODO avoid returning javascript
         return " ".join(str(html_node.text_content()).strip().split())
 
-
     def filter_by_css_classes(self, node):
         # TODO Implement faster way of checking all css classes
         css_classes = node.get('class')
@@ -379,7 +385,6 @@ class IsResultsPage(object):
                 product_bool = True
         return product_bool
 
-
     def parse_valid_block(self, valid_block):
         """
         Supposes the first date is the post date
@@ -398,7 +403,7 @@ class IsResultsPage(object):
         final_node = None
         while condition and not q.empty():
             node = q.get()
-            # print(node, node.get('class'), 'node')
+            # self.logger.info(format_html_node_for_print(node, 'node'))
             # print(self.extract_text_content(node))
             children = node.getchildren()
             # print('children count', len(children))
@@ -453,7 +458,6 @@ class IsResultsPage(object):
         # print('\n')
         # self.logger.info('parsed dict: {}'.format(parsed_dict))
         return parsed_dict
-
 
     def is_results_page(self, url, response=None):
         """
@@ -525,7 +529,7 @@ class IsResultsPage(object):
             if node is None:
                 continue
             # print(node)
-            # print("curr_node", node.tag, node.get('class'), node.get('id'))
+            print(format_html_node_for_print(node, 'current node: '))
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
@@ -543,7 +547,10 @@ class IsResultsPage(object):
                         continue
                     if self.is_valid_block(child):
                         valid_block_count += 1
-                        # print(format_html_node_for_print(child, 'valid child'))
+                        print(format_html_node_for_print(child, 'valid child'))
+                        # print(self.extract_user_node(child))
+                        # print(self.extract_dates(child))
+                        # print(self.extract_text_content(child))
 
                         if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
                             q.put(child)  # a child can only be valid if parent is valid
@@ -667,11 +674,12 @@ if __name__ == "__main__":
     # Broken
     # results_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
     # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
-    results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
+    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
     # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
 
     # Tests
     # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
+    results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
 
     # product = 'Dell Inspiron'
     product = None
