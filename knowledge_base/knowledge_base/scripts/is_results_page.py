@@ -245,7 +245,7 @@ class IsResultsPage(object):
         # TODO tidy
         block_string = etree.fromstring(etree.tostring(block))
         input_nodes = block_string.xpath('//input')
-        input_nodes = [i for i in input_nodes if i.get('type') != 'hidden']
+        input_nodes = [i for i in input_nodes if i.get('type') != 'hidden' and (i.get('type') in ['password', 'username'] or i.get('placeholder') in ['search'])]
         # print('inputs: {}'.format(input_nodes))
         doesnt_contain_input_nodes = len(input_nodes) == 0
         print('doesnt_contain_input_node: {}'.format(doesnt_contain_input_nodes))
@@ -528,8 +528,9 @@ class IsResultsPage(object):
         q = queue.Queue()
         q.put(html)
 
+        while_loop_bool = True
         lowest_valid_container = None
-        while not q.empty():
+        while not q.empty() and while_loop_bool:
             node = q.get()  # These are potential valid containers
             if node is None:
                 continue
@@ -572,6 +573,8 @@ class IsResultsPage(object):
                         lowest_valid_container = node
                         # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
                         self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                        while_loop_bool = False
+                        break
 
         if lowest_valid_container is not None:
             self.logger.info(format_html_node_for_print(lowest_valid_container, 'final lowest_valid_container'))
@@ -679,7 +682,7 @@ if __name__ == "__main__":
     # Positives
     # results_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    # results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
+    results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
     # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
     # results_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
 
@@ -692,7 +695,7 @@ if __name__ == "__main__":
 
     # Tests
     # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
-    results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
+    # results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
 
     # product = 'Dell Inspiron'
     product = None
