@@ -42,19 +42,20 @@ class IsResultsPage(object):
 
     # params
     min_text_len = 150
-    max_text_len = 4000
+    max_text_len = 5000
     nodes_to_ignore = ['text/javascript']
     url_blacklist = ['/blog/']
     class_blacklist = []
     tag_blacklist = ['footer']
     text_tags = ['blockquote', 'article', 'p']
     child_tag_blacklist = ['script']
+    input_node_type_blacklist = ['password', 'username']  # input nodes types which cause us to declare a block non valid
+    input_node_placeholder_blacklist = ['search']  # input node placeholders which cause us to declare a block non valid
 
     cleaner = Cleaner()
     cleaner.javascript = True
     cleaner.style = True
     cleaner.forms = False
-
 
     def __init__(self, product=None):
         self.url = None  # url of page to analyse
@@ -240,15 +241,17 @@ class IsResultsPage(object):
     def filter_valid_blocks(self, block):
         # We black list certain things we don't want to find in blocks
         # Search bar, login etc
-        print(format_html_node_for_print(block, 'current block'))
+        # print(format_html_node_for_print(block, 'current block'))
         # print(etree.tostring(block))
         # TODO tidy
+        # TODO: this sometimes crashed when parsing html ?? put try block ?
         block_string = etree.fromstring(etree.tostring(block))
         input_nodes = block_string.xpath('//input')
-        input_nodes = [i for i in input_nodes if i.get('type') != 'hidden' and (i.get('type') in ['password', 'username'] or i.get('placeholder') in ['search'])]
+        # TODO generalise ? (overfitting?)
+        input_nodes = [i for i in input_nodes if i.get('type') != 'hidden' and (i.get('type') in self.input_node_type_blacklist or i.get('placeholder') in self.input_node_placeholder_blacklist)]
         # print('inputs: {}'.format(input_nodes))
         doesnt_contain_input_nodes = len(input_nodes) == 0
-        print('doesnt_contain_input_node: {}'.format(doesnt_contain_input_nodes))
+        # print('doesnt_contain_input_node: {}'.format(doesnt_contain_input_nodes))
         return doesnt_contain_input_nodes
 
     def get_text_leafs(self, html):
@@ -464,6 +467,73 @@ class IsResultsPage(object):
         # self.logger.info('parsed dict: {}'.format(parsed_dict))
         return parsed_dict
 
+    def find_lowest_valid_container(self, block):
+        """
+        Each block must contain an author, a post date and a text body
+        We recursively traverse the html tree. For each node, we want to check if it is a valid container.
+        A valid container has at least 2 valid blocks amongst its children.
+        If we find at least 2 valid blocks, we consider the node to be a valid container.
+        We then iterate the process on all the children nodes of the candidate valid container to see if we can find
+        a valid container lower in the hierarchy.
+        We proceed in a breadth first search fashion, and at the end, we return the lowest valid container we can find
+        :param block: 
+        :return: lowest_valid_container, which is an lxml node, and  None if it doesn't exist
+        """
+        # Init queue for breath first search over html node to find lowest valid container in html tree hierarchy
+        q = queue.Queue()
+        q.put(block)
+
+        while_loop_bool = True
+        lowest_valid_container = None
+        while not q.empty() and while_loop_bool:
+            node = q.get()  # These are potential valid containers
+            if node is None:
+                continue
+            # print(format_html_node_for_print(node, 'current node: '))
+            # Blacklist certain classes
+            css_check = self.filter_by_css_classes(node)
+            if css_check is False:
+                self.set_reason('css check is false')
+                return False
+
+            child_blocks = node.getchildren()
+            child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]  # Filter out blocks (empirical criteria)
+            if len(child_blocks) > 0:
+                valid_block_count = 0
+                valid_block_list = []
+                for child in child_blocks:
+                    print(format_html_node_for_print(child, 'child'))
+
+                    if isinstance(child, etree._Comment):
+                        continue
+                    if self.is_valid_block(child):
+                        valid_block_count += 1
+                        valid_block_list.append(child)
+                        # print(format_html_node_for_print(child, 'valid child'))
+
+                        if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
+                            q.put(child)  # a child can only be valid if parent is valid
+
+                if valid_block_count >= 2:
+                    # filtered_valid_blocks = valid_block_list
+                    filtered_valid_blocks = [v for v in valid_block_list if self.filter_valid_blocks(v)]
+                    # print('filtered valid block count: {}'.format(len(filtered_valid_blocks)))
+                    if len(filtered_valid_blocks) >= 2:
+                        for b in filtered_valid_blocks:
+                            print(format_html_node_for_print(b, 'valid block'))
+                        lowest_valid_container = node
+                        # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                        self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                        while_loop_bool = False
+                        break
+
+        if lowest_valid_container is not None:
+            self.logger.info(format_html_node_for_print(lowest_valid_container, 'final lowest_valid_container'))
+            return lowest_valid_container
+        else:
+            self.set_reason('no lowest_valid_container')
+            return None
+
     def is_results_page(self, url, response=None):
         """
         :param url: a url (string) which will be used for a http request
@@ -516,72 +586,40 @@ class IsResultsPage(object):
         #     return False
 
         # Step 2: Identify lowest html node (container) which contains all the posts of the page (blocks)
-        # Each block must contain an author, a post date and a text body
-        # We recursively traverse the html tree. For each node, we want to check if it is a valid container.
-        # A valid container has at least 2 valid blocks amongst its children.
-        # If we find at least 2 valid blocks, we consider the node to be a valid container.
-        # We then iterate the process on all the children nodes of the candidate valid container to see if we can find
-        # a valid container lower in the hierarchy.
-        # We proceed in a breadth first search fashion, and at the end, we return the lowest valid container we can find
 
-        # Init queue for breath first search over html node to find lowest valid container in html tree hierarchy
-        q = queue.Queue()
-        q.put(html)
+        lowest_valid_container = self.find_lowest_valid_container(html)
 
-        while_loop_bool = True
-        lowest_valid_container = None
-        while not q.empty() and while_loop_bool:
-            node = q.get()  # These are potential valid containers
-            if node is None:
-                continue
-            # print(node)
-            print(format_html_node_for_print(node, 'current node: '))
-            # Blacklist certain classes
-            css_check = self.filter_by_css_classes(node)
-            if css_check is False:
-                self.set_reason('css check is false')
-                return False
-
-            child_blocks = node.getchildren()
-            child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]  # Filter out blocks (empirical criteria)
-            if len(child_blocks) > 0:
-                valid_block_count = 0
-                valid_block_list = []
-                for child in child_blocks:
-                    # print(format_html_node_for_print(child, 'child'))
-
-                    if isinstance(child, etree._Comment):
-                        continue
-                    if self.is_valid_block(child):
-                        valid_block_count += 1
-                        valid_block_list.append(child)
-                        print(format_html_node_for_print(child, 'valid child'))
-                        # print(self.extract_user_node(child))
-                        # print(self.extract_dates(child))
-                        # print(self.extract_text_content(child))
-
-                        if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
-                            q.put(child)  # a child can only be valid if parent is valid
-
-                if valid_block_count >= 2:
-                    # filtered_valid_blocks = valid_block_list
-                    filtered_valid_blocks = [v for v in valid_block_list if self.filter_valid_blocks(v)]
-                    print('filtered valid block count: {}'.format(len(filtered_valid_blocks)))
-                    if len(filtered_valid_blocks) >= 2:
-                        for b in filtered_valid_blocks:
-                            print(format_html_node_for_print(b, 'valid block'))
-                        lowest_valid_container = node
-                        # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
-                        self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
-                        while_loop_bool = False
-                        break
-
-        if lowest_valid_container is not None:
-            self.logger.info(format_html_node_for_print(lowest_valid_container, 'final lowest_valid_container'))
-
-        else:
-            self.set_reason('no lowest_valid_container')
+        if lowest_valid_container is None:
             return False
+
+
+        # Step 2b: Check for nested content
+        # If 2 blocks are found, check if nested content inside second block
+        # This is because the question and the answer  may be in different blocks
+        # If nested content is found, flatten the structure
+
+        # TODO in first text, check for a question/problem
+        self.logger.info("\n")
+
+        child_blocks = list(filter(self.is_valid_block,
+                                   lowest_valid_container.getchildren()))  # Initialise with child blocks of container
+
+        print('child blocks count: {}'.format(len(child_blocks)))
+
+        if len(child_blocks) == 2:
+            snd_block = child_blocks[1]
+            print(format_html_node_for_print(snd_block, 'snd block'))
+            snd_lowest_valid_container = self.find_lowest_valid_container(snd_block)
+            if snd_lowest_valid_container is not None:
+                print(format_html_node_for_print(snd_lowest_valid_container, 'snd_lowest_valid_container'))
+                self.logger.info(format_html_node_for_print(snd_lowest_valid_container, 'snd_lowest_valid_container'))
+                snd_child_blocks = list(filter(self.is_valid_block,
+                                   snd_lowest_valid_container.getchildren()))
+                child_blocks = [child_blocks[0]] + snd_child_blocks  # Flatten the structure
+            else:
+                self.logger.info('no snd_lowest_valid_container found')
+
+            print('child blocks count (after de-nesting i.e. step 2b): {}'.format(len(child_blocks)))
 
         # Step 3: Extract valid blocks from container
         # The container may contain more content than we actually need
@@ -592,10 +630,7 @@ class IsResultsPage(object):
         # We recursively work our way down the html tree of the block until we find the lowest node containing all the information a valid block should have
         # These new blocks are stored in the list new_child_blocks
 
-        # TODO in first text, check for a question/problem
-        self.logger.info("\n")
 
-        child_blocks = list(filter(self.is_valid_block, lowest_valid_container.getchildren()))  # Initialise with child blocks of container
         new_child_blocks = {}
 
         # For each block, extract the smallest valid node inside it
@@ -621,7 +656,7 @@ class IsResultsPage(object):
 
         new_child_blocks = list(map(lambda x: x[-1], new_child_blocks.values()))
 
-
+        print('child blocks count (after step 3): {}'.format(len(new_child_blocks)))
 
         # Step 4: Filter valid blocks
         # We re-run some checks over the block to check they are valid (text length, text content) and filter only valid blocks
@@ -636,16 +671,23 @@ class IsResultsPage(object):
             text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
             valid_content_bool = self.content_is_valid(text_content, child, url)
             if text_len_bool and valid_content_bool:
+                self.logger.info(format_html_node_for_print(child, 'child {} is valid'.format(i)))
                 correct_post_len_count += 1
                 self.valid_blocks.append(child_copy)
                 self.text_content.append(text_content)
                 dates = self.extract_dates(child)
                 self.logger.info(list(dates))
                 self.logger.info('\n')
+            else:
+                self.logger.info(format_html_node_for_print(child, 'child {} is not valid'.format(i)))
+                print('text_len_bool: {}'.format(text_len_bool))
+                print('valid_content_bool: {}'.format(valid_content_bool))
 
         if correct_post_len_count < 2:
             self.set_reason('not enough valid posts found')
             return False
+
+        print('valid blocks count (after step 4): {}'.format((correct_post_len_count)))
 
         # Step 5: Parse blocks to extract text content
 
@@ -679,23 +721,24 @@ if __name__ == "__main__":
     # results_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
 
 
-    # Positives
+    # Positives (correct identification and correct parsing)
     # results_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
-    # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
+    # results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
     # results_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
+    # results_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
+    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
+    # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
+    # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
+    results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
+
+    # Incorrect parsing:
+    # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
 
 
     # Broken
-    # results_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
     # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
-    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
-    # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
 
-    # Tests
-    # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
-    # results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
 
     # product = 'Dell Inspiron'
     product = None

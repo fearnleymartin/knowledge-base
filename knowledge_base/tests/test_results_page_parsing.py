@@ -36,7 +36,7 @@ class TestResultsParsing:
 
                     res = self.isResultsPage.is_results_page(url)
                     items_count = len(self.isResultsPage.parsed_text_content)
-                    print(url, items_count == label)
+                    print(url, items_count == label, items_count, label)
                     print('--------------------------------------------------------------------------------------')
                     results.append(items_count == label)
                     count += 1

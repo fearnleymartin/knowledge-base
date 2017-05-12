@@ -67,5 +67,5 @@ Nested: https://www.reddit.com/r/iphonehelp/comments/680o2s/very_strange_ear_pie
 
 Need to improve parsing of results pages.
 Url guiding generally keeps us on topic (most extracts are pertinent)
-Questions usally ok, but could have some filtering
+Questions usually ok, but could have some filtering
 Answers tend to suck (forum discussions, and often not answers)
