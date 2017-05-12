@@ -132,7 +132,7 @@ class IsResultsPage(object):
         # matches = extract_dates(block)
         # return len(list(matches)) > 0
         block_string = str(etree.tostring(block))
-        # remove links
+        # remove links (to keep ?)
         pattern = r'<(a|/a).*?>'
         block_string = re.sub(pattern, "", block_string)
         block_string = block_string.replace('Z', '')  # hacky
@@ -203,7 +203,7 @@ class IsResultsPage(object):
                 user_node = user_node_pair[0]
                 filtered_links = user_node_pair[1]
                 if len(filtered_links) > 1:
-                    self.logger.info('multiple user  links found')
+                    self.logger.debug('multiple user  links found')
                 user_link = filtered_links[0][2]
                 user_text = self.extract_text_content(filtered_links[0][0])
         else:  # No valid user nodes
@@ -234,8 +234,12 @@ class IsResultsPage(object):
         :param block: lxml node
         :return: true if block contains user and date information
         """
+        self.logger.debug(format_html_node_for_print(block, 'test is valid block: '))
+        if block.get('id') == "reply_8990549":
+            self.logger.debug(etree.tostring(block))
+        self.logger.debug(self.contains_date(block))
+        self.logger.debug(self.contains_user(block))
         text = self.extract_text_content(block)
-
         return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len)
 
     def filter_valid_blocks(self, block):
@@ -291,7 +295,7 @@ class IsResultsPage(object):
 
 
     @staticmethod
-    def is_over_min_text_len(text, min_text_len, print_bool=False):
+    def is_over_min_text_len(text, min_text_len):
         """
         Checks one of the text leaf nodes contains at least min_text_len of text
         :param text:
@@ -300,22 +304,6 @@ class IsResultsPage(object):
         """
         # TODO sometimes problem is described by a picture
         # TODO improve filtering of text_content, often contains more than just the body text
-        min_text_len_bool = False
-        # leaves = get_text_leafs(html_node)
-        #
-        # for leaf in leaves:
-        #     try:
-        #         if len(leaf.text_content()) > min_text_len:
-        #             if print_bool:
-        #                 print(str(leaf.text_content()))
-        #                 print('\n')
-        #             min_text_len_bool = True
-        #             break
-        #     except ValueError:
-        #         # sometimes get cyfunction ?
-        #         # print('value error', leaf.tag, leaf.get('class'))
-        #         pass
-        # return min_text_len_bool
         return len(text) > min_text_len
 
     @staticmethod
@@ -447,12 +435,12 @@ class IsResultsPage(object):
         dates = [date_tuple[0] for date_tuple in dates]
         dates = list(set(dates))
         if len(dates) > 1:
-            self.logger.warning('multiple dates found: {}'.format(dates))
+            self.logger.debug('multiple dates found: {}'.format(dates))
             date = dates[0]
         elif len(dates) == 1:
             date = dates[0]
         else:
-            self.logger.warning('no dates found !')
+            self.logger.debug('no dates found !')
             date = None
         # print('extracted dates with duplicated removed: ', dates)
         parsed_dict = {
@@ -489,7 +477,7 @@ class IsResultsPage(object):
             node = q.get()  # These are potential valid containers
             if node is None:
                 continue
-            # print(format_html_node_for_print(node, 'current node: '))
+            self.logger.debug(format_html_node_for_print(node, 'current node: '))
             # Blacklist certain classes
             css_check = self.filter_by_css_classes(node)
             if css_check is False:
@@ -502,14 +490,14 @@ class IsResultsPage(object):
                 valid_block_count = 0
                 valid_block_list = []
                 for child in child_blocks:
-                    print(format_html_node_for_print(child, 'child'))
+                    self.logger.debug(format_html_node_for_print(child, 'child'))
 
                     if isinstance(child, etree._Comment):
                         continue
                     if self.is_valid_block(child):
                         valid_block_count += 1
                         valid_block_list.append(child)
-                        # print(format_html_node_for_print(child, 'valid child'))
+                        self.logger.debug(format_html_node_for_print(child, 'valid child'))
 
                         if child.get('type') not in self.nodes_to_ignore and child is not None and child.tag not in self.tag_blacklist:
                             q.put(child)  # a child can only be valid if parent is valid
@@ -520,7 +508,7 @@ class IsResultsPage(object):
                     # print('filtered valid block count: {}'.format(len(filtered_valid_blocks)))
                     if len(filtered_valid_blocks) >= 2:
                         for b in filtered_valid_blocks:
-                            print(format_html_node_for_print(b, 'valid block'))
+                            self.logger.debug(format_html_node_for_print(b, 'valid block'))
                         lowest_valid_container = node
                         # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
                         self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
@@ -604,14 +592,13 @@ class IsResultsPage(object):
         child_blocks = list(filter(self.is_valid_block,
                                    lowest_valid_container.getchildren()))  # Initialise with child blocks of container
 
-        print('child blocks count: {}'.format(len(child_blocks)))
+        self.logger.debug('child blocks count: {}'.format(len(child_blocks)))
 
         if len(child_blocks) == 2:
             snd_block = child_blocks[1]
-            print(format_html_node_for_print(snd_block, 'snd block'))
+            self.logger.debug(format_html_node_for_print(snd_block, 'snd block'))
             snd_lowest_valid_container = self.find_lowest_valid_container(snd_block)
             if snd_lowest_valid_container is not None:
-                print(format_html_node_for_print(snd_lowest_valid_container, 'snd_lowest_valid_container'))
                 self.logger.info(format_html_node_for_print(snd_lowest_valid_container, 'snd_lowest_valid_container'))
                 snd_child_blocks = list(filter(self.is_valid_block,
                                    snd_lowest_valid_container.getchildren()))
@@ -619,7 +606,7 @@ class IsResultsPage(object):
             else:
                 self.logger.info('no snd_lowest_valid_container found')
 
-            print('child blocks count (after de-nesting i.e. step 2b): {}'.format(len(child_blocks)))
+            self.logger.debug('child blocks count (after de-nesting i.e. step 2b): {}'.format(len(child_blocks)))
 
         # Step 3: Extract valid blocks from container
         # The container may contain more content than we actually need
@@ -638,7 +625,7 @@ class IsResultsPage(object):
         # We then take the final element of this list to get the lowest block
         for index, child_block in enumerate(child_blocks):
             new_child_blocks[index] = [child_block]
-            self.logger.info(format_html_node_for_print(child_block, 'child'))
+            self.logger.debug(format_html_node_for_print(child_block, 'child'))
             exists_valid_grandchild = True
             while exists_valid_grandchild:
                 children_count = len(child_block.getchildren())
@@ -656,38 +643,38 @@ class IsResultsPage(object):
 
         new_child_blocks = list(map(lambda x: x[-1], new_child_blocks.values()))
 
-        print('child blocks count (after step 3): {}'.format(len(new_child_blocks)))
+        self.logger.debug('child blocks count (after step 3): {}'.format(len(new_child_blocks)))
 
         # Step 4: Filter valid blocks
         # We re-run some checks over the block to check they are valid (text length, text content) and filter only valid blocks
 
         correct_post_len_count = 0
         for i, child in enumerate(new_child_blocks):
-            self.logger.info(format_html_node_for_print(child, 'child {}'.format(i)))
+            self.logger.debug(format_html_node_for_print(child, 'child {}'.format(i)))
             child_copy = deepcopy(child)
             text_content = self.extract_text_content(child)
-            self.logger.info(text_content)
+            self.logger.debug(text_content)
 
             text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
             valid_content_bool = self.content_is_valid(text_content, child, url)
             if text_len_bool and valid_content_bool:
-                self.logger.info(format_html_node_for_print(child, 'child {} is valid'.format(i)))
+                self.logger.debug(format_html_node_for_print(child, 'child {} is valid'.format(i)))
                 correct_post_len_count += 1
                 self.valid_blocks.append(child_copy)
                 self.text_content.append(text_content)
                 dates = self.extract_dates(child)
-                self.logger.info(list(dates))
+                self.logger.debug(list(dates))
                 self.logger.info('\n')
             else:
-                self.logger.info(format_html_node_for_print(child, 'child {} is not valid'.format(i)))
-                print('text_len_bool: {}'.format(text_len_bool))
-                print('valid_content_bool: {}'.format(valid_content_bool))
+                self.logger.debug(format_html_node_for_print(child, 'child {} is not valid'.format(i)))
+                self.logger.debug('text_len_bool: {}'.format(text_len_bool))
+                self.logger.debug('valid_content_bool: {}'.format(valid_content_bool))
 
         if correct_post_len_count < 2:
             self.set_reason('not enough valid posts found')
             return False
 
-        print('valid blocks count (after step 4): {}'.format((correct_post_len_count)))
+        self.logger.debug('valid blocks count (after step 4): {}'.format((correct_post_len_count)))
 
         # Step 5: Parse blocks to extract text content
 
@@ -730,7 +717,7 @@ if __name__ == "__main__":
     # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
     # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
     # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
-    results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
+    # results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
 
     # Incorrect parsing:
     # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
@@ -739,6 +726,8 @@ if __name__ == "__main__":
     # Broken
     # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
 
+    # Tests
+    results_page_url = "https://community.dynamics.com/crm/f/117/t/229815"
 
     # product = 'Dell Inspiron'
     product = None

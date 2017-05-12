@@ -8,10 +8,10 @@ from knowledge_base.knowledge_base.scripts.is_results_page import IsResultsPage
 from urllib.parse import urlparse
 
 results_output_path = 'results_output.csv'
-items_output_path = 'test.jl'
+items_output_path = 'items_output.jl'
 
 data = []
-with open('BDD-Q-A_with_extra_criteria.csv','r') as csvfile:
+with open('BDD-Q-A_with_extra_criteria.csv', 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
     for row in csvreader:
         if 'Yes' in row[1]:
@@ -44,8 +44,13 @@ class TestResultsPage:
                         results.append(res == label)
                         count += 1
                         f_results.write('{},{}\n'.format(url, res))
-                        # item = {url: self.isResultsPage.parsed_text_content}
-                        # f_items.write('{}\n'.format(item))
+                        item = {url: self.isResultsPage.parsed_text_content}
+                        try:
+                            f_items.write('{}\n'.format(item).replace('\u2191', '').replace('\U0001f44d', ''))
+                        except UnicodeEncodeError:
+                            # print('{}\n'.format(item).replace('\u2191', ''))
+                            f_items.write('{}'.format({url: 'unicode error'}))
+
         true_count = results.count(True)
         print(true_count)
         print(count)

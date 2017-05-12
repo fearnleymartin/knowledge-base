@@ -1,6 +1,6 @@
 
 
-def stats():
+def stats_classification():
     labels_path = 'BDD-Q-A_with_extra_criteria_no_symantec.csv'
     results_path = 'results_output.csv'
 
@@ -51,5 +51,40 @@ def stats():
     print('total: {}'.format(total))
 
 
-if __name__=="__main__":
-    stats()
+def stats_parsing():
+
+    results_path = 'items_count.csv'
+
+    correct_count = 0
+    incorrect_count = 0
+    total_posts = 0
+    total_parsed_posts = 0
+
+    with open(results_path) as f_results:
+        lines = f_results.readlines()
+        for line in lines:
+            expected_count = int(line.split(',')[1].replace('\n', ''))
+            actual_count = int(line.split(',')[2].replace('\n', ''))
+            total_posts += expected_count
+            total_parsed_posts += actual_count
+            print(expected_count, actual_count)
+            if expected_count == actual_count:
+                correct_count += 1
+            else:
+                incorrect_count += 1
+
+    total = correct_count + incorrect_count
+    accuracy = float(correct_count) / float(total)
+
+    print('accuracy: {}'.format(accuracy))
+    print('correctly parsed pages count: {}'.format(correct_count))
+    print('total pages: {}'.format(total))
+    print('\n')
+    print('total parsed posts: {}'.format(total_parsed_posts))
+    print('total posts: {}'.format(total_posts))
+    print('percentage of posts parsed: {}'.format(float(total_parsed_posts)/float(total_posts)))
+
+
+if __name__ == "__main__":
+    # stats_classification()
+    stats_parsing()
