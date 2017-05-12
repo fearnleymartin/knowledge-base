@@ -234,9 +234,13 @@ class IsResultsPage(object):
         :return: true if block contains user and date information
         """
         text = self.extract_text_content(block)
+
+        return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len)
+
+    def filter_valid_blocks(self, block):
         # We black list certain things we don't want to find in blocks
         # Search bar, login etc
-        # print(format_html_node_for_print(block, 'current block'))
+        print(format_html_node_for_print(block, 'current block'))
         # print(etree.tostring(block))
         # TODO tidy
         block_string = etree.fromstring(etree.tostring(block))
@@ -244,7 +248,8 @@ class IsResultsPage(object):
         input_nodes = [i for i in input_nodes if i.get('type') != 'hidden']
         # print('inputs: {}'.format(input_nodes))
         doesnt_contain_input_nodes = len(input_nodes) == 0
-        return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len) and doesnt_contain_input_nodes
+        print('doesnt_contain_input_node: {}'.format(doesnt_contain_input_nodes))
+        return doesnt_contain_input_nodes
 
     def get_text_leafs(self, html):
         """
@@ -540,6 +545,7 @@ class IsResultsPage(object):
             child_blocks = [child for child in child_blocks if isinstance(child, etree._Element) and child.tag not in self.child_tag_blacklist]  # Filter out blocks (empirical criteria)
             if len(child_blocks) > 0:
                 valid_block_count = 0
+                valid_block_list = []
                 for child in child_blocks:
                     # print(format_html_node_for_print(child, 'child'))
 
@@ -547,6 +553,7 @@ class IsResultsPage(object):
                         continue
                     if self.is_valid_block(child):
                         valid_block_count += 1
+                        valid_block_list.append(child)
                         print(format_html_node_for_print(child, 'valid child'))
                         # print(self.extract_user_node(child))
                         # print(self.extract_dates(child))
@@ -556,9 +563,15 @@ class IsResultsPage(object):
                             q.put(child)  # a child can only be valid if parent is valid
 
                 if valid_block_count >= 2:
-                    lowest_valid_container = node
-                    # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
-                    self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                    # filtered_valid_blocks = valid_block_list
+                    filtered_valid_blocks = [v for v in valid_block_list if self.filter_valid_blocks(v)]
+                    print('filtered valid block count: {}'.format(len(filtered_valid_blocks)))
+                    if len(filtered_valid_blocks) >= 2:
+                        for b in filtered_valid_blocks:
+                            print(format_html_node_for_print(b, 'valid block'))
+                        lowest_valid_container = node
+                        # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
+                        self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
 
         if lowest_valid_container is not None:
             self.logger.info(format_html_node_for_print(lowest_valid_container, 'final lowest_valid_container'))
