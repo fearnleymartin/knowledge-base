@@ -199,3 +199,4 @@ ENV/
 /Neo4j/.neo4j-community.vmoptions
 /Neo4j/.neo4j.conf
 /knowledge_base/knowledge_base/logs/log.txt
+/knowledge_base/knowledge_base/scripts/lxml_tester.py
