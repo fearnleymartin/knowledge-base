@@ -18,13 +18,10 @@ import solr.chatbotInformationRetrieval.udc_hparams
 import json
 import string
 
-from Neo4j.baseline_model import find_best_doc_page_rank,find_best_doc_tf
+from Neo4j.baseline_model import find_best_doc_page_rank, find_best_doc_tf
 
 from solr.chatbotInformationRetrieval.models.dual_encoder import dual_encoder_model
 import requests
-
-
-
 
 
 def tokenizer_fn(iterator):
@@ -36,22 +33,21 @@ def tokenizer_fn(iterator):
     return (x.split(" ") for x in iterator)
 
 
+def get_features(context, utterance, vp):
+    context_matrix = np.array(list(vp.transform([context])))
+    utterance_matrix = np.array(list(vp.transform([utterance])))
+    context_len = len(context.split(" "))
+    utterance_len = len(utterance.split(" "))
+    features = {
+        "context": tf.convert_to_tensor(context_matrix, dtype=tf.int64),
+        "context_len": tf.constant(context_len, shape=[1, 1], dtype=tf.int64),
+        "utterance": tf.convert_to_tensor(utterance_matrix, dtype=tf.int64),
+        "utterance_len": tf.constant(utterance_len, shape=[1, 1], dtype=tf.int64),
+    }
+    return features, None
 
-def get_features(context, utterance,vp):
-  context_matrix = np.array(list(vp.transform([context])))
-  utterance_matrix = np.array(list(vp.transform([utterance])))
-  context_len = len(context.split(" "))
-  utterance_len = len(utterance.split(" "))
-  features = {
-    "context": tf.convert_to_tensor(context_matrix, dtype=tf.int64),
-    "context_len": tf.constant(context_len, shape=[1,1], dtype=tf.int64),
-    "utterance": tf.convert_to_tensor(utterance_matrix, dtype=tf.int64),
-    "utterance_len": tf.constant(utterance_len, shape=[1,1], dtype=tf.int64),
-  }
-  return features, None
 
-
-def filter_raw_query(raw_query) :
+def filter_raw_query(raw_query):
     '''
 
     :param raw_query: The unfiltered query
@@ -59,7 +55,7 @@ def filter_raw_query(raw_query) :
     '''
     filtered_words = [word for word in raw_query.split() if word not in stopwords.words('english')]
     raw_query = ''
-    for word in filtered_words :
+    for word in filtered_words:
         raw_query += ' ' + word
 
     raw_query.translate(string.punctuation)
@@ -67,12 +63,8 @@ def filter_raw_query(raw_query) :
     return raw_query.replace(" ", "+")
 
 
-
-def predict_save_solr_results(raw_query , model_dir = "runs/1491654958", vocab_processor_file = "scripts/" + "mydata/vocab_processor.bin",
-                number_results = 100,solr_server = 'http://localhost:8983/solr/',col_name = 'Evaluation/',
-                              uid_question = 0, recall_at_k =10, baseline=True , rnn =True,
-                              path_rnn =  '../Old_file/EvaluationDB/Output_duplicat/RNN/',
-                              path_solr ='../Old_file/EvaluationDB/Output_duplicat/BASELINE/', save = True) :
+def predict_save_solr_results(raw_query, model_dir,vocab_processor_file,number_results, solr_server, col_name,
+                              uid_question, recall_at_k, baseline, rnn,path_rnn,path_solr):
     '''
 
     This function query solr and create 3 files :
@@ -90,71 +82,70 @@ def predict_save_solr_results(raw_query , model_dir = "runs/1491654958", vocab_p
     :param recall_at_k: The k best results you want to store
     :return: void
     '''
-    try :
+    try:
 
-      # Define query and URL
-      query = filter_raw_query(raw_query)
-      #product = __get__product_name(query)
-      url_query = solr_server + col_name + 'select?q=' + query \
-                  + '&defType=edismax&qf=question.question_body^1+question.question_title^1' \
-                  + '&rows='+ str(number_results) \
-                  + '&fl=*,score' + '&wt=json'
-      r = requests.get(url_query).json()
+        # Define query and URL
+        query = filter_raw_query(raw_query)
+        # product = __get__product_name(query)
+        url_query = solr_server + col_name + 'select?q=' + query \
+                    + '&defType=edismax&qf=question.question_body^1+question.question_title^1' \
+                    + '&rows=' + str(number_results) \
+                    + '&fl=*,score' + '&wt=json'
+        r = requests.get(url_query).json()
 
+        # Candidate returned by solr
+        candidates_objects = r['response']['docs']
 
-      # Candidate returned by solr
-      candidates_objects = r['response']['docs']
+        candidates = [c['question.question_body'] for c in candidates_objects]
+        candidates_uid = [c['uid'] for c in candidates_objects]
 
-      candidates = [c['question.question_body'] for c in candidates_objects]
-      candidates_uid = [c['uid'] for c in candidates_objects]
+        # Load vocabulary
+        vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(vocab_processor_file)
 
-      # Load vocabulary
-      vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(
-        vocab_processor_file)
+        # Load your own data here
+        INPUT_CONTEXT = query
+        POTENTIAL_RESPONSES = candidates
 
-      # Load your own data here
-      INPUT_CONTEXT = query
-      POTENTIAL_RESPONSES = candidates
+        # Do the prediction
+        hparams = solr.chatbotInformationRetrieval.udc_hparams.create_hparams()
+        model_fn = solr.chatbotInformationRetrieval.udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
+        estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=model_dir)
+        estimator._targets_info = tf.contrib.learn.estimators.tensor_signature.TensorSignature(
+            tf.constant(0, shape=[1, 1]))
+        scores = []
 
-      # Do the prediction
-      hparams = udc_hparams.create_hparams()
-      model_fn = udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
-      estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=model_dir)
-      estimator._targets_info = tf.contrib.learn.estimators.tensor_signature.TensorSignature(tf.constant(0, shape=[1,1]))
-      scores = []
+        for r in POTENTIAL_RESPONSES:
+            prob = estimator.predict(input_fn=lambda: get_features(INPUT_CONTEXT, r, vp))
+            results = prob[0][0]
+            scores.append(results)
 
+        num_candidates = sorted(range(len(scores)), key=lambda i: scores[i])[-recall_at_k:][::-1]
+        uid_candidate = []
 
-      for r in POTENTIAL_RESPONSES:
-        prob = estimator.predict(input_fn=lambda: get_features(INPUT_CONTEXT, r,vp))
-        results = prob[0][0]
-        scores.append(results)
+        # SAVE RNN CANDIDATES
+        if rnn:
+            try :
+                for i in range(recall_at_k):
+                    uid_candidate.append(candidates_uid[num_candidates[i]])
+                save_dataframe(uid_candidate, path_rnn, 'uid', uid_question)
+            except IndexError:
+                pass
 
-      num_candidates = sorted(range(len(scores)), key=lambda i: scores[i])[-recall_at_k:][::-1]
-      uid_candidate = []
-
-
-    # SAVE RNN CANDIDATES
-      if rnn :
-              for i in range(recall_at_k) :
-                  uid_candidate.append(candidates_uid[num_candidates[i]])
-              save_dataframe(uid_candidate,path_rnn,'uid',uid_question)
-
-          #SAVE BASELINE PREDICTION
-      if baseline :
-            save_dataframe(candidates_uid, path_solr, 'uid', uid_question )
-
-
-
-
-    except json.decoder.JSONDecodeError :
-      print('ERROR')
-
-    except KeyError :
-      print('ERROR')
+            # SAVE BASELINE PREDICTION
+        if baseline:
+            save_dataframe(candidates_uid, path_solr, 'uid', uid_question)
 
 
 
-def front_end_prediction(Inputquery, number_of_result ) :
+
+    except json.decoder.JSONDecodeError:
+        print('ERROR')
+
+    except KeyError:
+        print('ERROR')
+
+
+def front_end_prediction(Inputquery, number_of_result):
     '''
     This function is the one called in the front end
     :param Inputquery: the query asked by the user
@@ -163,11 +154,12 @@ def front_end_prediction(Inputquery, number_of_result ) :
     '''
     solr_server = 'http://localhost:8983/solr/'
     col_name = 'Evaluation/'
-
+    recall_at_k = 10
 
     ############################
     ###### Get Solr_answer ######
     ############################
+
 
     query = filter_raw_query(Inputquery)
     # product = __get__product_name(query)
@@ -178,66 +170,59 @@ def front_end_prediction(Inputquery, number_of_result ) :
     r = requests.get(url_query).json()
     candidates_objects = r['response']['docs']
 
-
     solr_response = []
     for element in candidates_objects:
         ### check the field title if it is exactly the same do not add
-        solr_response.append(element['answer.answer_body'])
-
-
+        solr_response.append('<I><B>Question :</B></I> <br>'+element['question.question_body']+'<br><I><B>Answer </B></I> <br>'+ element['answer.answer_body'])
 
     ############################
     ###### Get RNN_answer ######
     ############################
-
-
-    model_dir = "runs/1494252297"
-    vocab_processor_file = "scripts/" + "super_user_big_dataset/vocab_processor.bin"
+    candidates_objects = r['response']['docs']
 
     candidates = [c['question.question_body'] for c in candidates_objects]
     candidates_uid = [c['uid'] for c in candidates_objects]
-
+    model_dir ="/Users/pierrecolombo/Desktop/Knowledge/knowledge-base/solr/chatbotInformationRetrieval/"+ "runs/1494257531"
+    vocab_processor_file = "/Users/pierrecolombo/Desktop/Knowledge/knowledge-base/solr/chatbotInformationRetrieval/"+"scripts/" + "super_user_big_dataset/vocab_processor.bin"
     # Load vocabulary
-    vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(
-        vocab_processor_file)
+    vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(vocab_processor_file)
 
-      # Load your own data here
-    INPUT_CONTEXT = Inputquery
+    # Load your own data here
+    INPUT_CONTEXT = query
     POTENTIAL_RESPONSES = candidates
 
     # Do the prediction
-    hparams = udc_hparams.create_hparams()
-    model_fn = udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
+    hparams = solr.chatbotInformationRetrieval.udc_hparams.create_hparams()
+    model_fn = solr.chatbotInformationRetrieval.udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
     estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=model_dir)
-    estimator._targets_info = tf.contrib.learn.estimators.tensor_signature.TensorSignature(tf.constant(0, shape=[1,1]))
+    estimator._targets_info = tf.contrib.learn.estimators.tensor_signature.TensorSignature(
+        tf.constant(0, shape=[1, 1]))
     scores = []
-
     for r in POTENTIAL_RESPONSES:
-        prob = estimator.predict(input_fn=lambda: get_features(INPUT_CONTEXT, r,vp))
+        prob = estimator.predict(input_fn=lambda: get_features(INPUT_CONTEXT, r, vp))
         results = prob[0][0]
         scores.append(results)
 
-    num_candidates = sorted(range(len(scores)), key=lambda i: scores[i])[-100:][::-1]
-    uid_candidate = []
+    num_candidates = sorted(range(len(scores)), key=lambda i: scores[i])[-recall_at_k:][::-1]
+    #print(num_candidates,POTENTIAL_RESPONSES)
+    rnn_response =[]
+    for i in range(recall_at_k):
+        try :
+            id =candidates_uid[num_candidates[i]]
+            url_query = solr_server + col_name + 'select?q=' + str(id) \
+                        + '&defType=edismax&qf=uid' \
+                        + '&rows=' + str(1) \
+                        + '&fl=*,score' + '&wt=json'
+            r = requests.get(url_query).json()
+            candidates_objects = r['response']['docs']
 
+            for element in candidates_objects:
+                ### check the field title if it is exactly the same do not add
+                rnn_response.append('<I><B>Question :</B></I> <br>'+element['question.question_body']+'<br><I><B>Answer </B></I> <br>'+ element['answer.answer_body'])
 
-    # Query solr to get answers #
+        except IndexError:
+            pass
 
-    for i in range(number_of_result) :
-        uid_candidate.append(candidates_uid[num_candidates[i]])
-
-    for id in uid_candidate :
-        url_query = solr_server + col_name + 'select?q=' + str(id) \
-                    + '&defType=edismax&qf=uid' \
-                    + '&rows=' + str(1) \
-                    + '&fl=*,score' + '&wt=json'
-        r = requests.get(url_query).json()
-        candidates_objects = r['response']['docs']
-
-        rnn_response = []
-        for element in candidates_objects:
-            ### check the field title if it is exactly the same do not add
-            rnn_response.append(element['answer.answer_body'])
 
 
 
@@ -249,7 +234,12 @@ def front_end_prediction(Inputquery, number_of_result ) :
 
 
     # Query solr to get answers #
-    for id in results_neo4j :
+    noe4j_response = []
+    count = 0
+    for id in results_neo4j:
+        count += 1
+        if count == number_of_result:
+            break
         url_query = solr_server + col_name + 'select?q=' + str(id) \
                     + '&defType=edismax&qf=uid' \
                     + '&rows=' + str(1) \
@@ -257,20 +247,15 @@ def front_end_prediction(Inputquery, number_of_result ) :
         r = requests.get(url_query).json()
         candidates_objects = r['response']['docs']
 
-        noe4j_response = []
         for element in candidates_objects:
             ### check the field title if it is exactly the same do not add
-            noe4j_response.append(element['answer.answer_body'])
+            noe4j_response.append('<I><B>Question :</B></I> <br>'+element['question.question_body']+'<br><I><B>Answer </B></I> <br>'+ element['answer.answer_body'])
+
+    return noe4j_response, rnn_response, solr_response
 
 
-    return noe4j_response,rnn_response,solr_response
-
-
-
-
-
-
-def save_dataframe(uid_candidate ,path = '../Old_file/EvaluationDB/Output_duplicat/RNN/' ,column_name = 'uid',uid_question= ''):
+def save_dataframe(uid_candidate, path='../Old_file/EvaluationDB/Output_duplicat/RNN/', column_name='uid',
+                   uid_question=''):
     '''
     This function saved datframe used to factor a bit the code
 
@@ -286,124 +271,74 @@ def save_dataframe(uid_candidate ,path = '../Old_file/EvaluationDB/Output_duplic
     nn_candidates.to_csv(path_or_buf=predict_dir)
 
 
-
-def create_Theoritical_id(path,uid_question, all_id):
-    '''
-    This functino save the duplicats id
-
-    :param path: where you want to store the files
-    :param uid_question:
-    :param all_id:
-    :return:
-    '''
-    with open(path+ uid_question + ".csv", "w") as text_file:
-        text_file.writelines(["%s\n" % item for item in all_id])
-
-def create_uid_list_of_duplicat(solr_server,col_name,number_results,original_url) :
-    '''
-
-    :param solr_server: the solr server adress
-    :param col_name: core name
-    :param number_results: number of results you want
-    :param original_url: the url of your original question
-    :return: a containing the uuid of all duplicated questions
-    '''
-    uid_list = []
-    complete_list = list(original_url)
-    while original_url != []:
-
-        url = original_url[0]
-        if url not in complete_list:
-            complete_list.append(url)
-
-        url_query = solr_server + col_name + 'select?q=' + url + '&defType=edismax&qf=question.question_original_url' + '&rows=' + str(
-            number_results) + '&fl=*,score' + '&wt=json'
-        r = requests.get(url_query).json()
-        candidates_objects = r['response']['docs']
-
-        for element in candidates_objects:
-            ### check the field title if it is exactly the same do not add
-            uid_list.append(element['uid'])
-            for newUrl in element['question.question_original_url']:
-                if newUrl not in complete_list:
-                    original_url.append(newUrl)
-
-        original_url.remove(url)
-
-    uid_list = list(set(uid_list))
-    return uid_list
-
-
-def main():
-    front_end_prediction('outlook crashed', 10)
-
-    '''
+if __name__ == '__main__':
 
     # Solr parameters :
     solr_server = 'http://localhost:8983/solr/'
     col_name = 'Evaluation/'
-    number_results = 100
+    number_results = 10
     recall_at_k = 10
 
-    # RNN parameters :
-    model_dir = "runs/1493320213"  # 1493320213 # ubuntu 1490608921
-    vocab_processor_file = "scripts/" + "superuser/vocab_processor.bin" # data #superuser
-
     # Decide what model you want to predict :
+    baseline_ubuntu = True
+    baseline_spe = False
     baseline = False
-    rnn = False
-    theoretical_id = False
-    neo4j = True
+    neo4j_pr = False
+    neo4j_tfidf = False
 
     # Path to the duplicate questions
-    path_to_duplicate = '../Old_file/EvaluationDB/evaluationWithOnlyDuplicate.csv'
+    path_to_duplicate = '../Old_file/Data/duplicate_questions.csv'
 
     # Path for saving predictions
-    path_rnn = '../Old_file/EvaluationDB/Output_duplicat/RNN200/'
-    path_solr = '../Old_file/EvaluationDB/Output_duplicat/BASELINE/'
-
+    path_solr = '../Old_file/Predictions/baseline/'
 
     # Load the duplicate questions
     df = pd.read_csv(path_to_duplicate)
 
-
     count = 0
-    for index, row in df.iterrows() :
-        count  +=1
+    for index, row in df.iterrows():
+        count += 1
         print('Question duplicat number : ---------------', count)
 
-        original_url=eval(row['question'])['question_original_url']
         question_uid = row['uid']
-        question_title=eval(row['question'])['question_body'] + eval(row['question'])['question_title']
-
-
-        uid_list = create_uid_list_of_duplicat(solr_server,col_name,number_results,original_url)
-
-
-        # THEORITICAL IDS
-        if theoretical_id :
-            create_Theoritical_id("../Old_file/EvaluationDB/Output_duplicat/TEXT/", question_uid, uid_list)
+        question_title = eval(row['question'])['question_body'] + eval(row['question'])['question_title']
 
         # We query the title of the question
         query = question_title
 
         # Create BASELINE + RNN + Theoritical ID
-        if baseline or rnn :
-            predict_save_solr_results(query , model_dir,vocab_processor_file,number_results,solr_server,col_name ,
-                                  question_uid,recall_at_k, baseline ,rnn, path_rnn,path_solr)
+        if baseline or baseline_ubuntu:
+            model_dir = "runs/1494257531"
+            vocab_processor_file = "scripts/" + "data/vocab_processor.bin"
+            path_rnn = '../Old_file/Predictions/spe 15/'
+            predict_save_solr_results(query, model_dir, vocab_processor_file, number_results, solr_server, col_name,
+                                      question_uid, recall_at_k, baseline_ubuntu, baseline_ubuntu, path_rnn, path_solr)
 
+        if baseline_spe:
+            model_dir = "runs/1494273670"
+            vocab_processor_file = "scripts/" + "super_user_big_dataset/vocab_processor.bin"
+            path_rnn = '../Old_file/Predictions/RNN_superuser/'
+            predict_save_solr_results(query, model_dir, vocab_processor_file, number_results, solr_server, col_name,
+                                      question_uid, recall_at_k, False, baseline_spe, path_rnn, path_solr)
 
-
-        if neo4j:
-            results = find_best_doc_tf(query,1,1)[0]
+        if neo4j_pr:
+            results = find_best_doc_page_rank(query, 10, coefficientAuthor= 1, coefficientWord=11)
             print(results)
             noe4j_candidates = pd.DataFrame(results)
-            try :
+            try:
                 noe4j_candidates.columns = ['uid']
-                predict_dir = '../Old_file/EvaluationDB/Output_duplicat/NEO4J/' + question_uid + '.csv'
+                predict_dir = '../Old_file/Predictions/PR_11_1/' + question_uid + '.csv'
                 noe4j_candidates.to_csv(path_or_buf=predict_dir)
-            except ValueError :
+            except ValueError:
                 pass
 
-    '''
-main()
+        if neo4j_tfidf:
+            results = find_best_doc_tf(query, 11, 1)[0]
+            print(results)
+            noe4j_candidates = pd.DataFrame(results)
+            try:
+                noe4j_candidates.columns = ['uid']
+                predict_dir = '../Old_file/Predictions/TFIDF_11_1/' + question_uid + '.csv'
+                noe4j_candidates.to_csv(path_or_buf=predict_dir)
+            except ValueError:
+                pass

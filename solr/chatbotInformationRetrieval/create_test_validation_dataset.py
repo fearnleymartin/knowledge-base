@@ -77,7 +77,7 @@ if __name__ == '__main__':
     with open(path_train_data_set) as f:
         data = pd.DataFrame(json.loads(line) for line in f)
 
-    data = data.head(int(124147 / 4))
+
 
     print('the shape is :',data.shape)
     for e in data['question'] :
@@ -108,4 +108,4 @@ if __name__ == '__main__':
 
     #### mixe for randomless
     result =result.sample(frac=1).reset_index(drop=True)
-    #result.to_csv(path_train_output_directory,index=False)
+    result.to_csv(path_train_output_directory,index=False)

@@ -208,3 +208,10 @@ ENV/
 /solr/chatbotInformationRetrieval/runs/1490608921/
 /solr/chatbotInformationRetrieval/runs/1493320213/
 /solr/chatbotInformationRetrieval/runs/1494252297/
+/fasttext_content_filter/coucou.txt
+/solr/Old_file/Data/
+/solr/Old_file/Predictions/
+/solr/Old_file/EvaluationDB/Coefficient_Optimization/
+/solr/Old_file/EvaluationDB/optimization_coefficents.csv
+/solr/Old_file/EvaluationDB/optimization_coefficents_tf.csv
+/solr/Old_file/EvaluationDB/optimization_coefficents_tf_local.csv

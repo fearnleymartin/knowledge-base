@@ -2,6 +2,7 @@ function new_question(question) {
 	$('#question').text(question);
 	$('#answer_nn').text('');
 	$('#answer_solr').text('');
+	$('#answer_neo4j').text('');
 	$('#suggestions').text('');	
 	$('.robot').hide();
 	start_spinner();
@@ -18,7 +19,7 @@ function new_chatbot_answer(candidates_nn, candidates_solr, candidates_neo4j) {
 		$('#answer_solr').html($('#answer_solr').html() + '<div class="col-md-12 answer_box"><div class="panel panel-default benchmark"><div class="panel-body">' + candidates_solr[c] + ' </div></div></div>');
 	}
 	for (c in candidates_neo4j) {
-		$('#answer_neo4j').html($('#answer_neo4j').html() + '<div class="col-md-12 answer_box"><div class="panel panel-default benchmark"><div class="panel-body">' + candidates_neo4j[c] + ' </div></div></div>');
+		$('#answer_neo4j').html($('#answer_neo4j').html() + '<div class="col-md-12 answer_box"><div class="panel panel-default graphdata"><div class="panel-body">' + candidates_neo4j[c] + ' </div></div></div>');
 	}
     suggestions_random = get_random_suggestions(suggestions);
     load_suggestions(suggestions_random);	
@@ -47,6 +48,7 @@ function submit(input_text) {
 	  	var neo4j = data.neo4j;
 	  	console.log(nn);
 	  	console.log(solr);
+	  	console.log(neo4j);
 
 	  	new_chatbot_answer(nn, solr, neo4j)
 	  }

@@ -78,13 +78,17 @@ if __name__ == '__main__':
 
 
             # Author of the question
-            question_author_name = d['question']['question_author']['author_name']
-            session.run("MERGE (a:Author {name : {name} }) ON CREATE SET a.number_of_docs = 1 ON MATCH SET a.number_of_docs  =a.number_of_docs  + 1 ",
+
+            try :
+                question_author_name = d['question']['question_author']['author_name']
+                session.run("MERGE (a:Author {name : {name} }) ON CREATE SET a.number_of_docs = 1 ON MATCH SET a.number_of_docs  =a.number_of_docs  + 1 ",
                          {"name": question_author_name})
 
-            session.run("MATCH (myDoc:Doc { id:  {id}  }),(myAuthor:Author { name: {answer_author_name} }) MERGE (myAuthor)-[r:is_author]-(myDoc)",
+                session.run("MATCH (myDoc:Doc { id:  {id}  }),(myAuthor:Author { name: {answer_author_name} }) MERGE (myAuthor)-[r:is_author]-(myDoc)",
                         {"answer_author_name": question_author_name,"id" :doc_uid})
 
+            except neo4j.exceptions.ClientError :
+                print('Error Author')
 
 
             for word in question_title.split() :
@@ -92,7 +96,7 @@ if __name__ == '__main__':
                     if not word.isdigit() :
                         if len(word) > 3 :
                             word = stemmer.stem(word)
-                            print(word)
+                            #print(word)
                             try :
                                 session.run("MERGE (a:Word {name : {name} })",
                                                 {"name": word})
@@ -108,7 +112,7 @@ if __name__ == '__main__':
                     if not word.isdigit() :
                         if len(word) > 3 :
                             word = stemmer.stem(word)
-                            print(word)
+                            #print(word)
                             try :
                                 session.run("MERGE (a:Word {name : {name} })",
                                                 {"name": word})
@@ -134,4 +138,5 @@ if __name__ == '__main__':
 
     except neo4j.exceptions.ClientError :
         print('ERROR NEO4J closing')
+        print('number of error ' + str(error))
 

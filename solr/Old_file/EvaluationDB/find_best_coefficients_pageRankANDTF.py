@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 import numpy as np
 
-from baseline_model import find_best_doc_page_rank,find_best_doc_tf
+from Neo4j.baseline_model import find_best_doc_page_rank,find_best_doc_tf
 
 def find_first_match(input_dataFrame,ref_uid,recall_at):
     ''' Return the position of the first match with the uid
@@ -50,6 +50,12 @@ def mean(l):
         return -1
 
 
+def count_comon_element(list1,list2) :
+    result = []
+    for element in list1:
+        if element in list2:
+            result.append(element)
+    return len(result)
 
 if __name__ == '__main__':
     '''
@@ -63,78 +69,66 @@ if __name__ == '__main__':
     # Constants
     recall_at = 10
     count = 0
-    frecall_neo4j = []
-    neo4j = True
+    neo4j_tf = False
+    neo4j_pr = True
     l_score =[]
     l_coefficient = []
     number_of_question = 100 # number of duplicat questions used to find the best coefficients
 
     # Path to the duplicate questions
-    path_to_duplicate = 'evaluationWithOnlyDuplicate.csv'
+    path_to_duplicate = '../Data/duplicate_questions.csv'
 
     # Load the duplicate questions
     df = pd.read_csv(path_to_duplicate)
 
-    for coeff_1 in [0.1,1,50,100,1000] :
+    list_pd = []
 
-        for coeff_2 in [0.1,1,50,100,1000] :
+    for coeff_1 in [0] :
+
+        for coeff_2 in [1] :
             count = 0
             for index, row in df.iterrows():
                 count +=1
+                print('question number :', count)
+
 
                 if count == number_of_question :
                     break
-                original_url = eval(row['question'])['question_original_url']
+
+
                 question_uid = row['uid']
                 question_title = eval(row['question'])['question_body'] + eval(row['question'])['question_title']
+
+                theoritical_id_list = row['duplicate uid']
 
                 # We query the title of the question
                 query = question_title
 
-                if neo4j:
-                    #results = find_best_doc_page_rank(query,recall_at, coeff_1, coeff_2)
-                    results = find_best_doc_tf(query,coeff_1,coeff_2)[0]
-                    print(results)
-                    noe4j_candidates = pd.DataFrame(results)
-                    try :
-                        noe4j_candidates.columns = ['uid']
 
-                    except ValueError :
-                        pass
+                if neo4j_tf:
+                    print('coefficent question_title_mutiplier', coeff_1)
+                    print('coefficent question_body_mutiplier', coeff_2)
+                    results_tf = find_best_doc_tf(query,question_title_mutiplier=coeff_1,question_body_mutiplier = coeff_2)[0]
+                    results_tf= results_tf[0:recall_at-1]
 
-                    ## Load the expected uid
-                    text_file = open(str(os.getcwd()) + '/Output_duplicat/TEXT/' + question_uid +'.csv')
-                    lines = text_file.readlines()
+                    common_element_term_frequency = count_comon_element(results_tf, theoritical_id_list)
+                    print('number of matches TF', common_element_term_frequency)
+                    common_element_pr = 0
 
-                    rank_first_match_neo4j = []
-                    number_uid =len(lines)
-                    if lines != []:
+                if neo4j_pr :
+                    print('coefficent coefficientAuthor', coeff_1)
+                    print('coefficent coefficientWord', coeff_2)
+                    results_pr = find_best_doc_page_rank(query, recall_at, coefficientAuthor= coeff_1, coefficientWord=coeff_2)
+                    results_pr = results_pr[0:recall_at-1]
 
-                        ## Remove uid of the question
-                        lines.remove(question_uid + '\n')
+                    common_element_pr = count_comon_element(results_pr, theoritical_id_list)
+                    print('number of matches PR', common_element_pr)
+                    common_element_term_frequency = 0
 
-                        for i in range(len(lines)):
-                            ref_uid = lines[i].rstrip()
+                list_pd.append([common_element_term_frequency,common_element_pr,coeff_1,coeff_2])
 
-                            # Neo4j
-                            rank_first_match_neo4j.append(find_first_match(noe4j_candidates, ref_uid, recall_at))
+    df = pd.DataFrame(list_pd, columns=['nbr TF', 'nbr PR','Coeff 1','Coeff 2'])
 
-                        try:
-                            recall_neo4j = compute_recall(rank_first_match_neo4j, number_uid, recall_at)
-                        except ValueError:
-                            recall_neo4j = recall_at + 1
+    df.to_csv('optimization_coefficents_tf_local.csv')
 
-                        frecall_neo4j.append(recall_neo4j)
-
-                print('question number',count)
-
-
-
-        l_score.append(mean(frecall_neo4j))
-        l_coefficient.append((coeff_1,coeff_2))
-
-    ind = np.argmax(l_score)
-    print('liste score is ',l_score)
-    print('liste coefficeint is ', l_coefficient)
-    print('best coefficient',l_coefficient[ind])
 

@@ -37,7 +37,7 @@ def find_best_doc_tf(unfiltered_query,question_title_mutiplier,question_body_mut
     return comput_tf_idf(unfiltered_query,question_title_mutiplier,question_body_mutiplier)
 
 
-def find_best_doc_page_rank(query,number_of_result, coefficientAuthor=1, coefficientWord=1) :
+def find_best_doc_page_rank(query,number_of_result, coefficientAuthor, coefficientWord) :
     '''
 
     :param query: the unfiltered question you want to ask
@@ -46,10 +46,32 @@ def find_best_doc_page_rank(query,number_of_result, coefficientAuthor=1, coeffic
     :param coefficientWord: booster  for the word PageRank result
     :return:
     '''
+    driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
     l_uid = []
+    session = driver.session()
+    session.run("MATCH (doc:Doc) "
+                "SET doc.Apagerank = 0"
+
+    )
+    try:
+        session.close()
+    except AttributeError:
+        pass
+
+    driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
+    l_uid = []
+    session = driver.session()
+    session.run("MATCH (doc:Doc) "
+
+                "SET doc.Wpagerank = 0 "
+                )
+    try:
+        session.close()
+    except AttributeError:
+        pass
     author_page_rank()
     word_page_rank(query)
-    driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
+
 
     session = driver.session()
     session.run("MATCH (doc:Doc) "
@@ -62,7 +84,7 @@ def find_best_doc_page_rank(query,number_of_result, coefficientAuthor=1, coeffic
 
     session = driver.session()
     session.run("MATCH (doc:Doc) "
-                "SET doc.Fpagerank = {coefficient_author} * doc.Wpagerank   + {coefficient_word} * doc.Apagerank "
+                "SET doc.Fpagerank = {coefficient_author} * doc.Apagerank   + {coefficient_word} * doc.Wpagerank "
                 , {"coefficient_author": coefficientAuthor, "coefficient_word": coefficientWord})
     try:
         session.close()
