@@ -67,14 +67,14 @@ def word_page_rank(unfiltered_query):
         pass
 
 
-    for i in range(20):
+    if True :
         session = driver.session()
         ### initialise the weight of the words to the sum of all incoming edges
         session.run("MATCH (word:Word) "
                     "WHERE word.name IN {searchToken} "
                     "WITH (word) as word "
                     "MATCH (word:Word)-[r]-(doc:Doc) "
-                    "SET r.page_rank_weight = r.frequency "
+                    "SET r.page_rank_weight = 1 "#r.frequency "
                  , {"searchToken": query})
         try :
             session.close()
@@ -87,7 +87,7 @@ def word_page_rank(unfiltered_query):
                     "WHERE word.name IN {searchToken} "
                     "WITH (word) as word "
                     "MATCH (word:Word)-[r]-(doc:Doc) "
-                    "WITH word,doc, SUM(r.page_rank_weight) as word_sum "
+                    "WITH word,doc, SUM(r.page_rank_weight) as word_sum " #change there not to have ...
                     "SET word.page_rank_sum = word_sum "
                               ,{"searchToken": query})
         try :
@@ -110,7 +110,7 @@ def word_page_rank(unfiltered_query):
         except AttributeError:
             pass
 
-
+    for i in range(50):
         session = driver.session()
         # http://people.cs.ksu.edu/~halmohri/files/weightedPageRank.pdf
         try :
@@ -134,6 +134,7 @@ def word_page_rank(unfiltered_query):
                         "ELSE startNode(rel).Wpagerank "
                     "END "
                         )
+
         except TimeoutError:
             pass
 
@@ -211,7 +212,7 @@ def author_page_rank():
     except AttributeError:
        pass
 
-    for i in range(20):
+    for i in range(3):
         session = driver.session()
         # http://people.cs.ksu.edu/~halmohri/files/weightedPageRank.pdf
         results = session.run("MATCH (a:Author) "
@@ -254,6 +255,8 @@ def add_score(result_title,result_body) :
 
     driver = GraphDatabase.driver("bolt://localhost:7687", auth=basic_auth("neo4j", "neo4j"))
     for record in result_title:
+        #print('id', record["id"])
+        #print('tile', record["score"])
         session = driver.session()
         session.run("MATCH (doc:Doc) "
                     "WHERE doc.id = {id} "
@@ -337,7 +340,7 @@ def comput_tf_idf(unfiltered_query,question_title_mutiplier,question_body_mutipl
                     "WITH t, count(distinct doc) as NumberOfDocWhereTAppears, NumberTotalOfDoc, QuerySize,doc "
                     "MATCH (t)-[r:is_in_question_title]-(doc:Doc) "
                     "WITH DISTINCT r,doc, t.name as name, sum(r.frequency)*(1 + log((1.0*NumberTotalOfDoc)/(NumberOfDocWhereTAppears + 1)))* (1.0/doc.length^0.5) as sum, QuerySize,(1.0/doc.length^0.5) as c "
-                    "RETURN doc.id as id, (1.0*size(collect(name))/QuerySize)*(sum(sum)) as score"
+                    "RETURN doc.id as id, {word_coefficient_question}*(1.0*size(collect(name))/QuerySize)*(sum(sum)) as score"
     ,{"searchToken": query,"querySize": len(query),"word_coefficient_question" : question_title_mutiplier})
 
 
@@ -360,7 +363,7 @@ def comput_tf_idf(unfiltered_query,question_title_mutiplier,question_body_mutipl
                     "WITH t, count(distinct doc) as NumberOfDocWhereTAppears, NumberTotalOfDoc, QuerySize,doc "
                     "MATCH (t)-[r:is_in_question_body]-(doc:Doc) "
                     "WITH DISTINCT r,doc, t.name as name, sum(r.frequency)*(1 + log((1.0*NumberTotalOfDoc)/(NumberOfDocWhereTAppears + 1)))* (1.0/doc.length^0.5) as sum, QuerySize,(1.0/doc.length^0.5) as c "
-                    "RETURN doc.id as id, (1.0*size(collect(name))/QuerySize)*(sum(sum)) as score"
+                    "RETURN doc.id as id, {word_coefficient_answer}*(1.0*size(collect(name))/QuerySize)*(sum(sum)) as score"
     ,{"searchToken": query,"querySize": len(query),"word_coefficient_answer" : question_body_mutiplier})
 
 

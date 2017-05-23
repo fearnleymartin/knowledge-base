@@ -306,9 +306,9 @@ class SolrQuery:
         x = 0
 
         if len(sys.argv) > 0:
-            print(os.getcwd())
-            os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
-            print(os.getcwd())
+
+            #os.chdir('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/')
+
             req ='curl http://localhost:8983/solr/' + str(self.solr_core)  + '/update?commit=true -d '+'\"<delete><query>*:*</query ></delete>\"'
             print(req)
             x = os.popen(req).read()
@@ -322,28 +322,11 @@ class SolrQuery:
         :param path: doc path you want to add
         :return: response of the query if code 0 this is a success
         '''
-        # with open('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10/' + path) as f:
-        #     content = f.readlines()
-        # # first and last line no ,
-        # with open('formatted_file' + '.json', 'w') as outfile:
-        #     i = 0
-        #     for line in content :
-        #         if(i == 0 or i == len(content)-1) :
-        #             outfile.write(line )
-        #             i +=1
-        #         else :
-        #             outfile.write(line + ',')
-        #             i += 1
-        if len(sys.argv) > 0:
-            print(os.getcwd())
 
-            #os.chdir('Old_file/EvaluationDB')
-
+        if True :
 
             ### For checking paths
-
-
-
+            print(os.getcwd())
             x = os.popen('bin/post -c ' + str(self.solr_core)  + ' ' + path).read()
             print('command is ','bin/post -c ' + str(self.solr_core)  + ' ' + path)
 
@@ -510,12 +493,6 @@ solquery.add_doc('server/solr/ProductDB/Full.json')
 file = open('research_words','r')
 s = file.read()
 '''
-
-solquery = SolrQuery('localhost:8983','Evaluation')
-solquery.set_query('question.question_body:'+ '\"'+str('extern where answer I')+'~1'+ '\"')
-solquery.add_field('uid')
-solrResponse = solquery.execute()
-print(solrResponse.get_results())
 
 
 '''

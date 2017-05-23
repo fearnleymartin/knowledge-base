@@ -54,5 +54,5 @@ dependencies:
   - regex==2016.1.10
   - scrapy-splash==0.7.2
   - service-identity==16.0.0
-prefix: C:\Users\Fearnley\Anaconda2\envs\swisscom
+prefix: C:\Users\Fearnley\Anaconda3\envs\swisscom
 

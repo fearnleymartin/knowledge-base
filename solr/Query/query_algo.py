@@ -10,7 +10,6 @@
 
 import nltk
 import  sys
-sys.path.append('/Users/pierrecolombo/Documents/knowledge-base/solr-6.4.1 14.31.10')
 from solr_query import SolrQuery
 from solr_query import and_
 from solr_query import or_
@@ -231,3 +230,4 @@ def baseline_near_boosted_Query(question, solquery,question_boost,answer_boost, 
 
     return solrResponse
 
+baselineQuery('question coucou',)
