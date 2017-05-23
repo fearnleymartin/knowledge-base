@@ -1,5 +1,6 @@
 
 import lxml.etree as etree
+import lxml.html
 import datefinder
 import datetime
 import queue
@@ -51,6 +52,7 @@ class IsResultsPage(object):
     child_tag_blacklist = ['script']
     input_node_type_blacklist = ['password', 'username']  # input nodes types which cause us to declare a block non valid
     input_node_placeholder_blacklist = ['search']  # input node placeholders which cause us to declare a block non valid
+    block_max_links = 8  # filter out blocks with more than 8 links (filter out menus etc)
 
     cleaner = Cleaner()
     cleaner.javascript = True
@@ -235,8 +237,6 @@ class IsResultsPage(object):
         :return: true if block contains user and date information
         """
         self.logger.debug(format_html_node_for_print(block, 'test is valid block: '))
-        if block.get('id') == "reply_8990549":
-            self.logger.debug(etree.tostring(block))
         self.logger.debug(self.contains_date(block))
         self.logger.debug(self.contains_user(block))
         text = self.extract_text_content(block)
@@ -249,7 +249,7 @@ class IsResultsPage(object):
         # print(etree.tostring(block))
         # TODO tidy
         # TODO: this sometimes crashed when parsing html ?? put try block ?
-        block_string = etree.fromstring(etree.tostring(block))
+        block_string = lxml.html.fromstring(lxml.html.tostring(block))
         input_nodes = block_string.xpath('//input')
         # TODO generalise ? (overfitting?)
         input_nodes = [i for i in input_nodes if i.get('type') != 'hidden' and (i.get('type') in self.input_node_type_blacklist or i.get('placeholder') in self.input_node_placeholder_blacklist)]
@@ -353,7 +353,7 @@ class IsResultsPage(object):
         :param child:
         :return:
         """
-        list_len = 4  # avoid getting lists of links of minimum this length
+        list_len = self.block_max_links  # avoid getting lists of links of minimum this length
         # print(child.tag, child.get('class'))
 
         lists_of_links = self.isIndexPage.find_lists_of_links(child, url, list_len)
@@ -384,6 +384,11 @@ class IsResultsPage(object):
     def parse_valid_block(self, valid_block):
         """
         Supposes the first date is the post date
+        Step 1: Identify the user node
+        Step 2: Identify the highest level node containing the minimum text length
+        but not containing the user node. This is the body node.
+        Step 3: Extract the date
+        
         :param valid_block: html node containing date, author and body information
         :return: {'date':'example_date', 'author':'example_author', 'body': 'example_body'}
         """
@@ -727,7 +732,7 @@ if __name__ == "__main__":
     # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
 
     # Tests
-    results_page_url = "https://community.dynamics.com/crm/f/117/t/229815"
+    results_page_url = "https://forums.macrumors.com/threads/water-damaged-6s-is-there-anything-i-can-do.1961500/"
 
     # product = 'Dell Inspiron'
     product = None
