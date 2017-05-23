@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 
 class SuperUserSpider(MasterSpider):
     """
-    Will generalise to Q/A site spider
+    Hard-coded crawler for superuser.com
     """
     name = "superuser"
     allowed_domains = ["superuser.com"]
@@ -31,11 +31,8 @@ class SuperUserSpider(MasterSpider):
         self.duplicate_url = None
 
     product = 'outlook'
-    # product = 'ubuntu'
     # start_urls = ['http://superuser.com/search?q={}'.format(product)]
-
     start_urls = ['https://superuser.com/questions/tagged/{}'.format(product)]
-    # start_urls = ['https://superuser.com/questions/743662/what-are-system-active-and-boot-partitions-in-terms-of-microsoft']
 
     allow = ('superuser.com/search', 'superuser.com/questions/', )
     deny = ('superuser.com/questions/ask', 'submit', 'answertab', '/users/',
@@ -63,8 +60,6 @@ class SuperUserSpider(MasterSpider):
         :param response:
         :return:
         """
-        # print("processing: {}".format(response.url))
-
         if self.initial_page_filter(response):
             if self.is_index_page(url=response.url, response=response):
                 self.process_index_page(response)
@@ -90,9 +85,6 @@ class SuperUserSpider(MasterSpider):
         :param response: question_answer item object
         :return:
         """
-        # TODO: implement going through pagination of forums responses
-        # All posts on page (might be posts on other pages though, )
-
         self.results_page_count += 1
         self.classification_file.write("results, {}\n".format(response.url))
         logging.info('results: {}'.format(response.url))
@@ -169,7 +161,6 @@ class SuperUserSpider(MasterSpider):
 
     def fill_answer(self, response, question_answer, answer_number):
         """
-        @TODO break components down into functions
         :param response:
         :param question_answer: question_answer item object
         :param answer_number: position of answer in page
@@ -195,7 +186,6 @@ class SuperUserSpider(MasterSpider):
     ### Page identification functions
 
     def is_results_page(self, url, response=None):
-        # @TODO tidy up types
         if type(url) is not str:
             url = url.url
         return "superuser.com/questions/" in url

@@ -1,4 +1,3 @@
-
 import lxml.etree as etree
 import lxml.html
 import datefinder
@@ -32,10 +31,6 @@ We look for a list of >= 2 posts, containing a date and user information
 The block containing this list of posts is called the  lowest block
 We try to make sure each post in the block has a minimum text length (avoid index pages and bad quality pages)
 """
-
-# TODO: structure code into functions
-# TODO speed up code, avoid going through whole tree, but perhaps flatten with regexes
-
 
 class IsResultsPage(object):
 
@@ -88,26 +83,10 @@ class IsResultsPage(object):
         self.reason = reason
         self.logger.info(reason)
 
-    @staticmethod
-    def print_link_list(link_list):
-        """
-        Helper function for print the urls of link lxml object
-        :param link_list: list of links (lxml object)
-        :return:
-        """
-        for el in link_list:
-            print(el)
-            print(el.get('href'))
-            # indexPageLogger.info(el.get('href'))
-
     def extract_dates(self, block, string=None):
         """
-        Kind of deprecated, using contains_date simply
-        Can be useful for actually getting dates to print them
-        But slower than than just contains_date
         Extract dates from raw html string
-        We use a raw html string because date information is not necessarily contained in user visible text, but can also be
-        contained in tag attributes
+        We use a raw html string because date information is not necessarily contained in user visible text, but can also be contained in tag attributes
         :param block: lxml node
         :return: list of python date time objects
         """
@@ -115,10 +94,8 @@ class IsResultsPage(object):
             block_string = string
         else:
             block_string = str(etree.tostring(block))
-        # print(block_string)
         block_string = block_string.replace('Z', '')  # hacky
         matches = datefinder.find_dates(block_string, strict=True, source=True)
-        # print(len(list(matches)))
         max_year = datetime.datetime.today().year
         min_year = 1970
         matches = [(match[0],match[1]) for match in matches if min_year <= match[0].year <= max_year and self.hasNumbers(match[1])]
@@ -130,11 +107,7 @@ class IsResultsPage(object):
         :param block: lxml node
         :return: true if node contains date in html, false otherwise
         """
-        # TODO improve strictness, is catching too many non dates
-        # matches = extract_dates(block)
-        # return len(list(matches)) > 0
         block_string = str(etree.tostring(block))
-        # remove links (to keep ?)
         pattern = r'<(a|/a).*?>'
         block_string = re.sub(pattern, "", block_string)
         block_string = block_string.replace('Z', '')  # hacky
@@ -160,13 +133,10 @@ class IsResultsPage(object):
         css_classes_list = extract_css_class(block_string).split(' ')
         user_css_class = None
         user_css_classes = []
-        # TODO user_css_class shouldn't be null but what if anyway ?
         for css_class in css_classes_list:
             if 'user' in css_class or 'author' in css_class:
                 user_css_classes.append(css_class)
-        # print("user css class", user_css_classes)
-        # TODO speed up because can be a lot of user css classes
-        # TODO should always contain element but never too sure
+
         if len(user_css_classes) > 0:
 
             # Step 2
@@ -174,15 +144,12 @@ class IsResultsPage(object):
             user_nodes = []
             for user_css_class in user_css_classes:
                 user_nodes += list(CSSSelector('.{}'.format(user_css_class))(block_copy))
-            # print("user nodes count", len(user_nodes))
             valid_user_nodes = []  # list of tuples containing (user node, list of links in user node)
             for _user_node in user_nodes:
                 links = _user_node.iterlinks()
                 filtered_links = []
                 # Filter links 1) on site 2) a tags 3) duplicates 4) text content not null 5) contains no dates
                 # Idea is when a user is mentioned, there is always a link to his profile
-                # print(_user_node, _user_node.get('class'), _user_node.get('id'))
-                # print([link for link in _user_node.iterlinks()])
                 for link in links:
                     if link[0].tag == 'a':
                         if urlparse(link[2]).netloc == urlparse(self.url).netloc:
@@ -193,7 +160,6 @@ class IsResultsPage(object):
                 if len(filtered_links) > 0:
                     valid_user_nodes.append((_user_node, filtered_links))
                     break
-                # print([link for link in filtered_links])
 
             # Step 3
             if len(valid_user_nodes) == 0:
@@ -221,13 +187,6 @@ class IsResultsPage(object):
         :param block: lxml node
         :return: true if node contains the word user in html
         """
-        # TODO improve strictness, is too large still
-        # TODO would like to restrict to tag information (ie classes, tag attributes with user in them
-        # TODO improve with regexes, I think there are major improvement to be made here
-        # block_string = str(etree.tostring(block))
-        # css_classes_string = extract_css_class(block_string)
-        # TODO extract link and check there is a link
-        # return 'user' in css_classes_string or 'author' in css_classes_string
         user_node = self.extract_user_node(block)[0]
         return user_node is not None
 
@@ -236,63 +195,33 @@ class IsResultsPage(object):
         :param block: lxml node
         :return: true if block contains user and date information
         """
-        self.logger.debug(format_html_node_for_print(block, 'test is valid block: '))
-        self.logger.debug(self.contains_date(block))
-        self.logger.debug(self.contains_user(block))
         text = self.extract_text_content(block)
         return self.contains_date(block) and self.contains_user(block) and self.is_over_min_text_len(text, self.min_text_len)
 
     def filter_valid_blocks(self, block):
-        # We black list certain things we don't want to find in blocks
-        # Search bar, login etc
-        # print(format_html_node_for_print(block, 'current block'))
-        # print(etree.tostring(block))
-        # TODO tidy
-        # TODO: this sometimes crashed when parsing html ?? put try block ?
+        """
+        We black list certain things we don't want to find in blocks
+        Search bar, login etc
+        :param block: 
+        :return: 
+        """
         block_string = lxml.html.fromstring(lxml.html.tostring(block))
         input_nodes = block_string.xpath('//input')
-        # TODO generalise ? (overfitting?)
         input_nodes = [i for i in input_nodes if i.get('type') != 'hidden' and (i.get('type') in self.input_node_type_blacklist or i.get('placeholder') in self.input_node_placeholder_blacklist)]
-        # print('inputs: {}'.format(input_nodes))
         doesnt_contain_input_nodes = len(input_nodes) == 0
-        # print('doesnt_contain_input_node: {}'.format(doesnt_contain_input_nodes))
         return doesnt_contain_input_nodes
-
-    def get_text_leafs(self, html):
-        """
-        DEPRECATED (TO DELETE?)
-        We want to extract all leaf nodes that contain text
-        This is because usually text is located in leaf node
-        :param html: lxml root node containing html
-        :return: list of leaf nodes (lxml objects)
-        """
-        # TODO Try to find lowest common denominator (i.e. not paragraphs but an ensemble of paragraphs). Perhaps we can use beautiful soup ?
-        leafs = []
-        stack = []
-        stack.append(html)
-        while len(stack) > 0:
-            node = stack.pop()
-            children = node.getchildren()
-            # Sometimes <br> tags are found in "leaf nodes" we skip these
-            children = [child for child in children if child.tag != 'br']
-            if node.tag in self.text_tags:
-                leafs.append(node)
-            if len(children) > 0:
-                for child in children:
-                    stack.append(child)
-            else:
-                leafs.append(node)
-        return leafs
 
     @staticmethod
     def get_body(html):
-        # TODO deal with empty list case
+        """
+        :param html: 
+        :return: body node of the html
+        """
         body_list = list(filter(lambda child: child.tag == 'body', html.getchildren()))
         if len(body_list) > 0:
             return body_list[0]
         else:
             return None
-
 
     @staticmethod
     def is_over_min_text_len(text, min_text_len):
@@ -302,8 +231,6 @@ class IsResultsPage(object):
         :param min_text_len:
         :return: true or false
         """
-        # TODO sometimes problem is described by a picture
-        # TODO improve filtering of text_content, often contains more than just the body text
         return len(text) > min_text_len
 
     @staticmethod
@@ -312,11 +239,14 @@ class IsResultsPage(object):
 
     @staticmethod
     def extract_text_content(html_node):
-        # TODO avoid returning javascript
         return " ".join(str(html_node.text_content()).strip().split())
 
     def filter_by_css_classes(self, node):
-        # TODO Implement faster way of checking all css classes
+        """
+        Filter blocks by excluding certain blacklisted css classes
+        :param node: 
+        :return: True if block not blacklisted, False otherwise
+        """
         css_classes = node.get('class')
         if css_classes:
             css_classes = css_classes.lower()
@@ -325,44 +255,35 @@ class IsResultsPage(object):
                 for blacklisted_class in self.class_blacklist:
                     for css_class in css_classes:
                         if blacklisted_class == css_class:
-                            # print(css_class)
-                            # print('css class blacklisted', css_class)
-                            self.logger.info(css_class)
                             self.logger.info('css class blacklisted: {}'.format(css_class))
                             return False
                         elif blacklisted_class + '_' in css_class or blacklisted_class + '-' in css_class:
-                            self.logger.info(css_class)
                             self.logger.info('css class blacklisted: {}'.format(css_class))
                             return False
         return True
 
     def filter_by_url(self, url):
-        # TODO improve this with regexs
-        # TODO overfitting at the moment
+        """
+        Filter page based on a url blacklist
+        :param url: 
+        :return: True if url is blacklisted, False otherwise
+        """
         for url_domain_clue in self.url_blacklist:
-            if url_domain_clue in url: #  urlparse(url).netloc:
-                # print('url blacklisted')
+            if url_domain_clue in url:
                 self.logger.info('url blacklisted')
                 return True
         return False
 
-    def content_is_valid(self, content, child, url):
+    def content_is_valid(self, block, url):
         """
-        Check content doesn't contain list of links
-        :param content:
-        :param child:
-        :return:
+        Check content is not just simply a list of links list of links
+        :param block:
+        :return:  True if content is not a list of links, False otherwise
         """
         list_len = self.block_max_links  # avoid getting lists of links of minimum this length
-        # print(child.tag, child.get('class'))
-
-        lists_of_links = self.isIndexPage.find_lists_of_links(child, url, list_len)
+        lists_of_links = self.isIndexPage.find_lists_of_links(block, url, list_len)
         lists_of_links = list(filter(lambda x: len(x) > list_len, lists_of_links))
-        # print('links counts: {}'.format(len(lists_of_links)))
         if len(lists_of_links) > 0:
-            # print(len(lists_of_links[0]))
-            # self.print_link_list(lists_of_links[0])
-
             self.logger.info('content is list of links: not valid')
             return False
         else:
@@ -372,7 +293,7 @@ class IsResultsPage(object):
         """
         Check a block contains the product keyword
         :param text_content: the text content of a block
-        :return: bool
+        :return: True if text_content contains the product, False otherwise
         """
         product_words = self.product.split(' ')
         product_bool = False
@@ -398,34 +319,24 @@ class IsResultsPage(object):
         condition = True
         q = queue.Queue()
         q.put(node)
-        # TODO make sure terminates correctly
         # Normally at least one block has min required len and doesn't contain user class
         # Here we look for the block that contains just the user information but not date or author
         final_node = None
         while condition and not q.empty():
             node = q.get()
-            # self.logger.info(format_html_node_for_print(node, 'node'))
-            # print(self.extract_text_content(node))
             children = node.getchildren()
-            # print('children count', len(children))
-            # valid_children = []
             for child in children:
-                # print(child, child.get('class'), 'child')
                 contains_user_node = len(list(CSSSelector('.{}'.format(user_css_class))(child))) > 0
-                # print('contains user node', contains_user_node)
                 valid_text_len = len(self.extract_text_content(child)) > self.min_text_len
-                # print('valid text len', valid_text_len)
 
                 if not contains_user_node and valid_text_len:
                     final_node = child
-                    # print('final node:', final_node, final_node.get('class'))
                     condition = False
                     break
                 elif valid_text_len and contains_user_node:
                     q.put(child)
                 else:
                     pass
-                    # print('problem')
         if final_node is not None:
             text_content = self.extract_text_content(final_node)
             # Now consider html structure without the final node. Parse this to extract date
@@ -433,10 +344,7 @@ class IsResultsPage(object):
         else:
             # Better to return too much text (i.e. with author and date) than none at all
             text_content = self.extract_text_content(valid_block)
-        # date_text_container = self.extract_text_content(valid_block_copy)
-        # print('looking for dates in: ', self.extract_text_content(valid_block_copy))
         dates = self.extract_dates(valid_block_copy)
-        # print('extracted dates', dates)
         dates = [date_tuple[0] for date_tuple in dates]
         dates = list(set(dates))
         if len(dates) > 1:
@@ -447,17 +355,12 @@ class IsResultsPage(object):
         else:
             self.logger.debug('no dates found !')
             date = None
-        # print('extracted dates with duplicated removed: ', dates)
         parsed_dict = {
             'date': date,
             'author': user_text,
             'author_link': user_link,
             'body': text_content
         }
-        # print(parsed_dict)
-        # print('---------------------------------------')
-        # print('\n')
-        # self.logger.info('parsed dict: {}'.format(parsed_dict))
         return parsed_dict
 
     def find_lowest_valid_container(self, block):
@@ -508,14 +411,11 @@ class IsResultsPage(object):
                             q.put(child)  # a child can only be valid if parent is valid
 
                 if valid_block_count >= 2:
-                    # filtered_valid_blocks = valid_block_list
                     filtered_valid_blocks = [v for v in valid_block_list if self.filter_valid_blocks(v)]
-                    # print('filtered valid block count: {}'.format(len(filtered_valid_blocks)))
                     if len(filtered_valid_blocks) >= 2:
                         for b in filtered_valid_blocks:
                             self.logger.debug(format_html_node_for_print(b, 'valid block'))
                         lowest_valid_container = node
-                        # print(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
                         self.logger.info(format_html_node_for_print(lowest_valid_container, 'lowest_valid_container'))
                         while_loop_bool = False
                         break
@@ -571,13 +471,6 @@ class IsResultsPage(object):
             self.set_reason('url blacklisted')
             return False
 
-        # Check is not index page
-        # if is_index_page(url, input_html=original_html):  # TODO cleaning twice etc, can tidy this
-        #     reason = 'false because index page'
-        #     self.logger.info(reason)
-
-        #     return False
-
         # Step 2: Identify lowest html node (container) which contains all the posts of the page (blocks)
 
         lowest_valid_container = self.find_lowest_valid_container(html)
@@ -585,13 +478,11 @@ class IsResultsPage(object):
         if lowest_valid_container is None:
             return False
 
-
         # Step 2b: Check for nested content
         # If 2 blocks are found, check if nested content inside second block
         # This is because the question and the answer  may be in different blocks
         # If nested content is found, flatten the structure
 
-        # TODO in first text, check for a question/problem
         self.logger.info("\n")
 
         child_blocks = list(filter(self.is_valid_block,
@@ -611,8 +502,6 @@ class IsResultsPage(object):
             else:
                 self.logger.info('no snd_lowest_valid_container found')
 
-            self.logger.debug('child blocks count (after de-nesting i.e. step 2b): {}'.format(len(child_blocks)))
-
         # Step 3: Extract valid blocks from container
         # The container may contain more content than we actually need
         # We go through each block and extract the lowest html node contain all essential information
@@ -621,7 +510,6 @@ class IsResultsPage(object):
         # Each child block node tends to have multiple children nodes itself, but only one of these node usually tend to contain the actual block
         # We recursively work our way down the html tree of the block until we find the lowest node containing all the information a valid block should have
         # These new blocks are stored in the list new_child_blocks
-
 
         new_child_blocks = {}
 
@@ -648,8 +536,6 @@ class IsResultsPage(object):
 
         new_child_blocks = list(map(lambda x: x[-1], new_child_blocks.values()))
 
-        self.logger.debug('child blocks count (after step 3): {}'.format(len(new_child_blocks)))
-
         # Step 4: Filter valid blocks
         # We re-run some checks over the block to check they are valid (text length, text content) and filter only valid blocks
 
@@ -661,7 +547,7 @@ class IsResultsPage(object):
             self.logger.debug(text_content)
 
             text_len_bool = self.is_over_min_text_len(text_content, self.min_text_len) and self.is_under_max_text_len(text_content, self.max_text_len)
-            valid_content_bool = self.content_is_valid(text_content, child, url)
+            valid_content_bool = self.content_is_valid(child, url)
             if text_len_bool and valid_content_bool:
                 self.logger.debug(format_html_node_for_print(child, 'child {} is valid'.format(i)))
                 correct_post_len_count += 1
@@ -704,49 +590,13 @@ class IsResultsPage(object):
         return True
 
 if __name__ == "__main__":
-    # Negatives
-    # results_page_url = 'https://redditblog.com/2017/03/02/rnintendoswitch-celebrates-switchmas-with-charity-live-stream/'
-    # results_page_url = 'https://community.mindjet.com/mindjet/details'
-    # results_page_url = 'https://www.cnet.com/es/noticias/ghost-in-the-shell-scarlett-johansson-se-convierte-en-robot/'
-    # results_page_url = "https://forums.adobe.com/community/creative_cloud"
-    # results_page_url = "https://www.macrumors.com/roundup/apple-pay/"
-    # results_page_url = 'http://www.dslreports.com/forum/r31291753-App-Update-MVPS-Host-File-Update-March-06-2017'
-
-
-    # Positives (correct identification and correct parsing)
-    # results_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
-    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5z2o1r/two_problems_iphone_6_and_iphone_7/'
-    # results_page_url = 'http://biology.stackexchange.com/questions/17807/when-infected-with-malaria-how-many-parasites-are-within-a-human-host?rq=1'
-    # results_page_url = "https://www.reddit.com/r/gaming/comments/693isi/just_gotta_deactivate_these_traps/"
-    # results_page_url = 'http://sports.stackexchange.com/questions/4892/what-kind-of-ball-is-used-in-the-fifa-world-cup?rq=1'
-    # results_page_url = 'https://www.reddit.com/r/iphonehelp/comments/5yxs4q/my_sister_put_her_iphone_into_lost_mode_in_an/'
-    # results_page_url = "http://stackoverflow.com/questions/42765621/cuda-accumulate-lines-of-an-image"  # Nested content
-    # results_page_url = "https://answers.microsoft.com/en-us/msoffice/forum/msoffice_powerpoint-mso_win10/powerpoint/103d0bc5-680c-4025-9efc-6558df1e6b1b"
-    # results_page_url = "https://forums.macrumors.com/threads/is-america-truly-a-nation-of-xenophobes-bigots-racists-and-misogynist-did-i-miss-any.2035549/page-7#post-24388998"
-
-    # Incorrect parsing:
-    # results_page_url = 'http://en.community.dell.com/support-forums/laptop/f/3518/t/20009712'
-
-
-    # Broken
-    # results_page_url = 'https://www.quora.com/Whats-the-easiest-way-to-make-money-online'
-
-    # Tests
-    results_page_url = "https://forums.macrumors.com/threads/water-damaged-6s-is-there-anything-i-can-do.1961500/"
-
-    # product = 'Dell Inspiron'
+    # For testing purposes
+    results_page_url = "https://forums.macrumors.com/threads/iphone-6-touchscreen-goes-crazy.1853268/"
     product = None
     isResultsPage = IsResultsPage(product=product)
-
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
-    # isIndexPageLogger = logging.getLogger('indexPageLogger')
-    # isIndexPageLogger.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    # results_page_url = "https://support.wix.com/en/ticket/c80d73fd-0599-4b07-a766-440ee5a6c720"
     print('source url', results_page_url)
-
     print('is results page bool: ', isResultsPage.is_results_page(results_page_url))
     print(isResultsPage.parsed_text_content)
     print('blocks count: ', len(isResultsPage.parsed_text_content))
-    print('finished')
 
