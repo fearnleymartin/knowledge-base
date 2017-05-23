@@ -21,10 +21,8 @@ class GeneralPipeline(object):
     Logs crawl stats on spider close
     """
     def open_spider(self, spider):
-        # TODO: regexify
         url_path = url_to_short_file_name(spider.start_urls[0])
-        items_file_path = 'scraped_data/{}_items2.jl'.format(url_path)
-        print('items file path', items_file_path)
+        items_file_path = 'scraped_data/{}_items.jl'.format(url_path)
         self.file = open(items_file_path, 'w')
 
     def close_spider(self, spider):
@@ -50,7 +48,6 @@ class JsonWriterPipeline(GeneralPipeline):
     """
     Processes items (Q/A pairs) and writes them to json
     """
-
     def process_item(self, item, spider):
         spider.total_items += 1
         question_answer_pair = {

@@ -215,3 +215,5 @@ ENV/
 /solr/Old_file/EvaluationDB/optimization_coefficents.csv
 /solr/Old_file/EvaluationDB/optimization_coefficents_tf.csv
 /solr/Old_file/EvaluationDB/optimization_coefficents_tf_local.csv
+/knowledge_base/knowledge_base/scripts/lxml_tester.py
+/knowledge_base/knowledge_base/scripts/split_train_test.py

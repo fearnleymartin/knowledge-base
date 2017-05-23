@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# from ..items import QuestionAnswer
-# from datetime import datetime
-# from bs4 import BeautifulSoup
-# import re
 from .master import MasterSpider
-# from ..utils import date_to_solr_format
 from scrapy.extensions.closespider import CloseSpider
 import logging
 import time
@@ -20,26 +15,14 @@ def page_count_with_log(self, response, request, spider):
 
 class IsSiteValidSpider(MasterSpider):
     """
+    The aim if this crawler is to detect whether a website contains both index and results pages.
+    In this case we say that the site is valid
     """
     name = "isSiteValid"
     allowed_domains = ["macrumors.com"]
-    custom_settings = {'DOWNLOAD_DELAY': 0,
-                       'LOG_FILE': 'logs/{}_log.txt'.format(name),
-                       'CLOSESPIDER_PAGECOUNT': 30,
-                       'ITEM_PIPELINES': {
-                                   'knowledge_base.pipelines.IsSiteValidPipeline': 300,
-                                }
-
-    }
-
-
     start_urls = ['http://www.macrumors.com']
 
-
-
-
     CloseSpider.page_count = page_count_with_log
-
 
     def __init__(self):
         self.rate_limit = False
@@ -60,8 +43,6 @@ class IsSiteValidSpider(MasterSpider):
         if self.contains_index_page and self.contains_results_page:
             print('should stop now')
             self.crawler.engine.close_spider(self, 'site is valid')
-        # print("call back response is not none: {}".format(response is not None))
-        # print("processing: {}".format(response.url))
         if self.is_index_page(url=response.url, response=response):
             self.process_index_page(response)
         elif self.is_captcha_page(response.url, response):
