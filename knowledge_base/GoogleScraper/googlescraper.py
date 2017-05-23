@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 22 11:07:20 2015
-Contains the scripts for the ranktracker
-@author: Fearnley Martin
-
-
 ERROR CODES:
 100: not ranked
 0: connection error
-
 
 Example of use :
 s=Scraper()
@@ -26,7 +20,7 @@ import tldextract
 
 
 
-class Scraper(object):
+class GoogleScraper(object):
     """
     Class for scraping google and getting rankings for individual keyword
     Use method find rank for this
@@ -79,7 +73,7 @@ class Scraper(object):
         Much easier to take the links from the url beginning with "/url?q="
         :param link: the link to be parsed (the part you want is contained between "/url?q=" and "&sa"
         :return: the link you need
-        >>> s = Scraper()
+        >>> s = GoogleScraper()
         >>> link = "/url?q=http://www.lepointdufle.net/tests-de-francais.htm&sa=U&ved=0ahUKEwi4jv-IwrnNAhVnKsAKHWh-BO8QFgjjBDBj&usg=AFQjCNErIS4pGpLqP6YM6RrQy-B4U77t8w"
         >>> s.link_parser(link)
         >>> 'http://www.lepointdufle.net/tests-de-francais.htm'
@@ -112,7 +106,7 @@ class Scraper(object):
         """ Takes the html code and parses with lxml to return links
         @param html_code: html to be passed for links
         @return: lxml iterlinks object
-        >>> s=Scraper()
+        >>> s=GoogleScraper()
         >>> html_code = "<body><h1>Not a link</h1><a href=\"testlink.com\">A real link</a></body>"
         >>> s.get_links_from_html(html_code)
         >>> <generator object iterlinks at 0x000000000316ECA8>
@@ -143,7 +137,7 @@ class Scraper(object):
         gets list of the urls found when typing keyword into google
         :param keyword: keyword object corresponding to a google request
         :return: True if request succeeds, False otherwise
-        >>> s=Scraper()
+        >>> s=GoogleScraper()
         >>> s.get_google_result_urls_for_keyword('test', 'google.fr','fr')
         ['https://www.16personalities.com/fr/test-de-personnalite',
         'http://test-orientation.studyrama.com/choixType.php',
@@ -183,7 +177,7 @@ class Scraper(object):
         # pws: personalised search
         # as_qdr: how long ago results were indexed
         try:
-            links = Scraper.get_links_from_html(self.get_google_html_code(url))
+            links = GoogleScraper.get_links_from_html(self.get_google_html_code(url))
             self.google_result_urls = self.filter_lxml_google_links_to_serp_results_list(links)
             return True
         except requests.ConnectionError:

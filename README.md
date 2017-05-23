@@ -17,7 +17,7 @@ If additional dependencies needed to be installed do not forget to re-export the
 
 The crawler is contained in the directory knowledge base. More information on the structure can be found in `docs/scraping.md`
 
-To run crawler:
+To run crawler (once parameters have been set):
 `cd knowledge_base`
 `scrapy crawl resultsScraper`
 
@@ -51,13 +51,17 @@ To launch:
 
 This must be running to crawl correctly. If you wish to disable it, the the SplashRequests in the spiders must be replaced with Requests.
 
+## Algorithms and tests
 
-## Json formats
+The main algorithm behind the crawler is is_results_page. This algorithm detect whether a page containers question/answer pairs and extracts them is so.
+The script can be found in `knowledge_base/knowledge_base/scripts/is_results_page.py`
+The evaluation for this test can be found in `knowledge_base/tests/test_is_results_page.py`
+This function will run the algorithm over a set of 180 pages  (`evaluation_set.csv`) and measure the performance. To get more metrics on the performance, run `analyse_results.py` when the test has finished running.
 
-The different json formats are detailed in the directory json_formats.
+The other script is `is_index_page.py` and the corresponding test `test_is_index_page.py`
 
-## Scraper Class
-This class represents a scraper object on which we can perform the requests to obtain the n first urls given a word search
+## Google Scraper
+This script scrapes the Google search results page for a given query and extracts the list of the first 100 urls.
 
 # Querying the database
 
