@@ -1,7 +1,9 @@
-
+"""
+Metrics on the results of the is_results_page algorithm run over the evaluation set
+"""
 
 def stats_classification():
-    labels_path = 'BDD-Q-A_with_extra_criteria_no_symantec.csv'
+    labels_path = 'evaluation_set.csv'
     results_path = 'results_output.csv'
 
     false_positives = 0
@@ -15,17 +17,12 @@ def stats_classification():
             results = f_results.readlines()
 
             for (label_, result_) in zip(labels, results):
-                label = label_.split(',')[1].replace('\n','')
-                if label == 'Yes':
-                    label = True
-                else:
-                    label = False
+                label = int(label_.split(',')[1].replace('\n',''))
+                if label > 0: label = True
+                else: label = False
                 result = result_.split(',')[1].replace('\n','')
-                if result == 'True':
-                    result = True
-                else:
-                    result = False
-                # print(label, result)
+                if result == 'True': result = True
+                else: result = False
                 if label and result:
                     true_positives += 1
                 elif label and not result:
@@ -67,7 +64,6 @@ def stats_parsing():
             actual_count = int(line.split(',')[2].replace('\n', ''))
             total_posts += expected_count
             total_parsed_posts += actual_count
-            print(expected_count, actual_count)
             if expected_count == actual_count:
                 correct_count += 1
             else:
@@ -79,12 +75,14 @@ def stats_parsing():
     print('accuracy: {}'.format(accuracy))
     print('correctly parsed pages count: {}'.format(correct_count))
     print('total pages: {}'.format(total))
-    print('\n')
     print('total parsed posts: {}'.format(total_parsed_posts))
     print('total posts: {}'.format(total_posts))
     print('percentage of posts parsed: {}'.format(float(total_parsed_posts)/float(total_posts)))
 
 
 if __name__ == "__main__":
-    # stats_classification()
+    print('Classification:')
+    stats_classification()
+    print('\n')
+    print('Parsing:')
     stats_parsing()

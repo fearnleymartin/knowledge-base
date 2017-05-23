@@ -10,6 +10,7 @@ logger = logging.getLogger('datefinder')
 class DateFinder(object):
     """
     Locates dates in a text
+    Slightly modified version of https://pypi.python.org/pypi/datefinder
     """
     max_year = datetime.datetime.today().year
     min_year = 1970
@@ -229,11 +230,7 @@ class DateFinder(object):
             return False
         if not self.hasNumbers(match.group(0)):
             return False
-        # print(match.group(0))
-        # print(group)
         captures = match.capturesdict()
-        # print('captures: ',captures)
-        # print("captures: ", captures)
         digits = captures.get('digits')
         months = captures.get('months')
         delimiters = captures.get('delimiters')
@@ -257,12 +254,6 @@ class DateFinder(object):
                 digit_min_len = True
         complete = complete and digit_min_len
 
-
-
-        # TODO implement sanity check for dates
-        # matches = [match[0] for match in matches  and hasNumbers(match[1])]
-        # if not min_year <= match[0].year <= max_year
-
         if not complete:
             return False
         else:
@@ -271,13 +262,8 @@ class DateFinder(object):
     def contains_date_strings(self, text, strict=False):
         # TODO: Instead of filtering, need to improve the regex
         groups = self.DATE_REGEX.finditer(text)
-        # print(groups)
-        # print(groups.capturesdict())
-        # if groups is not None:
-            # print("match: ", match.group(0))
         groups = list(filter(self.filter_date, groups))
         return len(groups) > 0
-        # return match is not None
 
 
     def extract_date_strings(self, text, strict=False):
