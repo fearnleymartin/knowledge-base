@@ -68,8 +68,7 @@ class resultsScraper(MasterSpider):
         :param response:
         :return: list of Q/A pairs
         """
-        # TODO: implement going through pagination of forums responses
-        # All posts on page (might be posts on other pages though, )
+        # All posts on page (might be posts on other pages though)
         self.results_page_count += 1
         if self.isResultsPage.is_pertinent:
             self.classification_file.write("results, {}\n".format(response.url))

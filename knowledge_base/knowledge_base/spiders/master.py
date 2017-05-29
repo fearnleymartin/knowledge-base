@@ -62,19 +62,11 @@ class MasterSpider(CrawlSpider):
     #                    gt.css_to_xpath('.sui-pagination'))
 
     # eset
-    # allow += ('/topic/', '/forum')
-    # deny += ('/login', "/profile",)
-    # restrict_xpaths += (gt.css_to_xpath('.ipsDataItem_main'),
-    #                    gt.css_to_xpath('.ipsPagination'))
+    allow += ('/topic/', '/forum')
+    deny += ('/login', "/profile",)
+    restrict_xpaths += (gt.css_to_xpath('.ipsDataItem_main'),
+                       gt.css_to_xpath('.ipsPagination'))
 
-    # allow = ('threads', 'forum')
-    # deny = ('members')
-    # restrict_xpaths = (gt.css_to_xpath('.listBlock'),
-    #                    gt.css_to_xpath('.PageNav'))
-
-    # allow = ()
-    # deny = ()
-    # restrict_xpaths = ()
 
     rules = (
         Rule(LinkExtractor(allow=allow,  # Allow index and results pages
@@ -232,7 +224,7 @@ class MasterSpider(CrawlSpider):
         :param response:
         :return:
         """
-        pass
+        return True
 
     def initial_page_filter(self, response):
         """ To quickly filter out unsuitable pages without running entire algorithm"""
