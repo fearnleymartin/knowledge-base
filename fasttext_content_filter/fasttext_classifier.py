@@ -1,15 +1,20 @@
 import fasttext
 import pandas as pd
-
 import random
+
+"""
+Basic FastText implementation
+Idea is to train a model to distinguish between answers to questions and general discussion in forums
+To do so, we train on a dataset where the answers are Stack Overflow answers (label: positive) and the general discussion is tweets (label: negative)
+"""
 
 def decision(probability):
     return random.random() < probability
 
 
-def set_positiv_to_rigth_format(path_input, path_output, pos_prefix,) :
+def set_positive_to_correct_format(path_input, path_output, pos_prefix):
 
-    df = pd.read_json(path_input,lines = True)
+    df = pd.read_json(path_input,lines=True)
     l_label = []
     l_text = []
 
@@ -28,16 +33,14 @@ def set_positiv_to_rigth_format(path_input, path_output, pos_prefix,) :
     final_data.to_csv(path_output,header = False)
 
 
-
-
 if __name__ == '__main__' :
-    set_positiv_to_rigth_format('solr/Old_file/Data/test.json','coucou.txt','__label__')
+    set_positive_to_correct_format('solr/Old_file/Data/test.json', 'coucou.txt', '__label__')
 
-    ## Train fast text :
+    # Train fast text :
     classifier = fasttext.supervised('coucou.txt', 'model', label_prefix='__label__',
-                                     thread=12,epoch  = 20,lr  = 0.01)
+                                     thread=12, epoch=20, lr=0.01)
 
-    ## Load text to evaluate :
-    texts = ['example vefin fpomamnf neifo','coucou mon cher !']
+    # Load text to evaluate :
+    texts = ['example vefin fpomamnf neifo', 'coucou mon cher !']
     labels = classifier.predict(texts)
     print(labels)
