@@ -1,5 +1,11 @@
-# knowledge-base
-Creating a knowledge base for product orientated discussion
+# Creating a knowledge base for product-orientated discussion
+
+Code for:
+- Extracting content from question-answer sites and forums via a systematic and site-independent approach
+- Running a question answering system using Solr, Tensorflow and Neo4j
+
+Find the project report at: https://github.com/fearnleymartin/knowledge-base/blob/master/Docs/report.pdf
+
 
 # Environment
 
