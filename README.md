@@ -27,15 +27,19 @@ To run crawler (once parameters have been set):
 `cd knowledge_base`  
 `scrapy crawl resultsScraper`  
 
-N.B. make sure conda environment is activated
+N.B. make sure conda environment is activated.
 
 To set the parameters:  
-Open `knowledge_base/knowledge_base/spiders/resultsScraper`  
+Open `knowledge_base/knowledge_base/spiders/resultsScraper.py`  
 Set `start_urls` to the list of urls you would like the crawler to start crawling from  
 
 To set the url-guiding parameters:  
-Open `knowledge_base/knowledge_base/spiders/master`  
-Set `allow`, `deny` and `retrict_xpaths`. Some examples are given. These parameters allow you to specify which link you would like the crawler to follow. In you leave the empty, the crawler will follow all links that remain in the allowed domain.
+Open `knowledge_base/knowledge_base/spiders/master.py`  
+Set `allow`, `deny` and `restrict_xpaths`. Some examples are given. These parameters allow you to specify which links you would like the crawler to follow. In you leave them empty, the crawler will simply follow all links that remain in the allowed domain.
+
+To get `allow` and `deny` attributes for new sites, navigate to the index page you would like to start crawling at (e.g. a search results page for "iPhone" on your chosen site). Then put in `allow` the url elements common to all index pages pages (e.g. search results pages) and the url elements common to all results pages (e.g. the page where the question and the answers can be found).
+
+To get `restrict_xpath` attribute, again navigate the th eindex page you would like to start crawling at. Then using chrome developer tools, select the links towards results pages. Then take the css class and put the following in `restrict_xpaths`: `gt.css_to_xpath('.<extracted_xpath>')`. Do the same for the pagination links (e.g. links to other pages of the search results).
 
 To set paths:  
 Log: in `knowledge_base/knowledge_base/settings.py` set `LOG_FILE`
@@ -70,6 +74,11 @@ The other script is `is_index_page.py` and the corresponding test `test_is_index
 
 ## Google Scraper
 This script scrapes the Google search results page for a given query and extracts the list of the first 100 urls.
+See `knowledge_base/GoogleScraper/run.py` for usage example.
+
+## FastText filtering solution
+
+Basic FastText implementation which aims to distinguish between answers to questions and general discussion in forums
 
 # Querying the database
 
