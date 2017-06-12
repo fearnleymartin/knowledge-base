@@ -80,6 +80,11 @@ See `knowledge_base/GoogleScraper/run.py` for usage example.
 
 Basic FastText implementation which aims to distinguish between answers to questions and general discussion in forums
 
+## Example data
+
+The following data set was extracted from 6 different sites using the url guiding method. 
+https://www.dropbox.com/s/xp3z4yfkexkt2d8/swisscom_crawl_data.zip?dl=0
+
 # Querying the database
 
 ## Solr
